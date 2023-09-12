@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\AccountTransaction;
+use App\Models\Member;
+use App\Observers\MemberAccountTransactionBalanceObserver;
+use App\Observers\MemberObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -27,7 +31,8 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Member::observe(MemberObserver::class);
+        AccountTransaction::observe(MemberAccountTransactionBalanceObserver::class);
     }
 
     /**

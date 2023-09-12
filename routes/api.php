@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\LoanController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UtilityController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +26,25 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/me', function (Request $request) {
         return $request->user();
     });
+
+    Route::resource('members', MemberController::class)->except(['create', 'edit']);
+    Route::resource('users', UserController::class)->except(['create', 'edit']);
+    Route::resource('loans', LoanController::class)->except(['create', 'edit']);
+
+    Route::post('/members/accounts/add/{id}/{account_id}', [MemberController::class, 'addAccount'])->name('members.account.add');
+    Route::post('/members/update/orientation/{member_number}', [MemberController::class, 'attendedOrientation'])->name('members.update.orientation');
+    
+    Route::post('/members/accounts/transaction/{member_account}', [MemberController::class, 'addAccountTransaction'])->name('members.accounts.transactions');
+
+    Route::group(['prefix' => 'utility', 'name' => 'utility.'], function() {
+        Route::get('/members-dropdown', [UtilityController::class, 'memberDropdown'])->name('members.dropdown');
+        Route::get('/accounts/dropdown', [UtilityController::class, 'accountDropdown'])->name('accounts.dropdown');
+        Route::get('/accounts/members/dropdown/{member_id}', [UtilityController::class, 'memberAccountDropdown'])->name('accounts.members.dropdown');
+        Route::get('/work-industries/dropdown', [UtilityController::class, 'workIndustryDropdown'])->name('work-industries.dropdown');
+        Route::get('/loan-products/dropdown', [UtilityController::class, 'loanProductions'])->name('loan-products.dropdown');
+
+    
+    });
+
+
 });
