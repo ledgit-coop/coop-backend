@@ -41,8 +41,9 @@ class Loan extends Model
         'repayment_cycle',
         'number_of_repayments',
         'repayment_mode',
+        'releasing_date',
     ];
-
+    
     // Define the foreign key relationships to the Member and LoanProduct models
     public function member()
     {
@@ -52,5 +53,9 @@ class Loan extends Model
     public function loanProduct()
     {
         return $this->belongsTo(LoanProduct::class);
+    }
+
+    public function loan_schedules() {
+        return $this->hasMany(LoanSchedule::class);
     }
 }

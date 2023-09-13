@@ -23,6 +23,7 @@ return new class extends Migration
             $table->enum('status', ['active', 'dormant']);
             $table->integer('passbook_count')->unsigned()->default(1);
             $table->double('balance')->default(0);
+            $table->double('interest_per_anum')->default(1);
             $table->timestamps();
         });
     }

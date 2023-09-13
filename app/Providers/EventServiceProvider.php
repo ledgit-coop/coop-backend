@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\AccountTransaction;
+use App\Models\Loan;
 use App\Models\Member;
+use App\Observers\LoanObserver;
 use App\Observers\MemberAccountTransactionBalanceObserver;
 use App\Observers\MemberObserver;
 use Illuminate\Auth\Events\Registered;
@@ -33,6 +35,7 @@ class EventServiceProvider extends ServiceProvider
     {
         Member::observe(MemberObserver::class);
         AccountTransaction::observe(MemberAccountTransactionBalanceObserver::class);
+        Loan::observe(LoanObserver::class);
     }
 
     /**

@@ -10,6 +10,6 @@ class Account extends Model
     use HasFactory;
 
     protected $fillable = [
-        'key', 'name', 'type'
+        'key', 'name', 'type', 'interest_per_anum',
     ];
 }

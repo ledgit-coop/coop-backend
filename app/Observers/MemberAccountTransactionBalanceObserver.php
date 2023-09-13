@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Helpers\AccountHelper;
 use App\Models\AccountTransaction;
 
 class MemberAccountTransactionBalanceObserver
@@ -17,6 +18,8 @@ class MemberAccountTransactionBalanceObserver
         $account = $transaction->member_account;
         $account->balance += $transaction->amount;   
         $account->save();
+        
+        AccountHelper::updateTransactionBalance($transaction, $account); 
     }
 
     /**
@@ -30,6 +33,8 @@ class MemberAccountTransactionBalanceObserver
         $account = $transaction->member_account;
         $account->balance += $transaction->amount;   
         $account->save();
+
+        AccountHelper::updateTransactionBalance($transaction, $account);
     }
 
     /**
@@ -43,6 +48,8 @@ class MemberAccountTransactionBalanceObserver
         $account = $transaction->member_account;
         $account->balance -= $transaction->amount;   
         $account->save();
+
+        AccountHelper::updateTransactionBalance($transaction, $account);
     }
 
     /**
@@ -56,6 +63,8 @@ class MemberAccountTransactionBalanceObserver
         $account = $transaction->member_account;
         $account->balance += $transaction->amount;   
         $account->save();
+
+        AccountHelper::updateTransactionBalance($transaction, $account);
     }
 
     /**
@@ -69,5 +78,7 @@ class MemberAccountTransactionBalanceObserver
         $account = $transaction->member_account;
         $account->balance -= $transaction->amount;   
         $account->save();
+
+        AccountHelper::updateTransactionBalance($transaction, $account);
     }
 }

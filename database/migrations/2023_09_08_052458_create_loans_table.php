@@ -46,6 +46,7 @@ return new class extends Migration
             $table->string('salary_range')->nullable();
             
             $table->decimal('applied_amount', 10, 2)->comment('Orignal loan applied')->nullable();
+            $table->date('releasing_date')->nullable();
 
             $table->decimal('principal_amount', 10, 2)->comment('Loan approved')->nullable();
             $table->enum('disbursed_channel', LoanDisbursementChannel::LIST)->nullable();

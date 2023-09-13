@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\AccountType;
 use App\Constants\AddressResidencyStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -90,5 +91,17 @@ class Member extends Model
 
     public function member_accounts() {
         return $this->hasMany(MemberAccount::class);
+    }
+
+    public function share_capital_account() {
+        return $this->hasOne(MemberAccount::class)->whereHas('account', function($account) {
+            $account->where('type', AccountType::SHARE_CAPITAL);
+        });
+    }
+
+    public function savings_accounts() {
+        return $this->hasMany(MemberAccount::class)->whereHas('account', function($account) {
+            $account->where('type', AccountType::SAVINGS);
+        });
     }
 }

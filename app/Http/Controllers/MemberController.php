@@ -7,18 +7,15 @@ use App\Helpers\MemberHelper;
 use App\Http\Requests\AddAccountTransactionRequest;
 use App\Http\Requests\MemberRequest;
 use App\Models\Account;
+use App\Models\AccountTransaction;
 use App\Models\Member;
 use App\Models\MemberAccount;
-use Exception;
+use Faker\Extension\Helper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MemberController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
         $filters = (object) $request->filters ?? [];
@@ -54,13 +51,7 @@ class MemberController extends Controller
 
         return $members->paginate($limit);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    
     public function store(MemberRequest $request)
     {
         $data = $request->only([
@@ -116,12 +107,6 @@ class MemberController extends Controller
         return response()->json(Member::find($member->id));
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $member = Member::where('member_number', $id)->firstOrFail();
@@ -135,38 +120,33 @@ class MemberController extends Controller
             'full_permanent_address' => $member->full_permanent_address,
             'member_year' => $member->member_at->format('Y'),
             'oriented' => $member->oriented,
+            'share_capital' => [
+                'id' => $member->share_capital_account->id,
+                'balance' => $member->share_capital_account->balance,
+                'latest_transaction' => $member->share_capital_account->latest_transaction,
+            ],
+            'savings_accounts' => $member->savings_accounts->map(function($account) {
+                return [
+                    'id' => $account->id,
+                    "name" => $account->account->name,
+                    'interest_per_anum' => $account->interest_per_anum,
+                    'balance' => $account->balance,
+                    'latest_transaction' => $account->latest_transaction,
+                ];
+            }),
         ];
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function edit($id)
     {
         //
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function update(Request $request, $id)
     {
         //
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function destroy($id)
     {
         //
@@ -205,17 +185,39 @@ class MemberController extends Controller
 
         return response('Account updated.');
     }
-    
 
     public function addAccountTransaction(AddAccountTransactionRequest $request, MemberAccount $member_account) {
         
         $member_account->transactions()->createMany([
             [
+                'transaction_number' => AccountHelper::generateUniqueTransactionNumber(),
                 'particular' => $request->particular,
+                'transaction_date' => $request->transaction_date,
                 'amount' => $request->transaction_type == 'deposit' ? $request->amount : -$request->amount,
             ]
         ]);
         
         return response('Transaction created.');
+    }
+
+    public function getAccountTransactions(Request $request, Member $member) {
+        $transactions = AccountTransaction::whereHas('member_account', function($account) use($member) {
+            $account->where('member_id', $member->id);
+        });
+        
+        if(!empty($request->member_account_id))
+            $transactions->where('member_account_id', $request->member_account_id);
+
+        if(!empty($request->year))
+            $transactions->whereYear('transaction_date', $request->year);
+
+        if(!empty($request->type))
+            $transactions->whereHas('member_account', function($account) use($request) {
+                $account->whereHas('account', function($account) use($request) {
+                    $account->where('type', $request->type);
+                });
+            });
+
+        return response()->json($transactions->get());
     }
 }

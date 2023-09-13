@@ -34,7 +34,8 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/members/accounts/add/{id}/{account_id}', [MemberController::class, 'addAccount'])->name('members.account.add');
     Route::post('/members/update/orientation/{member_number}', [MemberController::class, 'attendedOrientation'])->name('members.update.orientation');
     
-    Route::post('/members/accounts/transaction/{member_account}', [MemberController::class, 'addAccountTransaction'])->name('members.accounts.transactions');
+    Route::get('/members/accounts/transaction/{member}', [MemberController::class, 'getAccountTransactions'])->name('members.accounts.transactions.list');
+    Route::post('/members/accounts/transaction/{member_account}', [MemberController::class, 'addAccountTransaction'])->name('members.accounts.transactions.post');
 
     Route::group(['prefix' => 'utility', 'name' => 'utility.'], function() {
         Route::get('/members-dropdown', [UtilityController::class, 'memberDropdown'])->name('members.dropdown');

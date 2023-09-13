@@ -17,8 +17,11 @@ return new class extends Migration
         Schema::create('account_transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(MemberAccount::class, 'member_account_id');
+            $table->string('transaction_number')->unique();
             $table->string('particular');
             $table->double('amount');
+            $table->date('transaction_date');
+            $table->double('remaining_balance')->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

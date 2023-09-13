@@ -24,6 +24,7 @@ class AddAccountTransactionRequest extends FormRequest
     public function rules()
     {
         return [
+            'transaction_date' => 'required|date|date_format:Y-m-d',
             'transaction_type' => 'required',
             'amount' => 'required',
             'particular' => 'required',

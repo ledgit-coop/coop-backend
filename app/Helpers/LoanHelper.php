@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use App\Models\Loan;
+use Illuminate\Support\Carbon;
 use InvalidArgumentException;
 
 class LoanHelper {
@@ -102,64 +104,85 @@ class LoanHelper {
                                 $interestMethod, $loanInterestPercentage, $loanInterestFrequency,
                                 $loanDuration, $repaymentCycle) {
 
-    // Convert interest rate percentage to decimal
-    $interestRate = $interestRatePercentage / 100.0;
+        // Convert interest rate percentage to decimal
+        $interestRate = $interestRatePercentage / 100.0;
 
-    // Calculate the number of payment periods based on loan duration and repayment cycle
-    switch ($loanDuration[0]) {
-        case 'D':
-            $totalPeriods = (int) substr($loanDuration, 1);
-            break;
-        case 'W':
-            $totalPeriods = (int) substr($loanDuration, 1) * 7;
-            break;
-        case 'M':
-            $totalPeriods = (int) substr($loanDuration, 1) * 30;
-            break;
-        case 'Y':
-            $totalPeriods = (int) substr($loanDuration, 1) * 365;
-            break;
-        default:
-            throw new Exception("Invalid loan duration format");
-    }
-
-    // Initialize variables
-    $schedule = [];
-    $currentDate = $loanReleaseDate;
-    $remainingPrincipal = $principalAmount;
-    $interestFrequency = ["Day" => 365, "Week" => 52, "Month" => 12, "Year" => 1, "Loan" => $totalPeriods];
-    $interestPeriod = $interestFrequency[$loanInterestFrequency];
-
-    for ($period = 0; $period < $totalPeriods; $period++) {
-        if ($interestMethod == "Flat Rate") {
-            $interestPayment = $remainingPrincipal * $interestRate;
-        } elseif ($interestMethod == "Reducing Balance equal installments" || $interestMethod == "Reducing balance equal principal") {
-            $interestPayment = $remainingPrincipal * $interestRate / $interestPeriod;
-        } else {
-            throw new Exception("Invalid interest method");
+        // Calculate the number of payment periods based on loan duration and repayment cycle
+        switch ($loanDuration[0]) {
+            case 'D':
+                $totalPeriods = (int) substr($loanDuration, 1);
+                break;
+            case 'W':
+                $totalPeriods = (int) substr($loanDuration, 1) * 7;
+                break;
+            case 'M':
+                $totalPeriods = (int) substr($loanDuration, 1) * 30;
+                break;
+            case 'Y':
+                $totalPeriods = (int) substr($loanDuration, 1) * 365;
+                break;
+            default:
+                throw new Exception("Invalid loan duration format");
         }
 
-        if ($repaymentCycle == "Lump-Sum") {
-            $principalPayment = $remainingPrincipal;
-        } else {
-            $principalPayment = ($principalAmount / $totalPeriods) - $interestPayment;
+        // Initialize variables
+        $schedule = [];
+        $currentDate = $loanReleaseDate;
+        $remainingPrincipal = $principalAmount;
+        $interestFrequency = ["Day" => 365, "Week" => 52, "Month" => 12, "Year" => 1, "Loan" => $totalPeriods];
+        $interestPeriod = $interestFrequency[$loanInterestFrequency];
+
+        for ($period = 0; $period < $totalPeriods; $period++) {
+            if ($interestMethod == "Flat Rate") {
+                $interestPayment = $remainingPrincipal * $interestRate;
+            } elseif ($interestMethod == "Reducing Balance equal installments" || $interestMethod == "Reducing balance equal principal") {
+                $interestPayment = $remainingPrincipal * $interestRate / $interestPeriod;
+            } else {
+                throw new Exception("Invalid interest method");
+            }
+
+            if ($repaymentCycle == "Lump-Sum") {
+                $principalPayment = $remainingPrincipal;
+            } else {
+                $principalPayment = ($principalAmount / $totalPeriods) - $interestPayment;
+            }
+
+            $totalPayment = $principalPayment + $interestPayment;
+            $remainingPrincipal -= $principalPayment;
+
+            $schedule[] = [
+                "Date" => $currentDate->format('Y-m-d'),
+                "Principal Payment" => round($principalPayment, 2),
+                "Interest Payment" => round($interestPayment, 2),
+                "Total Payment" => round($totalPayment, 2),
+                "Remaining Principal" => round($remainingPrincipal, 2)
+            ];
+
+            $currentDate->add(new DateInterval('P' . $interestPeriod . 'D'));
         }
 
-        $totalPayment = $principalPayment + $interestPayment;
-        $remainingPrincipal -= $principalPayment;
-
-        $schedule[] = [
-            "Date" => $currentDate->format('Y-m-d'),
-            "Principal Payment" => round($principalPayment, 2),
-            "Interest Payment" => round($interestPayment, 2),
-            "Total Payment" => round($totalPayment, 2),
-            "Remaining Principal" => round($remainingPrincipal, 2)
-        ];
-
-        $currentDate->add(new DateInterval('P' . $interestPeriod . 'D'));
+        return $schedule;
     }
 
-    return $schedule;
-}
+    public static function makeSchedule(Loan $loan) {
+
+        $loanReleaseDate = new Carbon($loan->releasing_date ?? null);
+
+        $schedules = [];
+        for ($i=0; $i < $loan->number_of_repayments; $i++) {
+            $schedules[] = [
+                'due_date' => $loanReleaseDate->addDay(),
+                'principal_amount' => 0,
+                'interest_amount' => 0,
+                'fee_amount' => 0,
+                'penalty_amount' => 0,
+                'due_amount' => 0,
+                'principal_balance' => $loan->applied_amount,
+            ];
+        }
+        
+        $loan->loan_schedules()->createMany($schedules);
+
+    }
 
 }

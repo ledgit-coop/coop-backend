@@ -15,6 +15,7 @@ class MemberAccount extends Model
         'account_id',
         'passbook_count',
         'balance',
+        'interest_per_anum',
     ];
 
     public function account() {
@@ -23,5 +24,9 @@ class MemberAccount extends Model
 
     public function transactions() {
         return $this->hasMany(AccountTransaction::class);
+    }
+
+    public function latest_transaction() {
+        return $this->hasOne(AccountTransaction::class)->orderBy('transaction_date', 'desc');
     }
 }
