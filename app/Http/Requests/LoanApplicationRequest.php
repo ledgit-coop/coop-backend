@@ -34,6 +34,7 @@ class LoanApplicationRequest extends FormRequest
             'loan_product_id' => 'required|exists:loan_products,id',
             'member_account_id'  => 'required|exists:member_accounts,id',
             'contact_number' => 'nullable|string',
+            'email' => 'nullable|string',
             'age' => 'nullable|integer',
             'civil_status' => 'nullable|string',
             'present_address' => 'nullable|string',
@@ -60,6 +61,7 @@ class LoanApplicationRequest extends FormRequest
             'repayment_cycle' => ['nullable', 'string', 'in:' . implode(',', LoanRepaymentCycle::LIST)],
             'number_of_repayments' => 'nullable|integer',
             'repayment_mode' => 'nullable|string',
+            'applied_date' => 'nullable|date|date_format:Y-m-d',
         ];
     }
 }

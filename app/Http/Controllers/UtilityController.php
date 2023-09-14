@@ -17,7 +17,7 @@ class UtilityController extends Controller
     public function memberDropdown() {
         return Member::select('first_name', 'surname','middle_name', 'id')->get()->map(function($member){
             return [
-                'value' => $member->id,
+                'value' => "$member->id",
                 'label' => $member->full_name,
             ];
         });
@@ -51,13 +51,24 @@ class UtilityController extends Controller
     }
 
 
-    public function memberAccountDropdown($member_id) {
+    public function memberAccountDropdown(Request $request, $member_id) {
         $member = Member::findOrFail($member_id);
-        return MemberAccount::where('member_id', $member->id)->with('account')->get()->map(function($data){
+
+        $accounts = MemberAccount::where('member_id', $member->id)->with('account');
+
+        if(!empty($request->type))
+            $accounts->whereHas('account', function($account) use($request) {
+                $account->where('type', $request->type);
+            });
+
+        $accounts = $accounts->get()->map(function($data){
             return [
                 'value' => $data->id,
                 'label' => $data->account->name,
             ];
         });
+
+
+        return response()->json($accounts);
     }
 }

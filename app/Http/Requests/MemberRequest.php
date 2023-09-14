@@ -84,6 +84,10 @@ class MemberRequest extends FormRequest
             'spouse.date_of_birth'=> 'nullable|string|max:255',
             'spouse.occupation'=> 'nullable|string|max:255',
             'spouse.contact_number'=> 'nullable|string|max:255',
+            
+            'beneficiaries.*.name'=> 'nullable|string|max:255',
+            'beneficiaries.*.birthdate'=> 'nullable|date_format:Y-m-d',
+            'beneficiaries.*.relationship'=> 'nullable|string|max:255',
         ];
     }
 }

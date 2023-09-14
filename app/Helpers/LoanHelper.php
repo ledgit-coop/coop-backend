@@ -185,4 +185,16 @@ class LoanHelper {
 
     }
 
+
+    public static function generateUniqueTransactionNumber() {
+        // Generate a unique transaction number based on timestamp and a random number
+        $timestamp = time();
+        $randomNumber = mt_rand(1000, 9999); // You can adjust the range as needed
+    
+        // Combine the timestamp and random number to create a unique identifier
+        $transactionNumber = "TXN" . $timestamp . $randomNumber;
+    
+        return $transactionNumber;
+    }
+
 }

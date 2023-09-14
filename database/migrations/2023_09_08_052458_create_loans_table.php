@@ -28,7 +28,9 @@ return new class extends Migration
             $table->foreignIdFor(Member::class, 'member_id');
             $table->foreignIdFor(LoanProduct::class, 'loan_product_id');
             $table->foreignIdFor(MemberAccount::class, 'member_account_id');
-            $table->enum('status', MemberLoanStatus::LIST);
+            $table->string('loan_number')->unique();
+            $table->string('email')->nullable();
+            $table->enum('status', MemberLoanStatus::LIST)->default(MemberLoanStatus::PENDING);
             $table->string('contact_number')->nullable();
             $table->integer('age')->nullable();
             $table->string('civil_status')->nullable();
@@ -47,7 +49,8 @@ return new class extends Migration
             
             $table->decimal('applied_amount', 10, 2)->comment('Orignal loan applied')->nullable();
             $table->date('releasing_date')->nullable();
-
+            $table->date('applied_date')->nullable();
+            
             $table->decimal('principal_amount', 10, 2)->comment('Loan approved')->nullable();
             $table->enum('disbursed_channel', LoanDisbursementChannel::LIST)->nullable();
             $table->enum('interest_method',LoanInterestMethod::LIST)->nullable();

@@ -81,12 +81,48 @@ class Member extends Model
         );
     }
 
+    protected function residencyStatus(): Attribute
+    {
+        return Attribute::make(
+            get: function() {
+                $address = $this->member_addresses()->where('type', AddressResidencyStatus::PRESENT)->first();
+                return $address ? $address->residency_status : '';
+            }
+        );
+    }
+
+    public function present_address()
+    {
+        return $this->hasOne(MemberAddress::class, 'member_id')->where('type', AddressResidencyStatus::PRESENT);
+    }
+
+    public function permanent_address()
+    {
+        return $this->hasOne(MemberAddress::class)->where('type', AddressResidencyStatus::PERMANENT);
+    }
+
+    public function beneficiaries() {
+        return $this->hasMany(MemberBeneficiary::class);
+    }
+
     public function member_addresses() {
         return $this->hasMany(MemberAddress::class);
     }
 
     public function member_related_people() {
         return $this->hasMany(MemberRelatedPeople::class);
+    }
+
+    public function mother() {
+        return $this->hasOne(MemberRelatedPeople::class)->where('type', 'mother');
+    }
+
+    public function spouse() {
+        return $this->hasOne(MemberRelatedPeople::class)->where('type', 'spouse');
+    }
+
+    public function father() {
+        return $this->hasOne(MemberRelatedPeople::class)->where('type', 'father');
     }
 
     public function member_accounts() {

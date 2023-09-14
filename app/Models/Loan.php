@@ -10,6 +10,7 @@ class Loan extends Model
     use HasFactory;
 
     protected $fillable = [
+        'loan_number',
         'member_id',
         'loan_product_id',
         'member_account_id',
@@ -42,6 +43,8 @@ class Loan extends Model
         'number_of_repayments',
         'repayment_mode',
         'releasing_date',
+        'applied_date',
+        'email',
     ];
     
     // Define the foreign key relationships to the Member and LoanProduct models
