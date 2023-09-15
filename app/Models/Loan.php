@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Loan extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'loan_number',
@@ -42,9 +45,21 @@ class Loan extends Model
         'repayment_cycle',
         'number_of_repayments',
         'repayment_mode',
-        'releasing_date',
-        'applied_date',
         'email',
+        'approved_date',
+        'applied_date',
+        'guarantor_first_id',
+        'guarantor_second_id',
+        'released_date',
+        'released',
+    ];
+
+    protected $casts = [
+        'applied_amount' => 'integer',
+        'principal_amount' => 'integer',
+        'loan_duration' => 'integer',
+        'number_of_repayments' => 'integer',
+        'loan_interest' => 'integer',
     ];
     
     // Define the foreign key relationships to the Member and LoanProduct models
@@ -60,5 +75,43 @@ class Loan extends Model
 
     public function loan_schedules() {
         return $this->hasMany(LoanSchedule::class);
+    }
+
+    public function member_account() {
+        return $this->belongsTo(MemberAccount::class, 'member_account_id');
+    }
+
+    public function guarantor_first() {
+        return $this->belongsTo(LoanGuarantor::class, 'guarantor_first_id');
+    }
+
+    public function guarantor_second() {
+        return $this->belongsTo(LoanGuarantor::class, 'guarantor_second_id');
+    }
+
+    protected function overdue(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->loan_schedules()->where('overdue', 1)-exists(),
+        );
+    }
+
+    protected function widgetData(): Attribute
+    {
+        return Attribute::make(
+            get: function() {
+                $schedules = $this->loan_schedules;
+                $paid = $schedules->where('paid', true)->count();
+                $unpaid = $schedules->where('paid', false)->count();
+                
+                return [
+                    'interest' => "$this->loan_interest/$this->loan_interest_period",
+                    'loan_duration' => "$this->loan_duration/$this->loan_duration_type",
+                    'paid_count' => $paid,
+                    'unpaid_count' => $unpaid,
+                    'overdue' => $this->overdue,
+                ];
+            }
+        );
     }
 }

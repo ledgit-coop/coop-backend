@@ -6,7 +6,7 @@ class AccountType
 {
     const REGULAR = 'regular';
     const SAVINGS = 'savings';
-    const SHARE_CAPITAL = 'share-capita';
+    const SHARE_CAPITAL = 'share-capital';
 
     const LIST = [
         self::REGULAR,

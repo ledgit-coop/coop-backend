@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\AccountHelper;
+use App\Helpers\Helper;
 use App\Helpers\MemberHelper;
+use App\Helpers\Uploading;
 use App\Http\Requests\AddAccountTransactionRequest;
 use App\Http\Requests\MemberRequest;
 use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\Member;
 use App\Models\MemberAccount;
-use Faker\Extension\Helper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -74,8 +75,16 @@ class MemberController extends Controller
 
         $data['member_number'] = MemberHelper::generateID();
 
+        Log::info($data);
+
         $member = Member::create($data);
         
+        // Upload image
+        if(!Helper::isBase64($request->profile_picture_url)) {
+            $member->profile_picture_url = Uploading::memberImage($member, $request->profile_picture_url);
+            $member->save();
+        }
+
         $member->beneficiaries()->createMany([...$request->beneficiaries]);
 
         $member->member_addresses()->createMany([
@@ -132,6 +141,11 @@ class MemberController extends Controller
   
         foreach ($data as $key => $value) {
             $member->{$key} = $value;
+        }
+
+        // Upload image
+        if(!Helper::isBase64($request->profile_picture_url)) {
+            $member->profile_picture_url = Uploading::memberImage($member, $request->profile_picture_url);
         }
 
         $member->save();
@@ -232,13 +246,15 @@ class MemberController extends Controller
         //
     }
 
-    public function addAccount($id, $account_id) {
+    public function addAccount(Request $request, $id, $account_id) {
+        $this->validate($request, ['account_holder' => 'required']);
+
         $member = Member::findOrFail($id);
         $account = Account::findOrFail($account_id);
 
         $member_account = MemberAccount::where([
             'member_id' => $member->id,
-            'account_id' => $account->id
+            'account_id' => $account->id,
         ])->first();
 
         if($member_account)
@@ -246,13 +262,7 @@ class MemberController extends Controller
                 "message" => "Account already exists."
             ], 422);
 
-        MemberAccount::create([
-            'account_number' => AccountHelper::generateAccount(),
-            'passbook_count' => 1,
-            'member_id' => $member->id,
-            'account_id' => $account->id,
-            'balance' => 0,
-        ]);
+        MemberHelper::makeAccount($member, $account, $request->account_holder);
         
         return response('Account created.');
     }

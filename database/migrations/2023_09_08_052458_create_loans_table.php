@@ -7,6 +7,7 @@ use App\Constants\LoanInterestPeriod;
 use App\Constants\LoanInterestType;
 use App\Constants\LoanRepaymentCycle;
 use App\Constants\MemberLoanStatus;
+use App\Models\LoanGuarantor;
 use App\Models\LoanProduct;
 use App\Models\Member;
 use App\Models\MemberAccount;
@@ -25,9 +26,12 @@ return new class extends Migration
     {
         Schema::create('loans', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Member::class, 'member_id');
-            $table->foreignIdFor(LoanProduct::class, 'loan_product_id');
-            $table->foreignIdFor(MemberAccount::class, 'member_account_id');
+            $table->foreignIdFor(Member::class, 'member_id')->constrained()->onDelete('cascade');
+            $table->foreignIdFor(LoanProduct::class, 'loan_product_id')->constrained()->onDelete('cascade');
+            $table->foreignIdFor(MemberAccount::class, 'member_account_id')->constrained()->onDelete('cascade');
+            $table->foreignIdFor(LoanGuarantor::class, 'guarantor_first_id');
+            $table->foreignIdFor(LoanGuarantor::class, 'guarantor_second_id');
+
             $table->string('loan_number')->unique();
             $table->string('email')->nullable();
             $table->enum('status', MemberLoanStatus::LIST)->default(MemberLoanStatus::PENDING);
@@ -48,9 +52,7 @@ return new class extends Migration
             $table->string('salary_range')->nullable();
             
             $table->decimal('applied_amount', 10, 2)->comment('Orignal loan applied')->nullable();
-            $table->date('releasing_date')->nullable();
-            $table->date('applied_date')->nullable();
-            
+ 
             $table->decimal('principal_amount', 10, 2)->comment('Loan approved')->nullable();
             $table->enum('disbursed_channel', LoanDisbursementChannel::LIST)->nullable();
             $table->enum('interest_method',LoanInterestMethod::LIST)->nullable();
@@ -62,8 +64,14 @@ return new class extends Migration
             $table->enum('repayment_cycle', LoanRepaymentCycle::LIST)->nullable();
             $table->integer('number_of_repayments')->nullable();
             $table->string('repayment_mode')->nullable();
-            
+
+            $table->date('applied_date')->nullable();
+            $table->date('approved_date')->nullable();
+            $table->date('released_date')->nullable()->comment('Needed to have a value for loan computation');
+            $table->boolean('released')->default(false)->comment('Will be updated after actual released to the loaner');
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

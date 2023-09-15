@@ -11,11 +11,17 @@ class MemberAccount extends Model
 
     protected $fillable = [
         'account_number',
+        'account_holder',
         'member_id',
         'account_id',
         'passbook_count',
         'balance',
         'interest_per_anum',
+
+        'earn_interest_per_anum',
+        'maintaining_balance',
+        'penalty_below_maintaining_method',
+        'penalty_below_maintaining',
     ];
 
     public function account() {

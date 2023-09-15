@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\MemberHelper;
-use App\Http\Requests\MemberRequest;
+use App\Helpers\LoanCalculator;
+use App\Http\Requests\LoanCalculatorRequest;
 use App\Models\Account;
+use App\Models\LoanGuarantor;
 use App\Models\LoanProduct;
 use App\Models\Member;
 use App\Models\MemberAccount;
+use App\Models\MemberBeneficiary;
 use App\Models\WorkIndustry;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class UtilityController extends Controller
 {
@@ -70,5 +71,52 @@ class UtilityController extends Controller
 
 
         return response()->json($accounts);
+    }
+
+    public function guarantorDropdown() {
+        $guarantors = LoanGuarantor::on();
+
+        $guarantors = $guarantors->get()->map(function($data){
+            return [
+                'value' => $data->id,
+                'label' => $data->full_name,
+                'disabled' => rand(0,1),
+                'extra' => [
+                    'guarantor_twice' => false,
+                ]
+            ];
+        });
+
+        return response()->json($guarantors);
+    }
+
+
+    public function loanCalculator(LoanCalculatorRequest $request) {
+        $calculator = new LoanCalculator();
+        $result = $calculator->generateSchedule(
+            $request->principal_amount, 
+            $request->loan_interest, 
+            $request->loan_duration, 
+            $request->interest_method, 
+            $request->number_of_repayments, 
+            $request->repayment_cycle, 
+            $request->loan_duration_type, 
+            $request->loan_interest_period, 
+            $request->released_date,
+        );
+
+        return response()->json($result);
+    }
+
+    public function memberAccountHolder(Member $member) {
+
+        $beneficiaries = $member->beneficiaries->map(function($member){
+            return [
+                'value' => $member->name,
+                'label' => empty(str_replace(" ", "", $member->name)) ? '----' : $member->name,
+            ];
+        })->toArray();
+        
+        return response()->json(array_merge([['value' => $member->full_name,'label' => $member->full_name]],$beneficiaries));
     }
 }

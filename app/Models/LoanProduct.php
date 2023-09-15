@@ -17,10 +17,21 @@ class LoanProduct extends Model
         'disbursed_channel',
         'interest_method',
         'interest_type',
-        'loan_interest',
         'loan_interest_period',
-        'loan_duration',
+        'default_loan_interest',
+        'loan_duration_type',
+        'default_loan_duration',
         'repayment_cycle',
-        'number_of_repayments',
+        'default_number_of_repayments',
+        'locked',
+    ];
+
+    protected $casts = [
+        'default_principal_amount' => 'integer',
+        'min_principal_amount' => 'integer',
+        'max_principal_amount' => 'integer',
+        'default_loan_interest' => 'integer',
+        'default_loan_duration' => 'integer',
+        'default_number_of_repayments' => 'integer',
     ];
 }

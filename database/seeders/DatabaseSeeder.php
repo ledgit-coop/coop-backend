@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Constants\AccountType;
 use App\Models\Account;
+use App\Models\LoanGuarantor;
 use App\Models\LoanProduct;
 use App\Models\User;
 use App\Models\WorkIndustry;
@@ -26,15 +27,53 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
-        LoanProduct::factory()->count(1)->create();
-        LoanProduct::create(['name'=> 'Student Loan']);
-        LoanProduct::create(['name'=> 'Motorcycle Loan']);
+        LoanProduct::create(['name'=> 'Salary Loan', 'locked' => true]);
+        LoanProduct::create(['name'=> 'Negosyo Loan', 'locked' => true]);
+        LoanProduct::create(['name'=> 'Student Loan', 'locked' => true]);
+        LoanProduct::create(['name'=> 'Other Loan', 'locked' => true]);
 
-        WorkIndustry::create(['name'=> 'IT Software', 'key' => 'it-software']);
-        WorkIndustry::create(['name'=> 'Manufacturing', 'key' => 'manufacturing']);
+        $industries = [
+            ['name' => 'Agriculture', 'key' => 'agriculture'],
+            ['name' => 'Automotive', 'key' => 'automotive'],
+            ['name' => 'Construction', 'key' => 'construction'],
+            ['name' => 'Education', 'key' => 'education'],
+            ['name' => 'Energy', 'key' => 'energy'],
+            ['name' => 'Entertainment', 'key' => 'entertainment'],
+            ['name' => 'Finance', 'key' => 'finance'],
+            ['name' => 'Food and Beverage', 'key' => 'food-and-beverage'],
+            ['name' => 'Healthcare', 'key' => 'healthcare'],
+            ['name' => 'Hospitality and Tourism', 'key' => 'hospitality-and-tourism'],
+            ['name' => 'Information Technology (IT)', 'key' => 'information-technology'],
+            ['name' => 'Manufacturing', 'key' => 'manufacturing'],
+            ['name' => 'Real Estate', 'key' => 'real-estate'],
+            ['name' => 'Retail', 'key' => 'retail'],
+            ['name' => 'Transportation and Logistics', 'key' => 'transportation-and-logistics'],
+            ['name' => 'Wholesale', 'key' => 'wholesale'],
+            ['name' => 'Non-Profit', 'key' => 'non-profit'],
+            ['name' => 'Government', 'key' => 'government'],
+            ['name' => 'Professional Services', 'key' => 'professional-services'],
+            ['name' => 'Other', 'key' => 'other'],
+        ];
+        WorkIndustry::insert($industries);
 
-        Account::create(['name'=> 'Share Capital', 'type' => AccountType::SHARE_CAPITAL, 'key' => 'share-capital']);
-        Account::create(['name'=> 'Regular Savings', 'type' => AccountType::SAVINGS, 'key' => 'regular-savings']);
-        Account::create(['name'=> 'Kiddie Savings', 'type' => AccountType::SAVINGS, 'key' => 'kiddie-savings']);
+
+        Account::create(['name'=> 'Share Capital', 'type' => AccountType::SHARE_CAPITAL, 'key' => 'share-capital', 'earn_interest_per_anum' => 1, 'maintaining_balance' => 1000]);
+        Account::create(['name'=> 'Regular Savings', 'type' => AccountType::SAVINGS, 'key' => 'regular-savings', 'earn_interest_per_anum' => 1, 'maintaining_balance' => 1000]);
+        Account::create(['name'=> 'Kiddie Savings', 'type' => AccountType::SAVINGS, 'key' => 'kiddie-savings', 'earn_interest_per_anum' => 1, 'maintaining_balance' => 1000]);
+
+        LoanGuarantor::create([
+            'first_name' => 'Kevin Mokie',
+            'last_name' => 'Koree',
+        ]);
+
+        LoanGuarantor::create([
+            'first_name' => 'Kolen',
+            'last_name' => 'Koree',
+        ]);
+
+        LoanGuarantor::create([
+            'first_name' => 'Loque',
+            'last_name' => 'Coins',
+        ]);
     }
 }

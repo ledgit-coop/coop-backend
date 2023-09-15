@@ -34,4 +34,8 @@ class AccountHelper {
         $transaction->remaining_balance = $account->balance;
         $transaction->saveQuietly();
     }
+
+    public static function computeEarnInterest() {
+        
+    }
 }

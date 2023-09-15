@@ -33,7 +33,8 @@ class Member extends Model
         'member_at',
         'mobile_number',
         'telephone_number',
-        'oriented'
+        'oriented',
+        'profile_picture_url'
     ];
 
     protected $appends = [
@@ -42,11 +43,10 @@ class Member extends Model
     ];
 
     protected $casts = [
-        'member_at' => 'datetime',
+        'member_at' => 'datetime:Y-m-d',
         'date_of_birth' => 'datetime:Y-m-d'
     ];
-
-
+    
     protected function age(): Attribute
     {
         return Attribute::make(
@@ -57,7 +57,7 @@ class Member extends Model
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn () => ucwords("$this->first_name $this->middle_name, $this->surname"),
+            get: fn () => ucwords("$this->first_name $this->middle_name $this->surname"),
         );
     }
 

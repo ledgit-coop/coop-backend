@@ -21,6 +21,10 @@ class LoanSchedule extends Model
         'is_maturity',
     ];
 
+    protected $casts = [
+        'due_date' => 'datetime:Y-m-d',
+    ];
+
     public function loan()
     {
         return $this->belongsTo(Loan::class, 'loan_id');

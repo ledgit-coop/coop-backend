@@ -30,6 +30,9 @@ class LoanApplicationRequest extends FormRequest
     public function rules()
     {
         return [
+
+            'guarantor_first_id' => 'required|exists:loan_guarantors,id',
+            'guarantor_second_id' => 'required|exists:loan_guarantors,id',
             'member_id' => 'required|exists:members,id',
             'loan_product_id' => 'required|exists:loan_products,id',
             'member_account_id'  => 'required|exists:member_accounts,id',
@@ -62,6 +65,7 @@ class LoanApplicationRequest extends FormRequest
             'number_of_repayments' => 'nullable|integer',
             'repayment_mode' => 'nullable|string',
             'applied_date' => 'nullable|date|date_format:Y-m-d',
+            'released_date' => 'nullable|date|date_format:Y-m-d',
         ];
     }
 }

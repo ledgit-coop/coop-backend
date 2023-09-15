@@ -24,6 +24,7 @@ class MemberRequest extends FormRequest
     public function rules()
     {
         return [
+            'profile_picture_url' => 'nullable|string',
             'surname' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
@@ -34,7 +35,6 @@ class MemberRequest extends FormRequest
             'date_hired' => 'nullable|date|date_format:Y-m-d',
             'department' => 'nullable|string|max:255',
             'position' => 'nullable|string|max:255',
-            'employee_no' => 'nullable|string|max:255',
             'tin_no' => 'nullable|string|max:255',
             'email_address' => 'nullable|email|max:255',
             'member_at' => 'required|date',
@@ -48,7 +48,7 @@ class MemberRequest extends FormRequest
             'permanent_address.barangay'=> 'nullable|string|max:255',
             'permanent_address.city_municipality'=> 'nullable|string|max:255',
             'permanent_address.province'=> 'nullable|string|max:255',
-            'permanent_address.zip_code'=> 'nullable|string|max:255',
+            'permanent_address.zip_code'=> 'nullable|integer',
 
             'present_address.house_block_lot'=> 'nullable|string|max:255',
             'present_address.street'=> 'nullable|string|max:255',
@@ -56,7 +56,7 @@ class MemberRequest extends FormRequest
             'present_address.barangay'=> 'nullable|string|max:255',
             'present_address.city_municipality'=> 'nullable|string|max:255',
             'present_address.province'=> 'nullable|string|max:255',
-            'present_address.zip_code'=> 'nullable|string|max:255',
+            'present_address.zip_code'=> 'nullable|integer',
             'present_address.residency_status'=> 'nullable|string|max:255',
 
          
@@ -64,7 +64,7 @@ class MemberRequest extends FormRequest
             'father.first_name'=> 'nullable|string|max:255',
             'father.middle_name'=> 'nullable|string|max:255',
             'father.name_extension'=> 'nullable|string|max:255',
-            'father.date_of_birth'=> 'nullable|string|max:255',
+            'father.date_of_birth'=> 'nullable|date|date_format:Y-m-d',
             'father.occupation'=> 'nullable|string|max:255',
             'father.contact_number'=> 'nullable|string|max:255',
            
@@ -73,7 +73,7 @@ class MemberRequest extends FormRequest
             'mother.first_name'=> 'nullable|string|max:255',
             'mother.middle_name'=> 'nullable|string|max:255',
             'mother.name_extension'=> 'nullable|string|max:255',
-            'mother.date_of_birth'=> 'nullable|string|max:255',
+            'mother.date_of_birth'=> 'nullable|date|date_format:Y-m-d',
             'mother.occupation'=> 'nullable|string|max:255',
             'mother.contact_number'=> 'nullable|string|max:255',
 
@@ -81,12 +81,12 @@ class MemberRequest extends FormRequest
             'spouse.first_name'=> 'nullable|string|max:255',
             'spouse.middle_name'=> 'nullable|string|max:255',
             'spouse.name_extension'=> 'nullable|string|max:255',
-            'spouse.date_of_birth'=> 'nullable|string|max:255',
+            'spouse.date_of_birth'=> 'nullable|date|date_format:Y-m-d',
             'spouse.occupation'=> 'nullable|string|max:255',
             'spouse.contact_number'=> 'nullable|string|max:255',
             
             'beneficiaries.*.name'=> 'nullable|string|max:255',
-            'beneficiaries.*.birthdate'=> 'nullable|date_format:Y-m-d',
+            'beneficiaries.*.birthdate'=> 'nullable|date|date_format:Y-m-d',
             'beneficiaries.*.relationship'=> 'nullable|string|max:255',
         ];
     }

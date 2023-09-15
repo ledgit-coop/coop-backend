@@ -22,8 +22,6 @@ return new class extends Migration
         Schema::create('loan_products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-
-            $table->decimal('percentage_against_share_capital', 10, 2)->nullable();
             
             $table->decimal('default_principal_amount', 10, 2)->nullable();
             $table->decimal('min_principal_amount', 10, 2)->nullable();
@@ -37,11 +35,13 @@ return new class extends Migration
             $table->enum('loan_interest_period', LoanInterestPeriod::LIST)->nullable();
             $table->decimal('default_loan_interest', 5, 2)->nullable();
 
-            $table->enum('loan_duration_period', LoanDurationPeriod::LIST)->nullable();
-            $table->decimal('default_duration_period', 10, 2)->nullable();
+            $table->enum('loan_duration_type', LoanDurationPeriod::LIST)->nullable();
+            $table->decimal('default_loan_duration', 10, 2)->nullable();
 
             $table->enum('repayment_cycle', LoanRepaymentCycle::LIST)->nullable();
             $table->integer('default_number_of_repayments')->nullable();
+
+            $table->boolean('locked')->default(false)->comment('Locked if in used');
 
             $table->timestamps();
         });

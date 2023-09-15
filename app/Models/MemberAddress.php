@@ -23,6 +23,10 @@ class MemberAddress extends Model
         'type',
     ];
 
+    protected $casts = [
+        'zip_code' => 'integer'
+    ];
+
     protected function fullAddress(): Attribute
     {
         return Attribute::make(

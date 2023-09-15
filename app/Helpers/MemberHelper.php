@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Models\Account;
 use App\Models\Member;
+use App\Models\MemberAccount;
 
 class MemberHelper {
     public static function generateID() {
@@ -12,16 +13,29 @@ class MemberHelper {
         if($member)
             return (int) $member->member_number + 1;
 
-        return 1000001;
+        return "10000000001";
     }
 
     public static function memberCreateDefaults(Member $member) {
         $share_capital = Account::where('key', 'share-capital')->firstOrFail();
-        $savings = Account::where('key', 'regular-savings')->firstOrFail();
+        
+        self::makeAccount($member, $share_capital, $member->full_name);
+    }
 
-        $member->member_accounts()->createMany([
-            ['account_id' => $share_capital->id, 'account_number' => bin2hex(random_bytes(rand(7,6)))],
-            ['account_id' => $savings->id, 'account_number' => bin2hex(random_bytes(rand(7,6)))],
+    public static function makeAccount(Member $member, Account $account, string $holder) {
+        return MemberAccount::create([
+            'account_holder' => $holder,
+            'account_number' => AccountHelper::generateAccount(),
+            'passbook_count' => 1,
+            'member_id' => $member->id,
+            'account_id' => $account->id,
+            'balance' => 0,
+            'earn_interest_per_anum' => $account->earn_interest_per_anum,
+            'maintaining_balance' => $account->maintaining_balance,
+            'penalty_below_maintaining_method' => $account->penalty_below_maintaining_method,
+            'penalty_below_maintaining' => $account->penalty_below_maintaining,
+            'penalty_below_maintaining_cycle' => $account->penalty_below_maintaining_cycle,
+            'penalty_below_maintaining_duration' => $account->penalty_below_maintaining_duration,
         ]);
     }
 }
