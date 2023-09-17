@@ -5,7 +5,10 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Constants\AccountType;
+use App\Constants\LoanFeeMethod;
+use App\Constants\LoanFeeType;
 use App\Models\Account;
+use App\Models\LoanFeeTemplate;
 use App\Models\LoanGuarantor;
 use App\Models\LoanProduct;
 use App\Models\User;
@@ -54,12 +57,32 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Professional Services', 'key' => 'professional-services'],
             ['name' => 'Other', 'key' => 'other'],
         ];
-        WorkIndustry::insert($industries);
+        
+        LoanFeeTemplate::create([
+            'name' => 'Processing Fee',
+            'fee' => 1,
+            'enabled' => true,
+            'fee_type' => LoanFeeType::DEDUCT_PRINCIPAL,
+            'fee_method' => LoanFeeMethod::PERCENTAGE,
+        ]);
 
+        LoanFeeTemplate::create([
+            'name' => 'Share Capital',
+            'fee' => 300,
+            'enabled' => true,
+            'fee_type' => LoanFeeType::DEDUCT_PRINCIPAL,
+            'fee_method' => LoanFeeMethod::FIX_AMOUNT,
+        ]);
+
+        WorkIndustry::insert($industries);
 
         Account::create(['name'=> 'Share Capital', 'type' => AccountType::SHARE_CAPITAL, 'key' => 'share-capital', 'earn_interest_per_anum' => 1, 'maintaining_balance' => 1000]);
         Account::create(['name'=> 'Regular Savings', 'type' => AccountType::SAVINGS, 'key' => 'regular-savings', 'earn_interest_per_anum' => 1, 'maintaining_balance' => 1000]);
         Account::create(['name'=> 'Kiddie Savings', 'type' => AccountType::SAVINGS, 'key' => 'kiddie-savings', 'earn_interest_per_anum' => 1, 'maintaining_balance' => 1000]);
+
+        Account::create(['name'=> 'Negosyo Loan', 'type' => AccountType::REGULAR, 'key' => 'negosyo-loan']);
+        Account::create(['name'=> 'Salary Loan', 'type' => AccountType::REGULAR, 'key' => 'salary-loan']);
+        Account::create(['name'=> 'Other Loan', 'type' => AccountType::REGULAR, 'key' => 'other-loan']);
 
         LoanGuarantor::create([
             'first_name' => 'Kevin Mokie',

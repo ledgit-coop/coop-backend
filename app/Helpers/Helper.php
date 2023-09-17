@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Exception;
+use Illuminate\Support\Carbon;
 
 class Helper {
     public static function isBase64($str) {
@@ -31,6 +32,17 @@ class Helper {
 
     public static function extractBase64Image(string $imageUrl) {
         return base64_decode(self::extractBase64ImagePart($imageUrl));
+    }
+
+    public static function loanDuedifference(Carbon $dueDateObj) {
+        $currentDate = Carbon::now();
+        if($currentDate->isSameAs("Y-m-d",$dueDateObj))
+            return "Due Today";
+        else if ($currentDate->greaterThan($dueDateObj)) {
+            return $dueDateObj->diffForHumans(null, true) . " overdue";
+        } else if ($currentDate->lessThan($dueDateObj)) {
+            return $dueDateObj->diffForHumans(null, true, false) . " left";
+        }
     }
 }
 

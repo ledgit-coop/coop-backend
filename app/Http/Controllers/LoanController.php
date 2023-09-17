@@ -8,8 +8,6 @@ use App\Http\Requests\LoanApplicationRequest;
 use App\Models\Loan;
 use App\Models\Member;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rules\Enum;
 
 class LoanController extends Controller
 {
@@ -23,6 +21,18 @@ class LoanController extends Controller
             $loans->where('member_id', $request->member_id);
 
         if(!empty($filters)) {
+            if(isset($filters->keyword))
+                $loans->where(function($loans) use($filters) {
+                    $loans->whereHas('member', function($member) use($filters) {
+                        $member->where(function($member) use($filters) {
+                            $member->orWhere('surname', 'like', "%$filters->keyword%")
+                            ->orWhere('first_name', 'like', "%$filters->keyword%")
+                            ->orWhere('middle_name', 'like', "%$filters->keyword%");
+                        });
+                    })
+                    ->orWhere('loan_number', 'like', "%$filters->keyword%");
+                });
+
             if(isset($filters->status))
                 $loans->where('status', $filters->status);
             if(isset($filters->loan_product_id))
@@ -33,8 +43,10 @@ class LoanController extends Controller
         if($request->sortField && $request->sortOrder)
             $loans->orderBy($request->sortField, $request->sortOrder);
 
-
         $loans->with('loanProduct');
+        $loans->with('member');
+        $loans->with('loan_fees.loan_fee_template');
+
         return response()->json($loans->paginate($limit));
     }
 
@@ -82,8 +94,13 @@ class LoanController extends Controller
 
         $data['loan_number'] = LoanHelper::generateUniqueTransactionNumber();
 
-        Log::info(json_encode($data));
         $loan = Loan::create($data);
+
+
+        if($request->loan_fees)
+            $loan->loan_fees()->createMany($request->loan_fees);
+
+        LoanHelper::makeSchedule($loan);
 
         return response()->json($loan);
     }
@@ -96,6 +113,7 @@ class LoanController extends Controller
                 ->with('guarantor_first')
                 ->with('guarantor_second')
                 ->with('member_account.account')
+                ->with('loan_fees.loan_fee_template')
                 ->firstOrFail(); 
 
         return response()->json($loan);
@@ -148,9 +166,22 @@ class LoanController extends Controller
 
         $loan->save();
 
+        if($request->loan_fees)
+        {
+            foreach ($request->loan_fees as $fee) {
+                $loan->loan_fees()->updateOrCreate([
+                    'loan_fee_template_id' => $fee['loan_fee_template_id']
+                ],
+                [
+                    ...$fee,
+                ],);
+            }
+        }
+
+        LoanHelper::reComputeSchedule($loan);
+
         return response()->json($loan);
     }
-
 
     public function updateStatus(Request $request, Loan $loan)
     {
@@ -180,12 +211,18 @@ class LoanController extends Controller
 
     public function activeLoans(Member $member) {
         
-        $loans = Loan::where('member_id', $member->id);
-        
-        $loans = $loans->withCasts([
-            'widget_data' => 'json'
-        ]);
+        $loanSchedules = Loan::where('member_id', $member->id)->with(['loan_schedules', 'loanProduct'])->get();
+        $loanSchedules->each(function ($loanSchedule) {
+            $loanSchedule->append(['outstanding']);
+        });
 
-        return response()->json($loans->get());
+        return response()->json($loanSchedules);
+    }
+
+    public function loanSchedule(Loan $loan) {
+        
+        $schedules = $loan->loan_schedules()->orderBy('due_date');
+
+        return response()->json($schedules->get());
     }
 }

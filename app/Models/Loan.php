@@ -52,6 +52,9 @@ class Loan extends Model
         'guarantor_second_id',
         'released_date',
         'released',
+        'released_amount',
+        'interest_amount',
+        'due_amount',
     ];
 
     protected $casts = [
@@ -60,6 +63,9 @@ class Loan extends Model
         'loan_duration' => 'integer',
         'number_of_repayments' => 'integer',
         'loan_interest' => 'integer',
+        'released_amount' => 'integer',
+        'interest_amount' => 'integer',
+        'due_amount' => 'integer',
     ];
     
     // Define the foreign key relationships to the Member and LoanProduct models
@@ -92,7 +98,17 @@ class Loan extends Model
     protected function overdue(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->loan_schedules()->where('overdue', 1)-exists(),
+            get: fn () => $this->loan_schedules()->where('overdue', 1)->exists(),
+        );
+    }
+
+    protected function outstanding(): Attribute
+    {
+        return Attribute::make(
+            get: function() {
+                $schedules = $this->loan_schedules;
+                return $this->due_amount - $schedules->sum('amount_paid');
+            }
         );
     }
 
@@ -113,5 +129,9 @@ class Loan extends Model
                 ];
             }
         );
+    }
+
+    public function loan_fees() {
+        return $this->hasMany(LoanFee::class);
     }
 }

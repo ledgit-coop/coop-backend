@@ -15,7 +15,7 @@ class LoanObserver
      */
     public function created(Loan $loan)
     {
-        LoanHelper::makeSchedule($loan);
+    
     }
 
     /**

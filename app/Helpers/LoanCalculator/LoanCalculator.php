@@ -1,17 +1,37 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Helpers\LoanCalculator;
 
 use App\Constants\LoanDurationPeriod;
+use App\Constants\LoanFeeType;
 use App\Constants\LoanInterestMethod;
 use App\Constants\LoanInterestPeriod;
 use App\Constants\LoanRepaymentCycle;
+use App\Helpers\LoanCalculator\LoanFee\LoanFee;
 use App\Models\Loan;
+use App\Models\LoanFeeTemplate;
 use Illuminate\Support\Carbon;
 
 class LoanCalculator {
 
-    public function calculateFlatLoanInterest($loanAmount, $interestRate, $interestFrequency, $loanDuration, $durationUnit) {
+    protected $schedules;
+    protected $total_principal;
+    protected $total_interest;
+    protected $total_payment;
+    protected $fees;
+    protected $amortization_starting_date;
+    protected $maturity_date;
+    protected $released_date;
+
+    // Options
+    public bool $round_results = true;
+
+    public function __construct()
+    {
+        $this->fees = collect([]);
+    }
+
+    protected function calculateFlatLoanInterest($loanAmount, $interestRate, $interestFrequency, $loanDuration, $durationUnit) {
         // Convert the interest rate to a monthly rate
         if ($interestFrequency === LoanInterestPeriod::PER_DAY) {
             $monthlyInterestRate = $interestRate * 30; // Assuming an average of 30 days in a month
@@ -48,12 +68,12 @@ class LoanCalculator {
         ];
     }
     
-    public function calculateLoanSchedule($loanAmount, $interestRate, $loanDuration, $method, $repaymentCount, $repaymentCycle, $durationUnit, $interestFrequency, $amortization_start_date) {
+    protected function calculateLoanSchedule($loanAmount, $interestRate, $loanDuration, $method, $repaymentCount, $repaymentCycle, $durationUnit, $interestFrequency, $released_date) {
         
         $loanSchedule = [];
     
         // Set intial amortization
-        $start_date = new Carbon($amortization_start_date);
+        $start_date = new Carbon($released_date);
         $start_date->add(...LoanRepaymentCycle::CARBON[$repaymentCycle])->setDay($start_date->day);
     
         if ($method === LoanInterestMethod::FLAT_RATE) {
@@ -79,18 +99,18 @@ class LoanCalculator {
     
                 $interestPayment = ($totalInterestPayable / $repaymentCount);
                 $totalPayment = $principalPayment + $interestPayment;
-                $remaning_loan = ($remaning_loan - $principalPayment);
+                $remaning_loan = round($remaning_loan - $principalPayment, 2);
 
-                $loanSchedule[] = [
-                    'month' => $i, 
-                    'date' => $start_date->format("Y-m-d"),
-                    'principal' => $principalPayment,
-                    'interest' => $interestPayment,
-                    'total_payment' => $totalPayment,
-                    'loan_balance' => $remaning_loan,
-                    'description' => $description,
-                ];
-    
+                $loanSchedule[] = (new LoanSchedule(
+                    $i, 
+                    $start_date,
+                    $principalPayment,
+                    $interestPayment,
+                    $totalPayment,
+                    $remaning_loan,
+                    $description,
+                ))->toArray();
+
                 $start_date->add(...LoanRepaymentCycle::CARBON[$repaymentCycle])->setDay($start_date->day);
             } 
         } 
@@ -119,9 +139,28 @@ class LoanCalculator {
         return $loanSchedule;
     }
     
-    public function generateSchedule($loanAmount, $interestRate, $loanDuration, $method, $repaymentCount, $repaymentCycle, $durationUnit, $interestFrequency, $amortization_start_date) {
+    public function generateSchedule(
+        $loanAmount,
+        $interestRate,
+        $loanDuration,
+        $method,
+        $repaymentCount,
+        $repaymentCycle,
+        $durationUnit,
+        $interestFrequency,
+        $released_date) {
 
-        $loanSchedule = $this->calculateLoanSchedule($loanAmount, $interestRate, $loanDuration, $method, $repaymentCount, $repaymentCycle, $durationUnit, $interestFrequency, $amortization_start_date);
+        $loanSchedule = $this->calculateLoanSchedule(
+            $loanAmount,
+            $interestRate,
+            $loanDuration,
+            $method,
+            $repaymentCount,
+            $repaymentCycle,
+            $durationUnit,
+            $interestFrequency,
+            $released_date
+        );
 
         $totalPrincipal = 0;
         $totalInterest = 0;
@@ -132,14 +171,17 @@ class LoanCalculator {
             $totalInterest += $payment['interest'];
             $totalPayment += $payment['total_payment'];
         }
-        
 
-        return [
-            'schedules' => $loanSchedule,
-            'total_principal' => $totalPrincipal,
-            'total_interest' => $totalInterest,
-            'total_payment' => $totalPayment,
-        ];
+        // Populate properties
+        $this->schedules = $loanSchedule;
+        $this->total_principal = $totalPrincipal;
+        $this->total_interest = $totalInterest;
+        $this->total_payment = $totalPayment;
+        $this->amortization_starting_date = count($loanSchedule) ? $loanSchedule[0]['date'] : null;
+        $this->maturity_date = count($loanSchedule) ? $loanSchedule[count($loanSchedule) -1]['date'] : null;
+        $this->released_date = $released_date;
+
+        return $this->toArray();
     }
 
     public function makeLoanSchedule(Loan $loan) {
@@ -154,6 +196,51 @@ class LoanCalculator {
             $loan->loan_interest_period, 
             $loan->released_date,
         );
+    }
+
+    public function addFee(LoanFee $fee) {
+        $this->fees->add($fee);
+    }
+
+
+    public function addFeeOnTemplate(LoanFeeTemplate $template, float $fee, float $amount) {
+        $this->addFee(new LoanFee(
+            $template->id,
+            $template->name,
+            $fee,
+            $template->fee_type,
+            $template->fee_method,
+            $amount,
+        ));
+    }
+
+
+    public function toArray() {
+
+        // Compute principal dedictible fees
+        $fees = [];
+
+        foreach ($this->fees->where('type', LoanFeeType::DEDUCT_PRINCIPAL) as $fee) {
+            $fees[] = (object) [
+                'id' => $fee->id,
+                'name' => $fee->name,
+                'amount' => round($fee->fee(), 2)
+            ];
+        }
+
+        $fees = collect($fees);
+
+        return [
+            'schedules' => $this->schedules,
+            'total_principal' => $this->total_principal,
+            'total_interest' => $this->total_interest,
+            'total_payment' => round($this->total_payment),
+            'fees' => $fees,
+            'amortization_starting_date' => $this->amortization_starting_date,
+            'maturity_date' => $this->maturity_date,
+            'released_date' => $this->released_date,
+            'released_amount' => round($this->total_principal - ($fees->sum('amount')))
+        ];
     }
 }
 

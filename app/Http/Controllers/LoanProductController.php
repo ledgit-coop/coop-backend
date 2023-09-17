@@ -36,15 +36,21 @@ class LoanProductController extends Controller
             'default_loan_duration',
             'repayment_cycle',
             'default_number_of_repayments',
+            'repayment_mode',
         ]);
 
         $product = LoanProduct::create($data);
+
+        if($request->loan_product_fees)
+            $product->loan_product_fees()->createMany($request->loan_product_fees);
 
         return response()->json($product);
     }
 
     public function show(LoanProduct $loanProduct)
     {
+        $loanProduct = LoanProduct::with('loan_product_fees.loan_fee_template')->find($loanProduct->id);
+        
         return response()->json($loanProduct);
     }
 
@@ -64,13 +70,26 @@ class LoanProductController extends Controller
             'default_loan_duration',
             'repayment_cycle',
             'default_number_of_repayments',
+            'repayment_mode',
         ]);
 
         foreach ($data as $key => $value) {
             $loanProduct->{$key} = $value;
         }
-
+        
         $loanProduct->save();
+
+        if($request->loan_product_fees)
+        {
+            foreach ($request->loan_product_fees as $fee) {
+                $loanProduct->loan_product_fees()->updateOrCreate([
+                    'loan_fee_template_id' => $fee['loan_fee_template_id']
+                ],
+                [
+                    ...$fee,
+                ],);
+            }
+        }
 
         return response()->json($loanProduct);
     }

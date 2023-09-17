@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\GuarantorController;
 use App\Http\Controllers\LoanController;
+use App\Http\Controllers\LoanFeeTemplateController;
 use App\Http\Controllers\LoanProductController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\RepaymentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilityController;
 use Illuminate\Http\Request;
@@ -29,18 +32,27 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::resource('users', UserController::class)->except(['create', 'edit']);
+    Route::resource('loan-guarantors', GuarantorController::class)->except(['create', 'edit']);
     Route::resource('loan-products', LoanProductController::class)->except(['create', 'edit']);
+    Route::resource('loan-fees', LoanFeeTemplateController::class)->except(['create', 'edit']);
+    Route::post('/loan-fees/{loanFee}/toggle', [LoanFeeTemplateController::class, 'toggle'])->name('loan-fees.toggle');
 
     Route::resource('loans', LoanController::class)->except(['create', 'edit']);
     Route::get('/loans/active-loans/{member}', [LoanController::class, 'activeLoans'])->name('loans.active');
     Route::post('/loans/status/{loan}', [LoanController::class, 'updateStatus'])->name('loans.status');
+    Route::get('/loans/schedule/{loan}', [LoanController::class, 'loanSchedule'])->name('loans.schedule');
+        
+    Route::get('/loan-repayments', [RepaymentController::class, 'index'])->name('loan-repayments');
+    Route::post('/loan-repayments/{loanRepayment}', [RepaymentController::class, 'store'])->name('loan-repayments.store');
 
-    
+
+
     Route::resource('members', MemberController::class)->except(['create', 'edit']);
     Route::post('/members/accounts/add/{id}/{account_id}', [MemberController::class, 'addAccount'])->name('members.account.add');
     Route::post('/members/update/orientation/{member_number}', [MemberController::class, 'attendedOrientation'])->name('members.update.orientation');
     Route::get('/members/accounts/transaction/{member}', [MemberController::class, 'getAccountTransactions'])->name('members.accounts.transactions.list');
     Route::post('/members/accounts/transaction/{member_account}', [MemberController::class, 'addAccountTransaction'])->name('members.accounts.transactions.post');
+    Route::get('/members/accounts/{member}', [MemberController::class, 'getMemberAccounts'])->name('members.accounts');
 
     Route::group(['prefix' => 'utility', 'name' => 'utility.'], function() {
         Route::get('/members/dropdown', [UtilityController::class, 'memberDropdown'])->name('members.dropdown');
@@ -52,7 +64,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('/loan-products/dropdown', [UtilityController::class, 'loanProductions'])->name('loan-products.dropdown');
         Route::get('/guarantors/dropdown', [UtilityController::class, 'guarantorDropdown'])->name('guarantors.dropdown');
         Route::get('/loan-calculator', [UtilityController::class, 'loanCalculator'])->name('loan-calculator.calculate');
-
+        Route::get('/loan-fee-templates', [UtilityController::class, 'loanFees'])->name('loan-fee-templates');
     });
 
 

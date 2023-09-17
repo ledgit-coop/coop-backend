@@ -40,6 +40,9 @@ return new class extends Migration
 
             $table->enum('repayment_cycle', LoanRepaymentCycle::LIST)->nullable();
             $table->integer('default_number_of_repayments')->nullable();
+            $table->string('repayment_mode')->nullable();
+
+            $table->json('fees')->nullable();
 
             $table->boolean('locked')->default(false)->comment('Locked if in used');
 

@@ -23,7 +23,9 @@ class LoanProduct extends Model
         'default_loan_duration',
         'repayment_cycle',
         'default_number_of_repayments',
+        'repayment_mode',
         'locked',
+        'fees',
     ];
 
     protected $casts = [
@@ -33,5 +35,10 @@ class LoanProduct extends Model
         'default_loan_interest' => 'integer',
         'default_loan_duration' => 'integer',
         'default_number_of_repayments' => 'integer',
+        'fees' => 'array',
     ];
+
+    public function loan_product_fees() {
+        return $this->hasMany(LoanProductFee::class);
+    }
 }

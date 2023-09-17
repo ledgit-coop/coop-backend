@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\LoanCalculator;
+use App\Helpers\LoanCalculator\LoanCalculator;
 use App\Http\Requests\LoanCalculatorRequest;
 use App\Models\Account;
+use App\Models\LoanFeeTemplate;
 use App\Models\LoanGuarantor;
 use App\Models\LoanProduct;
 use App\Models\Member;
 use App\Models\MemberAccount;
-use App\Models\MemberBeneficiary;
 use App\Models\WorkIndustry;
 use Illuminate\Http\Request;
 
@@ -92,7 +92,24 @@ class UtilityController extends Controller
 
 
     public function loanCalculator(LoanCalculatorRequest $request) {
+
         $calculator = new LoanCalculator();
+
+        // Compute fees
+        if($request->fees) {
+            foreach ($request->fees as $fee) {
+                // Two must exists to compute the fees
+                if(isset($fee['loan_fee_template_id']) && isset($fee['fee'])) {
+                    $template = LoanFeeTemplate::find($fee['loan_fee_template_id']);
+                    $calculator->addFeeOnTemplate(
+                        $template,
+                        $fee['fee'],
+                        $request->principal_amount,
+                    );
+                }
+            }
+        }
+
         $result = $calculator->generateSchedule(
             $request->principal_amount, 
             $request->loan_interest, 
@@ -118,5 +135,9 @@ class UtilityController extends Controller
         })->toArray();
         
         return response()->json(array_merge([['value' => $member->full_name,'label' => $member->full_name]],$beneficiaries));
+    }
+    
+    public function loanFees() {
+        return response()->json(LoanFeeTemplate::where('enabled', true)->get());
     }
 }

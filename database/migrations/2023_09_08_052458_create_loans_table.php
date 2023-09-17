@@ -70,6 +70,10 @@ return new class extends Migration
             $table->date('released_date')->nullable()->comment('Needed to have a value for loan computation');
             $table->boolean('released')->default(false)->comment('Will be updated after actual released to the loaner');
 
+            $table->decimal('released_amount', 10, 2)->comment('Net principal deducted with fees')->nullable();
+            $table->decimal('interest_amount', 10, 2)->comment('Total interest computed in amortization')->nullable();
+            $table->decimal('due_amount', 10, 2)->comment('Principal plus interest')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
         });

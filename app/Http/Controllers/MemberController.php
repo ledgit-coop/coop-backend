@@ -36,7 +36,7 @@ class MemberController extends Controller
         if(!empty($filters)) {
             if(isset($filters->keyword))
                 $members->where(function($members) use($filters) {
-                    $members->orWhere('id', 'like', "%$filters->keyword%")
+                    $members->orWhere('member_number', 'like', "%$filters->keyword%")
                     ->orWhere('surname', 'like', "%$filters->keyword%")
                     ->orWhere('email_address', 'like', "%$filters->keyword%");
                 });
@@ -288,6 +288,20 @@ class MemberController extends Controller
         ]);
         
         return response('Transaction created.');
+    }
+
+    public function getMemberAccounts(Request $request, Member $member) {
+        $accounts = $member->member_accounts()->with('account');
+
+   
+        if(!empty($request->year))
+            $accounts->whereYear('created_at', $request->year);
+
+        if(!empty($request->status))
+            $accounts->where('status', $request->status);
+
+
+        return response()->json($accounts->get());
     }
 
     public function getAccountTransactions(Request $request, Member $member) {

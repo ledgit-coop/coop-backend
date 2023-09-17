@@ -43,6 +43,9 @@ class LoanProductRequest extends FormRequest
             'loan_duration_type' => ['nullable', 'string', 'in:' . implode(',', LoanDurationPeriod::LIST)],
             'repayment_cycle' => ['nullable', 'string', 'in:' . implode(',', LoanRepaymentCycle::LIST)],
             'number_of_repayments' => 'nullable|integer',
+            'repayment_mode' => 'nullable|string',
+            'loan_product_fees.*.loan_fee_template_id' => 'nullable|integer',
+            'loan_product_fees.*.fee' => 'nullable|integer',
         ];
     }
 }

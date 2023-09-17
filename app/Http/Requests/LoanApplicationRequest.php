@@ -66,6 +66,9 @@ class LoanApplicationRequest extends FormRequest
             'repayment_mode' => 'nullable|string',
             'applied_date' => 'nullable|date|date_format:Y-m-d',
             'released_date' => 'nullable|date|date_format:Y-m-d',
+
+            'loan_fees.*.loan_fee_template_id' => 'nullable|integer',
+            'loan_fees.*.fee' => 'nullable|integer',
         ];
     }
 }
