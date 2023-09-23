@@ -55,17 +55,29 @@ class Loan extends Model
         'released_amount',
         'interest_amount',
         'due_amount',
+        'penalty',
+        'penalty_duration',
+        'penalty_grace_period',
+        'penalty_method',
+
+        'pre_termination_fee',
+        'pre_termination_panalty',
+        'pre_termination_panalty_method'
     ];
 
     protected $casts = [
+        'pre_termination_fee' => 'integer',
+        'pre_termination_panalty' => 'integer',
         'applied_amount' => 'integer',
         'principal_amount' => 'integer',
         'loan_duration' => 'integer',
+        'penalty' => 'integer',
         'number_of_repayments' => 'integer',
         'loan_interest' => 'integer',
         'released_amount' => 'integer',
         'interest_amount' => 'integer',
         'due_amount' => 'integer',
+        'released_date' => 'datetime:Y-m-d',
     ];
     
     // Define the foreign key relationships to the Member and LoanProduct models
@@ -88,11 +100,11 @@ class Loan extends Model
     }
 
     public function guarantor_first() {
-        return $this->belongsTo(LoanGuarantor::class, 'guarantor_first_id');
+        return $this->belongsTo(Member::class, 'guarantor_first_id');
     }
 
     public function guarantor_second() {
-        return $this->belongsTo(LoanGuarantor::class, 'guarantor_second_id');
+        return $this->belongsTo(Member::class, 'guarantor_second_id');
     }
 
     protected function overdue(): Attribute
@@ -133,5 +145,9 @@ class Loan extends Model
 
     public function loan_fees() {
         return $this->hasMany(LoanFee::class);
+    }
+
+    public function loan_product() {
+        return $this->belongsTo(LoanProduct::class, 'loan_product_id');
     }
 }

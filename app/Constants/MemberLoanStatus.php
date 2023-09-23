@@ -9,9 +9,11 @@ class MemberLoanStatus
     const PENDING = 'pending';
     const APPROVED = 'approved';
     const REJECTED = 'rejected';
-    const PAID = 'paid';
+    const CLOSED = 'closed';
     const OVERDUE = 'overdue';
     const RELEASED = 'released';
+    const REQUEST_PRE_TERMINATION = 'request-pre-termination';
+    const PRE_TERMINATED = 'pre-terminated';
 
     const LIST = [
         self::EVALUATION,
@@ -19,8 +21,10 @@ class MemberLoanStatus
         self::PRE_APPROVED,
         self::PENDING,
         self::REJECTED,
-        self::PAID,
+        self::CLOSED,
         self::OVERDUE,
         self::RELEASED,
+        self::REQUEST_PRE_TERMINATION,
+        self::PRE_TERMINATED,
     ];
 }

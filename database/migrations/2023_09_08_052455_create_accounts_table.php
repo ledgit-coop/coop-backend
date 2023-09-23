@@ -1,5 +1,7 @@
 <?php
 
+use App\Constants\AccountMaintainingBalanceCycle;
+use App\Constants\AccountMaintainingBalanceMethod;
 use App\Constants\AccountType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -22,10 +24,10 @@ return new class extends Migration
             
             $table->double('earn_interest_per_anum')->nullable();
             $table->double('maintaining_balance')->nullable();
-            $table->enum('penalty_below_maintaining_method', ['fixed', 'percentage'])->nullable();
+            $table->enum('penalty_below_maintaining_method', AccountMaintainingBalanceMethod::LIST)->nullable();
             $table->double('penalty_below_maintaining')->nullable();
             
-            $table->enum('penalty_below_maintaining_cycle', ['day', 'month', 'quarter', 'year'])->nullable();
+            $table->enum('penalty_below_maintaining_cycle', AccountMaintainingBalanceCycle::LIST)->nullable();
             $table->double('penalty_below_maintaining_duration')->nullable();
             
             $table->timestamps();

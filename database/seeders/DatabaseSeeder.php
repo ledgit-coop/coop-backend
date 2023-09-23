@@ -9,7 +9,6 @@ use App\Constants\LoanFeeMethod;
 use App\Constants\LoanFeeType;
 use App\Models\Account;
 use App\Models\LoanFeeTemplate;
-use App\Models\LoanGuarantor;
 use App\Models\LoanProduct;
 use App\Models\User;
 use App\Models\WorkIndustry;
@@ -83,20 +82,5 @@ class DatabaseSeeder extends Seeder
         Account::create(['name'=> 'Negosyo Loan', 'type' => AccountType::REGULAR, 'key' => 'negosyo-loan']);
         Account::create(['name'=> 'Salary Loan', 'type' => AccountType::REGULAR, 'key' => 'salary-loan']);
         Account::create(['name'=> 'Other Loan', 'type' => AccountType::REGULAR, 'key' => 'other-loan']);
-
-        LoanGuarantor::create([
-            'first_name' => 'Kevin Mokie',
-            'last_name' => 'Koree',
-        ]);
-
-        LoanGuarantor::create([
-            'first_name' => 'Kolen',
-            'last_name' => 'Koree',
-        ]);
-
-        LoanGuarantor::create([
-            'first_name' => 'Loque',
-            'last_name' => 'Coins',
-        ]);
     }
 }

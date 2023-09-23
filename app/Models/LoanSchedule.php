@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 class LoanSchedule extends Model
@@ -75,20 +76,11 @@ class LoanSchedule extends Model
         );
     }
 
-    protected function overdue(): Attribute
-    {
-        return Attribute::make(
-            get: function() {
-                return $this->due_days < 0;
-            }
-        );
-    }
-
     protected function dueDays(): Attribute
     {
         return Attribute::make(
             get: function() {
-                return round(Carbon::now()->floatDiffInDays($this->due_date, false));
+                return Helper::diffDays(Carbon::now(), $this->due_date);
             }
         );
     }
@@ -100,5 +92,13 @@ class LoanSchedule extends Model
 
     public function transaction() {
         return $this->belongsTo(Transaction::class, 'transaction_id');
+    }
+
+    public function latest_penalty() {
+        return $this->loan_schedule_penalties()->orderBy('penalty_date', 'desc')->first();
+    }
+
+    public function loan_schedule_penalties() : HasMany {
+        return $this->hasMany(LoanSchedulePenalty::class, 'loan_schedule_id');
     }
 }

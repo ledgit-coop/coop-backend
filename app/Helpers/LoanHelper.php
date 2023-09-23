@@ -2,10 +2,15 @@
 
 namespace App\Helpers;
 
+use App\Constants\LoanPenaltyFrequency;
+use App\Constants\LoanPenaltyMethod;
 use App\Helpers\LoanCalculator\LoanCalculator;
 use App\Models\Loan;
 use App\Models\LoanSchedule;
+use App\Models\Log;
 use Exception;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class LoanHelper {
 
@@ -113,5 +118,87 @@ class LoanHelper {
             ->where('due_date', '>', $schedule->due_date)
             ->orderBy('due_date', 'asc')
             ->first();
+    }
+
+    public static function calculateLoanPenalty(
+            $loanAmount,
+            $penaltyAmountOrRate,
+            $penaltyType) {
+
+        if(!in_array($penaltyType, LoanPenaltyMethod::LIST))
+            throw new Exception("Penalty method not supported.", 1);
+
+        return round($penaltyType === LoanPenaltyMethod::PERCENTAGE ? $loanAmount * ($penaltyAmountOrRate / 100) : $penaltyAmountOrRate, 2);
+    }
+
+    public static function computeLoanPreTerminationFee(Loan $loan) : Loan {
+        // Do not update if loan released
+        if(!$loan->released) {
+            $loan->pre_termination_fee = LoanHelper::calculateLoanPenalty(
+                $loan->principal_amount,
+                $loan->pre_termination_panalty,
+                $loan->pre_termination_panalty_method,
+            );
+    
+            $loan->saveQuietly();
+        }
+
+        return $loan;
+    }
+
+    public static function applyAmortizationPenalty(LoanSchedule $schedule) {
+        // Past due grace period and not paid
+        if(abs($schedule->due_days) > $schedule->penalty_grace_period && $schedule->paid == false) {
+            $now = Carbon::now();
+            $latest_penalty = $schedule->latest_penalty();
+            $extended_penalty = false;
+
+            if($latest_penalty) {
+                $last_penalty_date = $latest_penalty->penalty_date;
+                $days_gap = 0;
+                $difference = Helper::diffDays($last_penalty_date, Carbon::now());
+
+                switch ($schedule->loan->penalty_duration) {
+                    case LoanPenaltyFrequency::EVERY_DAY:
+                        $days_gap = 1;
+                        break;
+                    case LoanPenaltyFrequency::EVERY_WEEK:
+                        $days_gap = 7;
+                        break;
+                    case LoanPenaltyFrequency::EVERY_MONTH:
+                        $days_gap = 31;
+                        break;
+                    case LoanPenaltyFrequency::EVERY_YEAR:
+                        $days_gap = 365;
+                        break;      
+                }
+
+                // Due from the last penalty
+                $extended_penalty = $difference >= $days_gap;
+            }
+
+            if(!$latest_penalty || $extended_penalty) {
+
+               try {
+                    DB::beginTransaction();
+                    $penalty = self::calculateLoanPenalty($schedule->due_amount, $schedule->loan->penalty, $schedule->loan->penalty_method);
+                    $schedule->penalty_amount += $penalty; 
+                    $schedule->due_amount += $penalty;
+                    $schedule->save();
+
+                    $schedule->loan_schedule_penalties()->create([
+                        'penalty' => $schedule->penalty_amount,
+                        'penalty_date' => $now->format('Y-m-d'),
+                        'frequency' => $schedule->loan->penalty_duration,
+                        'method' => $schedule->loan->penalty_method,
+                    ]);
+
+                    DB::commit();
+               } catch (\Throwable $th) {
+                    DB::rollBack();
+                    throw $th;
+               }
+            }
+        }
     }
 }

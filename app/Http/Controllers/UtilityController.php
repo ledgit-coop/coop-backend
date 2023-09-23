@@ -6,12 +6,12 @@ use App\Helpers\LoanCalculator\LoanCalculator;
 use App\Http\Requests\LoanCalculatorRequest;
 use App\Models\Account;
 use App\Models\LoanFeeTemplate;
-use App\Models\LoanGuarantor;
 use App\Models\LoanProduct;
 use App\Models\Member;
 use App\Models\MemberAccount;
 use App\Models\WorkIndustry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UtilityController extends Controller
 {
@@ -74,20 +74,18 @@ class UtilityController extends Controller
     }
 
     public function guarantorDropdown() {
-        $guarantors = LoanGuarantor::on();
-
-        $guarantors = $guarantors->get()->map(function($data){
+        $members = Member::on();
+        $members = $members->get()->map(function($data){
             return [
                 'value' => $data->id,
-                'label' => $data->full_name,
-                'disabled' => rand(0,1),
+                'label' => $data->full_name . $data->member_number,
                 'extra' => [
                     'guarantor_twice' => false,
                 ]
             ];
         });
 
-        return response()->json($guarantors);
+        return response()->json($members);
     }
 
 

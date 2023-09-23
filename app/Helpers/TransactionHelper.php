@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Constants\TransactionType;
+use App\Models\Loan;
 use App\Models\LoanSchedule;
 use App\Models\Member;
 use App\Models\Transaction;
@@ -13,7 +14,7 @@ class TransactionHelper {
 
     public static function makeTransaction(float $amount, string $particular, $type, Carbon $transactionDate ,$extraParams = null) {
 
-        if(in_array($type, TransactionType::LIST)) throw new Exception("Transaction type is not supported.", 1);
+        if(!in_array($type, TransactionType::LIST)) throw new Exception("Transaction type is not supported.", 1);
 
         return Transaction::create([
             'transaction_number' => TransactionNumber::generateTransactionNumber(),
@@ -59,6 +60,20 @@ class TransactionHelper {
             [
                 "loan_id" => $schedule->loan->id,
                 "loan_schedule_id" => $schedule->id,
+            ]
+        );
+    }
+    
+    public static function makeLoanPreTerminationFee(Loan $loan, Carbon $transactionDate, float $amount) {
+        $date = $transactionDate->format('Y-m-d');
+        $loan_number = $loan->loan_number;
+        return self::makeTransaction(
+            $amount,
+            "Loan Pre-Termination - $date/Loan #: $loan_number",
+            TransactionType::REVENUE,
+            $transactionDate,
+            [
+                "loan_id" => $loan->id,
             ]
         );
     }

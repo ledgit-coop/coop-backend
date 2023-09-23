@@ -5,9 +5,10 @@ use App\Constants\LoanDurationPeriod;
 use App\Constants\LoanInterestMethod;
 use App\Constants\LoanInterestPeriod;
 use App\Constants\LoanInterestType;
+use App\Constants\LoanPenaltyFrequency;
+use App\Constants\LoanPenaltyMethod;
 use App\Constants\LoanRepaymentCycle;
 use App\Constants\MemberLoanStatus;
-use App\Models\LoanGuarantor;
 use App\Models\LoanProduct;
 use App\Models\Member;
 use App\Models\MemberAccount;
@@ -29,8 +30,8 @@ return new class extends Migration
             $table->foreignIdFor(Member::class, 'member_id')->constrained()->onDelete('cascade');
             $table->foreignIdFor(LoanProduct::class, 'loan_product_id')->constrained()->onDelete('cascade');
             $table->foreignIdFor(MemberAccount::class, 'member_account_id')->constrained()->onDelete('cascade');
-            $table->foreignIdFor(LoanGuarantor::class, 'guarantor_first_id');
-            $table->foreignIdFor(LoanGuarantor::class, 'guarantor_second_id');
+            $table->foreignIdFor(Member::class, 'guarantor_first_id');
+            $table->foreignIdFor(Member::class, 'guarantor_second_id');
 
             $table->string('loan_number')->unique();
             $table->string('email')->nullable();
@@ -73,6 +74,15 @@ return new class extends Migration
             $table->decimal('released_amount', 10, 2)->comment('Net principal deducted with fees')->nullable();
             $table->decimal('interest_amount', 10, 2)->comment('Total interest computed in amortization')->nullable();
             $table->decimal('due_amount', 10, 2)->comment('Principal plus interest')->nullable();
+
+            $table->decimal('penalty', 10, 2)->nullable();
+            $table->integer('penalty_grace_period')->nullable()->comment('Days');
+            $table->enum('penalty_method', LoanPenaltyMethod::LIST)->nullable();
+            $table->enum('penalty_duration', LoanPenaltyFrequency::LIST)->nullable();
+
+            $table->decimal('pre_termination_fee', 10, 2)->nullable()->comment('Auto computed based on penalty settings');
+            $table->decimal('pre_termination_panalty', 10, 2)->nullable();
+            $table->enum('pre_termination_panalty_method', LoanPenaltyMethod::LIST)->nullable();
 
             $table->timestamps();
             $table->softDeletes();

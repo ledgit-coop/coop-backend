@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Constants\ActionTransaction;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AddAccountTransactionRequest extends FormRequest
@@ -25,9 +26,8 @@ class AddAccountTransactionRequest extends FormRequest
     {
         return [
             'transaction_date' => 'required|date|date_format:Y-m-d',
-            'transaction_type' => 'required',
+            'transaction_type' => 'required|in:'. implode(',', ActionTransaction::LIST),
             'amount' => 'required',
-            'particular' => 'required',
         ];
     }
 }

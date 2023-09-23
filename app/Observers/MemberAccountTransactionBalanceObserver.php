@@ -17,6 +17,7 @@ class MemberAccountTransactionBalanceObserver
     {
         $account = $transaction->member_account;
         $account->balance += $transaction->amount;   
+        $account->balance = round($account->balance, 2);
         $account->save();
         
         AccountHelper::updateTransactionBalance($transaction, $account); 
@@ -32,6 +33,7 @@ class MemberAccountTransactionBalanceObserver
     {
         $account = $transaction->member_account;
         $account->balance += $transaction->amount;   
+        $account->balance = round($account->balance, 2);
         $account->save();
 
         AccountHelper::updateTransactionBalance($transaction, $account);
@@ -47,6 +49,7 @@ class MemberAccountTransactionBalanceObserver
     {
         $account = $transaction->member_account;
         $account->balance -= $transaction->amount;   
+        $account->balance = round($account->balance, 2);
         $account->save();
 
         AccountHelper::updateTransactionBalance($transaction, $account);
@@ -62,6 +65,7 @@ class MemberAccountTransactionBalanceObserver
     {
         $account = $transaction->member_account;
         $account->balance += $transaction->amount;   
+        $account->balance = round($account->balance, 2);
         $account->save();
 
         AccountHelper::updateTransactionBalance($transaction, $account);
@@ -76,7 +80,8 @@ class MemberAccountTransactionBalanceObserver
     public function forceDeleted(AccountTransaction $transaction)
     {
         $account = $transaction->member_account;
-        $account->balance -= $transaction->amount;   
+        $account->balance -= $transaction->amount; 
+        $account->balance = round($account->balance, 2);  
         $account->save();
 
         AccountHelper::updateTransactionBalance($transaction, $account);

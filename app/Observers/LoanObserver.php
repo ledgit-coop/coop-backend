@@ -15,7 +15,7 @@ class LoanObserver
      */
     public function created(Loan $loan)
     {
-    
+        LoanHelper::computeLoanPreTerminationFee($loan);
     }
 
     /**
@@ -26,7 +26,7 @@ class LoanObserver
      */
     public function updated(Loan $loan)
     {
-        //
+        LoanHelper::computeLoanPreTerminationFee($loan);
     }
 
     /**

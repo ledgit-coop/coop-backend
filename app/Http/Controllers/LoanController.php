@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Constants\MemberLoanStatus;
+use App\Helpers\Exports\ExportFile;
 use App\Helpers\LoanHelper;
+use App\Helpers\TransactionHelper;
 use App\Http\Requests\LoanApplicationRequest;
 use App\Models\Loan;
 use App\Models\Member;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class LoanController extends Controller
 {
@@ -90,6 +94,13 @@ class LoanController extends Controller
             'guarantor_second_id',
             'repayment_mode',
             'released_date',
+            'penalty',
+            'penalty_duration',
+            'penalty_grace_period',
+            'penalty_method',
+
+            'pre_termination_panalty',
+            'pre_termination_panalty_method',
         ]);
 
         $data['loan_number'] = LoanHelper::generateUniqueTransactionNumber();
@@ -158,6 +169,13 @@ class LoanController extends Controller
             'guarantor_second_id',
             'repayment_mode',
             'released_date',
+            'penalty',
+            'penalty_duration',
+            'penalty_grace_period',
+            'penalty_method',
+
+            'pre_termination_panalty',
+            'pre_termination_panalty_method',
         ]);
 
         foreach ($data as $key => $value) {
@@ -187,17 +205,42 @@ class LoanController extends Controller
     {
         $this->validate($request,[
             'status' => 'required|in:'. implode(",", MemberLoanStatus::LIST),
+
+            'pre_termination_fee' => 'nullable|numeric',
+            'pre_termination_date' => 'nullable|date|date_format:Y-m-d',
+
         ]);
 
-        if($loan->released) return response()->json(['message' => 'Cannot update status of a released loan.'], 422);
+        if($loan->released && !in_array($request->status,[
+            MemberLoanStatus::REQUEST_PRE_TERMINATION,
+            MemberLoanStatus::PRE_TERMINATED
+        ])) return response()->json(['message' => 'Cannot update status of a released loan.'], 422);
 
-        if($request->status === MemberLoanStatus::RELEASED)
-            $loan->released = true;
+        try {
+            DB::beginTransaction();
 
-        $loan->status = $request->status;
-        $loan->save();
-        
-        return response()->json($loan);
+            if($request->status === MemberLoanStatus::REQUEST_PRE_TERMINATION) {
+                TransactionHelper::makeLoanPreTerminationFee(
+                    $loan,
+                    new Carbon($request->pre_termination_date),
+                    $request->pre_termination_fee,
+                );
+            }
+    
+            if($request->status === MemberLoanStatus::RELEASED) {
+                $loan->released = true;
+            }
+    
+            $loan->status = $request->status;
+            $loan->save();
+            
+            DB::commit();
+            
+            return response()->json($loan);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     public function destroy(Loan $loan)
@@ -224,5 +267,14 @@ class LoanController extends Controller
         $schedules = $loan->loan_schedules()->orderBy('due_date');
 
         return response()->json($schedules->get());
+    }
+
+    public function download(Request $request, Loan $loan) {
+        $this->validate($request, [
+            'document' => 'required|in:agreement,application-form',
+        ]);
+
+
+        return ExportFile::exportAgreement($loan);
     }
 }

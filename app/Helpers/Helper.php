@@ -44,5 +44,11 @@ class Helper {
             return $dueDateObj->diffForHumans(null, true, false) . " left";
         }
     }
+
+    public static function diffDays(Carbon $firstDate, Carbon $secondDate) {
+        $due_date = $secondDate->startOfDay();
+        $now = $firstDate->startOfDay();
+        return round($now->floatDiffInDays($due_date, false));
+    }
 }
 

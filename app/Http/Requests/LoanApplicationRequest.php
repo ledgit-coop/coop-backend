@@ -31,8 +31,8 @@ class LoanApplicationRequest extends FormRequest
     {
         return [
 
-            'guarantor_first_id' => 'required|exists:loan_guarantors,id',
-            'guarantor_second_id' => 'required|exists:loan_guarantors,id',
+            'guarantor_first_id' => 'required|exists:members,id',
+            'guarantor_second_id' => 'required|exists:members,id',
             'member_id' => 'required|exists:members,id',
             'loan_product_id' => 'required|exists:loan_products,id',
             'member_account_id'  => 'required|exists:member_accounts,id',
@@ -52,14 +52,14 @@ class LoanApplicationRequest extends FormRequest
             'work_industry' => 'nullable|string',
             'loan_purpose' => 'nullable|string',
             'salary_range' => 'nullable|string',
-            'applied_amount' => 'nullable|numeric|between:0.01,9999999.99',
-            'principal_amount' => 'nullable|numeric|between:0.01,9999999.99',
+            'applied_amount' => 'nullable|numeric|between:0.00,9999999.99',
+            'principal_amount' => 'nullable|numeric|between:0.00,9999999.99',
             'disbursed_channel' => ['nullable', 'string', 'in:' . implode(',', LoanDisbursementChannel::LIST)],
             'interest_method' => ['nullable', 'string', 'in:' . implode(',', LoanInterestMethod::LIST)],
             'interest_type' => ['nullable', 'string', 'in:' . implode(',', LoanInterestType::LIST)],
-            'loan_interest' => 'nullable|numeric|between:0.01,999.99',
+            'loan_interest' => 'nullable|numeric|between:0.00,999.99',
             'loan_interest_period' => ['nullable', 'string', 'in:' . implode(',', LoanInterestPeriod::LIST)],
-            'loan_duration' => 'nullable|numeric|between:0.01,999.99',
+            'loan_duration' => 'nullable|numeric|between:0.00,999.99',
             'loan_duration_type' => ['nullable', 'string', 'in:' . implode(',', LoanDurationPeriod::LIST)],
             'repayment_cycle' => ['nullable', 'string', 'in:' . implode(',', LoanRepaymentCycle::LIST)],
             'number_of_repayments' => 'nullable|integer',
@@ -69,6 +69,14 @@ class LoanApplicationRequest extends FormRequest
 
             'loan_fees.*.loan_fee_template_id' => 'nullable|integer',
             'loan_fees.*.fee' => 'nullable|integer',
+
+            'penalty' => 'nullable|numeric|between:0.00,9999999.99',
+            'penalty_grace_period' => 'nullable|numeric|between:0.00,9999999.99',
+            'penalty_duration' => 'nullable|string',
+            'penalty_method' => 'nullable|string',
+
+            'pre_termination_panalty' => 'nullable|numeric|between:0.00,9999999.99',
+            'pre_termination_panalty_method' => 'nullable|string',
         ];
     }
 }

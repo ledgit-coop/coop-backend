@@ -27,7 +27,7 @@ class LoanFeeTemplateRequest extends FormRequest
     {
         return [
             'name' => 'nullable|string',
-            'fee' => 'nullable|numeric|between:0.01,9999999.99',
+            'fee' => 'nullable|numeric|between:0.00,9999999.99',
             'fee_type' => ['nullable', 'string', 'in:' . implode(',', LoanFeeType::LIST)],
             'fee_method' => ['nullable', 'string', 'in:' . implode(',', LoanFeeMethod::LIST)],
             'enabled' => 'nullable|boolean',

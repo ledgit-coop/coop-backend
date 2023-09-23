@@ -223,11 +223,11 @@ class MemberController extends Controller
             'beneficiaries' => $member->beneficiaries,
             'member_year' => $member->member_at->format('Y'),
             'residency_status' => $member->residency_status,
-            'share_capital' => [
+            'share_capital' => $member->share_capital_account ? [
                 'id' => $member->share_capital_account->id,
                 'balance' => $member->share_capital_account->balance,
                 'latest_transaction' => $member->share_capital_account->latest_transaction,
-            ],
+            ] : null,
             'savings_accounts' => $member->savings_accounts->map(function($account) {
                 return [
                     'id' => $account->id,
@@ -276,6 +276,18 @@ class MemberController extends Controller
         return response('Account updated.');
     }
 
+    public function updateStatus(Request $request, Member $member) {
+        
+        $this->validate($request, [
+            'status' => 'required',
+        ]);
+
+        $member->status = $request->status;
+        $member->save();
+
+        return response('Account updated.');
+    }
+
     public function addAccountTransaction(AddAccountTransactionRequest $request, MemberAccount $member_account) {
         
         $member_account->transactions()->createMany([
@@ -309,7 +321,7 @@ class MemberController extends Controller
             $account->where('member_id', $member->id);
         });
         
-        if(!empty($request->member_account_id))
+        if(isset($request->member_account_id) && $request->member_account_id !== null)
             $transactions->where('member_account_id', $request->member_account_id);
 
         if(!empty($request->year))

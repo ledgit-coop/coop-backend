@@ -25,15 +25,23 @@ class LoanProduct extends Model
         'default_number_of_repayments',
         'repayment_mode',
         'locked',
-        'fees',
+        'penalty',
+        'penalty_duration',
+        'penalty_grace_period',
+        'penalty_method',
+
+        'pre_termination_panalty',
+        'pre_termination_panalty_method'
     ];
 
     protected $casts = [
+        'pre_termination_panalty' => 'integer',
         'default_principal_amount' => 'integer',
         'min_principal_amount' => 'integer',
         'max_principal_amount' => 'integer',
         'default_loan_interest' => 'integer',
         'default_loan_duration' => 'integer',
+        'penalty' => 'integer',
         'default_number_of_repayments' => 'integer',
         'fees' => 'array',
     ];

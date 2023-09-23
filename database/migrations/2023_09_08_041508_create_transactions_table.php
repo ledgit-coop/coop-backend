@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date('transaction_date');
             $table->string('particular')->nullable();
             $table->json('parameters')->nullable();
+            $table->boolean('posted')->default(false);
             $table->timestamps();
         });
     }

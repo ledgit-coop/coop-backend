@@ -37,6 +37,13 @@ class LoanProductController extends Controller
             'repayment_cycle',
             'default_number_of_repayments',
             'repayment_mode',
+            'penalty',
+            'penalty_grace_period',
+            'penalty_method',
+            'penalty_duration',
+
+            'pre_termination_panalty',
+            'pre_termination_panalty_method',
         ]);
 
         $product = LoanProduct::create($data);
@@ -71,6 +78,13 @@ class LoanProductController extends Controller
             'repayment_cycle',
             'default_number_of_repayments',
             'repayment_mode',
+            'penalty',
+            'penalty_grace_period',
+            'penalty_method',
+            'penalty_duration',
+
+            'pre_termination_panalty',
+            'pre_termination_panalty_method',
         ]);
 
         foreach ($data as $key => $value) {

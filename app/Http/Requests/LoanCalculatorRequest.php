@@ -28,9 +28,9 @@ class LoanCalculatorRequest extends FormRequest
     public function rules()
     {
         return [
-            'principal_amount' => 'required|numeric|between:0.01,9999999.99',
-            'loan_interest' => 'required|numeric|between:0.01,999.99',
-            'loan_duration' => 'required|numeric|between:0.01,999.99',
+            'principal_amount' => 'required|numeric|between:0.00,9999999.99',
+            'loan_interest' => 'required|numeric|between:0.00,999.99',
+            'loan_duration' => 'required|numeric|between:0.00,999.99',
             'interest_method' => ['required', 'string', 'in:' . implode(',', LoanInterestMethod::LIST)],
             'number_of_repayments' => 'required|integer',
             'repayment_cycle' => ['required', 'string', 'in:' . implode(',', LoanRepaymentCycle::LIST)],
@@ -38,8 +38,8 @@ class LoanCalculatorRequest extends FormRequest
             'loan_interest_period' => ['required', 'string', 'in:' . implode(',', LoanInterestPeriod::LIST)],
             'released_date' => 'required|date|date_format:Y-m-d',
 
-            'fees.*.loan_fee_template_id' => 'nullable|numeric|between:0.01,999.99',
-            'fees.*.fee' => 'nullable|numeric|between:0.01,999.99',
+            'fees.*.loan_fee_template_id' => 'nullable|numeric|between:0.00,999.99',
+            'fees.*.fee' => 'nullable',
         ];
     }
 }

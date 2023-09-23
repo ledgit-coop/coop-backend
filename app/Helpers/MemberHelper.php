@@ -5,9 +5,13 @@ namespace App\Helpers;
 use App\Models\Account;
 use App\Models\Member;
 use App\Models\MemberAccount;
+use Illuminate\Support\Carbon;
 
 class MemberHelper {
     public static function generateID() {
+        
+        $year = Carbon::now()->year;
+
         $member = Member::orderBy('member_number', 'desc')->first();
 
         if($member)

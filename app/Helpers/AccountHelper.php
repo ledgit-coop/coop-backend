@@ -35,7 +35,13 @@ class AccountHelper {
         $transaction->saveQuietly();
     }
 
-    public static function computeEarnInterest() {
+    public static function computeEarnInterest($principal, $annualInterestRate) {
+        // Convert the annual interest rate to a decimal
+        // Convert the annual interest rate to a decimal
+        $r = ($annualInterestRate / 100) / 365;
+        // Calculate the daily earnings
+        $dailyEarnings = $principal * $r;
         
+        return round($dailyEarnings, 2);
     }
 }

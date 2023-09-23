@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\AccountStatus;
 use App\Models\Account;
 use App\Models\Member;
 use Illuminate\Database\Migrations\Migration;
@@ -21,7 +22,7 @@ return new class extends Migration
             $table->string('account_holder');
             $table->foreignIdFor(Member::class, 'member_id');
             $table->foreignIdFor(Account::class, 'account_id');
-            $table->enum('status', ['active', 'dormant']);
+            $table->enum('status', AccountStatus::LIST);
             $table->integer('passbook_count')->unsigned()->default(1);
             $table->double('balance')->default(0);
             
@@ -32,6 +33,8 @@ return new class extends Migration
 
             $table->enum('penalty_below_maintaining_cycle', ['day', 'month', 'quarter', 'year'])->nullable();
             $table->double('penalty_below_maintaining_duration')->nullable();
+
+            $table->boolean('below_maintaining_balance')->default(false);
             
             $table->timestamps();
         });
