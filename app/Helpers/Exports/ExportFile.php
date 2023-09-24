@@ -3,7 +3,6 @@
 namespace App\Helpers\Exports;
 
 use App\Models\Loan;
-use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Browsershot\Browsershot;
 
@@ -14,7 +13,7 @@ class ExportFile {
         $Storage->makeDirectory($path);
         $path = $path. $filename;
         $storagePath = $Storage->path($path);
-        
+     
         // Transform to pdf
         Browsershot::html($view)
                 ->newHeadless()
@@ -23,7 +22,8 @@ class ExportFile {
                 ->margins(10, 10, 10, 10)
                 ->setNodeBinary(config('browsershot.node_path'))
                 ->setNpmBinary(config('browsershot.npm_path'))
-                ->savePdf("test.pdf");   
+                ->setChromePath(config('browsershot.chrome_path'))
+                ->savePdf($storagePath);   
         
         return $Storage->url($path);
     }
