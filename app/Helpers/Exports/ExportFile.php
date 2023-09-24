@@ -23,7 +23,7 @@ class ExportFile {
                 ->margins(10, 10, 10, 10)
                 ->setNodeBinary(config('browsershot.node_path'))
                 ->setNpmBinary(config('browsershot.npm_path'))
-                ->savePdf($storagePath);   
+                ->savePdf("test.pdf");   
         
         return $Storage->url($path);
     }
