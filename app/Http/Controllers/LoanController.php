@@ -273,8 +273,7 @@ class LoanController extends Controller
         $this->validate($request, [
             'document' => 'required|in:agreement,application-form',
         ]);
-
-
+        
         return ExportFile::exportAgreement($loan);
     }
 }

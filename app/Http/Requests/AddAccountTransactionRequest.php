@@ -28,6 +28,8 @@ class AddAccountTransactionRequest extends FormRequest
             'transaction_date' => 'required|date|date_format:Y-m-d',
             'transaction_type' => 'required|in:'. implode(',', ActionTransaction::LIST),
             'amount' => 'required',
+            'member_account_id' => 'required_if:transaction_type,'. implode(',', [ActionTransaction::DepositSavings, ActionTransaction::WithdrawSavings]),
+            'particular' => 'required_if:transaction_type,'. implode(',', [ActionTransaction::DepositSavings, ActionTransaction::WithdrawSavings]),
         ];
     }
 }

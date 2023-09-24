@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\ActionTransaction;
 use App\Helpers\AccountHelper;
 use App\Helpers\Helper;
 use App\Helpers\MemberHelper;
+use App\Helpers\TransactionHelper;
 use App\Helpers\Uploading;
 use App\Http\Requests\AddAccountTransactionRequest;
 use App\Http\Requests\MemberRequest;
@@ -12,6 +14,7 @@ use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\Member;
 use App\Models\MemberAccount;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -288,16 +291,83 @@ class MemberController extends Controller
         return response('Account updated.');
     }
 
-    public function addAccountTransaction(AddAccountTransactionRequest $request, MemberAccount $member_account) {
+    public function addAccountTransaction(AddAccountTransactionRequest $request, Member $member) {
+
         
-        $member_account->transactions()->createMany([
-            [
-                'transaction_number' => AccountHelper::generateUniqueTransactionNumber(),
-                'particular' => $request->particular,
-                'transaction_date' => $request->transaction_date,
-                'amount' => $request->transaction_type == 'deposit' ? $request->amount : -$request->amount,
-            ]
-        ]);
+        switch ($request->transaction_type) {
+
+            case ActionTransaction::DepositShareCapital:
+
+                $account = $member->share_capital_account;
+
+                if(!$account)
+                    throw new Exception("No share capital account.", 422);
+
+                $account->transactions()->createMany([
+                    [
+                        'transaction_number' => AccountHelper::generateUniqueTransactionNumber(),
+                        'particular' => "Share Capital Deposit",
+                        'transaction_date' => $request->transaction_date,
+                        'amount' => $request->amount,
+                    ]
+                ]);
+                break;
+            case ActionTransaction::WithdrawShareCapital:
+
+                $account = $member->share_capital_account;
+
+                if(!$account)
+                    throw new Exception("No share capital account.", 422);
+
+                $account->transactions()->createMany([
+                    [
+                        'transaction_number' => AccountHelper::generateUniqueTransactionNumber(),
+                        'particular' => "Share Capital Withdrawal",
+                        'transaction_date' => $request->transaction_date,
+                        'amount' => (-$request->amount),
+                    ]
+                ]);
+                break;
+
+            case ActionTransaction::DepositSavings:
+
+                $account = $member->savings_accounts()->where('id', $request->member_account_id)->first();
+
+                if(!$account)
+                    throw new Exception("Account not exists", 422);
+
+                $account->transactions()->createMany([
+                    [
+                        'transaction_number' => AccountHelper::generateUniqueTransactionNumber(),
+                        'particular' => $request->particular,
+                        'transaction_date' => $request->transaction_date,
+                        'amount' => $request->amount,
+                    ]
+                ]);
+                break;
+
+            case ActionTransaction::WithdrawSavings:
+
+                $account = $member->savings_accounts()->where('id', $request->member_account_id)->first();
+
+                if(!$account)
+                    throw new Exception("Account not exists", 422);
+
+                $account->transactions()->createMany([
+                    [
+                        'transaction_number' => AccountHelper::generateUniqueTransactionNumber(),
+                        'particular' => $request->particular,
+                        'transaction_date' => $request->transaction_date,
+                        'amount' => (-$request->amount),
+                    ]
+                ]);
+                break;
+            default:
+            throw new Exception("Transaction not supported.");
+            break;
+        }
+
+       
         
         return response('Transaction created.');
     }
