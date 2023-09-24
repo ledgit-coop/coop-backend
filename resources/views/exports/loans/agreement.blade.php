@@ -5,7 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $loan->loan_product->name }} - {{ $loan->loan_number }}</title>
-    <link href="{{ asset('bootstrap-5.0.2/css/bootstrap.min.css') }}" rel="stylesheet" />
+
+    <style>
+        {!! file_get_contents(realpath(public_path('bootstrap-5.0.2/css/bootstrap.min.css'))) !!}
+    </style>
+
     <style>
         * {
             font-family: Arial, Helvetica, sans-serif !important;
