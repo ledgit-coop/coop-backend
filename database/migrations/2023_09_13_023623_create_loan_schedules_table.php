@@ -27,7 +27,6 @@ return new class extends Migration
             $table->double('principal_balance');
             $table->boolean('is_maturity')->default(false);
             $table->boolean('paid')->default(false);
-            $table->boolean('overdue')->default(false);
             $table->double('amount_paid')->nullable()->comment('Must equal to (penalty_amount + due_amount) to flag paid');
             $table->foreignIdFor(Transaction::class, 'transaction_id')->nullable()->constrained()->onDelete('restrict');
 
