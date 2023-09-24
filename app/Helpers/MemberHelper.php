@@ -8,16 +8,16 @@ use App\Models\MemberAccount;
 use Illuminate\Support\Carbon;
 
 class MemberHelper {
+
     public static function generateID() {
-        
-        $year = Carbon::now()->year;
 
-        $member = Member::orderBy('member_number', 'desc')->first();
+        $currentYear = Carbon::now()->format('y');
 
-        if($member)
-            return (int) $member->member_number + 1;
+        $count = Member::count();
 
-        return "10000000001";
+        $sequence = sprintf('%08d', $count + 1);
+
+        return  $currentYear . '-' . $sequence;;
     }
 
     public static function memberCreateDefaults(Member $member) {

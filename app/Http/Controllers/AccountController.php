@@ -19,8 +19,8 @@ class AccountController extends Controller
         if(!empty($filters)) {
             if(isset($filters->keyword))
                 $accounts->where(function($accounts) use($filters) {
-                    $accounts->orWhere('first_name', 'like', "%$filters->keyword%")
-                    ->orWhere('first_name', 'like', "%$filters->keyword%");
+                    $accounts->orWhere('name', 'like', "%$filters->keyword%")
+                    ->orWhere('type', 'like', "%$filters->keyword%");
                 });
         }
 

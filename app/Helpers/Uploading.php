@@ -17,10 +17,8 @@ class Uploading {
         $content = Helper::extractBase64Image($image);
         $path = "members/image/$member->id/$member->member_number.png";
 
-        Log::info(Storage::url($path));
         if(Storage::put($path, $content));
             return Storage::url($path);
-
 
         throw new Exception("Failed to upload the image", 1);
     }

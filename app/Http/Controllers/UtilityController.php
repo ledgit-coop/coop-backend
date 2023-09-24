@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\DB;
 class UtilityController extends Controller
 {
     public function memberDropdown() {
-        return Member::select('first_name', 'surname','middle_name', 'id')->get()->map(function($member){
+        return Member::select('first_name', 'member_number', 'surname','middle_name', 'id')->get()->map(function($member){
             return [
                 'value' => "$member->id",
-                'label' => $member->full_name,
+                'label' => "$member->full_name - $member->member_number",
             ];
         });
     }

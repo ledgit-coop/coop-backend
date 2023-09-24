@@ -65,13 +65,14 @@ class LoanHelper {
     }
 
     public static function generateUniqueTransactionNumber() {
-   
-        $loan = Loan::orderBy('loan_number', 'desc')->first();
 
-        if($loan)
-            return ((int) $loan->loan_number) + 1;
+        $currentYear = Carbon::now()->format('ymd');
 
-        return "10000000001";
+        $count = Loan::count();
+
+        $sequence = sprintf('%012d', $count + 1);
+
+        return  $currentYear . $sequence;
     }
 
     public static function updatePayment(LoanSchedule $schedule, float $paymentAmount)

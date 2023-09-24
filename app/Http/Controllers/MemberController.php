@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\AccountType;
 use App\Constants\ActionTransaction;
 use App\Helpers\AccountHelper;
 use App\Helpers\Helper;
 use App\Helpers\MemberHelper;
-use App\Helpers\TransactionHelper;
 use App\Helpers\Uploading;
 use App\Http\Requests\AddAccountTransactionRequest;
 use App\Http\Requests\MemberRequest;
@@ -16,6 +16,7 @@ use App\Models\Member;
 use App\Models\MemberAccount;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class MemberController extends Controller
@@ -78,45 +79,54 @@ class MemberController extends Controller
 
         $data['member_number'] = MemberHelper::generateID();
 
-        Log::info($data);
+        try {
+            DB::beginTransaction();
 
-        $member = Member::create($data);
+            $member = Member::create($data);
         
-        // Upload image
-        if(!Helper::isBase64($request->profile_picture_url)) {
-            $member->profile_picture_url = Uploading::memberImage($member, $request->profile_picture_url);
-            $member->save();
+            // Upload image
+            if(!empty($request->profile_picture_url) && Helper::isDataImageValid($request->profile_picture_url)) {
+                $member->profile_picture_url = Uploading::memberImage($member, $request->profile_picture_url);
+                $member->save();
+            }
+    
+            $member->beneficiaries()->createMany([...$request->beneficiaries]);
+    
+            $member->member_addresses()->createMany([
+                [
+                    ...$request->permanent_address,
+                    'type' => 'permanent',
+                ],
+                [
+                    ...$request->present_address,
+                    'type' => 'present',
+                ]
+            ]);
+    
+            $member->member_related_people()->createMany([
+                [
+                    ...$request->father,
+                    'type' => 'father',
+                ],
+                [
+                    ...$request->mother,
+                    'type' => 'mother',
+                ],
+                [
+                    ...$request->spouse,
+                    'type' => 'spouse',
+                ]
+            ]);
+            
+            DB::commit();
+
+            return response()->json(Member::find($member->id));
+
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
         }
-
-        $member->beneficiaries()->createMany([...$request->beneficiaries]);
-
-        $member->member_addresses()->createMany([
-            [
-                ...$request->permanent_address,
-                'type' => 'permanent',
-            ],
-            [
-                ...$request->present_address,
-                'type' => 'present',
-            ]
-        ]);
-
-        $member->member_related_people()->createMany([
-            [
-                ...$request->father,
-                'type' => 'father',
-            ],
-            [
-                ...$request->mother,
-                'type' => 'mother',
-            ],
-            [
-                ...$request->spouse,
-                'type' => 'spouse',
-            ]
-        ]);
-        
-        return response()->json(Member::find($member->id));
     }
 
     public function update(MemberRequest $request, Member $member)
@@ -147,7 +157,7 @@ class MemberController extends Controller
         }
 
         // Upload image
-        if(!Helper::isBase64($request->profile_picture_url)) {
+        if(Helper::isDataImageValid($request->profile_picture_url)) {
             $member->profile_picture_url = Uploading::memberImage($member, $request->profile_picture_url);
         }
 
@@ -210,6 +220,7 @@ class MemberController extends Controller
     public function show($id)
     {
         $member = Member::where('member_number', $id)->firstOrFail();
+
         return [
         
             'id' => $member->id,
@@ -246,10 +257,15 @@ class MemberController extends Controller
 
     public function destroy($id)
     {
-        //
+        $member = Member::where('member_number', $id)->firstOrFail();
+
+        $member->delete();
+
+        return true;
     }
 
     public function addAccount(Request $request, $id, $account_id) {
+
         $this->validate($request, ['account_holder' => 'required']);
 
         $member = Member::findOrFail($id);
@@ -260,7 +276,7 @@ class MemberController extends Controller
             'account_id' => $account->id,
         ])->first();
 
-        if($member_account)
+        if($member_account && $member_account->account->type == AccountType::SHARE_CAPITAL)
             return response()->json([
                 "message" => "Account already exists."
             ], 422);
@@ -305,7 +321,7 @@ class MemberController extends Controller
 
                 $account->transactions()->createMany([
                     [
-                        'transaction_number' => AccountHelper::generateUniqueTransactionNumber(),
+                        'transaction_number' => AccountHelper::generateAccount(),
                         'particular' => "Share Capital Deposit",
                         'transaction_date' => $request->transaction_date,
                         'amount' => $request->amount,
@@ -321,7 +337,7 @@ class MemberController extends Controller
 
                 $account->transactions()->createMany([
                     [
-                        'transaction_number' => AccountHelper::generateUniqueTransactionNumber(),
+                        'transaction_number' => AccountHelper::generateAccount(),
                         'particular' => "Share Capital Withdrawal",
                         'transaction_date' => $request->transaction_date,
                         'amount' => (-$request->amount),
@@ -338,7 +354,7 @@ class MemberController extends Controller
 
                 $account->transactions()->createMany([
                     [
-                        'transaction_number' => AccountHelper::generateUniqueTransactionNumber(),
+                        'transaction_number' => AccountHelper::generateAccount(),
                         'particular' => $request->particular,
                         'transaction_date' => $request->transaction_date,
                         'amount' => $request->amount,
@@ -355,7 +371,7 @@ class MemberController extends Controller
 
                 $account->transactions()->createMany([
                     [
-                        'transaction_number' => AccountHelper::generateUniqueTransactionNumber(),
+                        'transaction_number' => AccountHelper::generateAccount(),
                         'particular' => $request->particular,
                         'transaction_date' => $request->transaction_date,
                         'amount' => (-$request->amount),

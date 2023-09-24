@@ -12,12 +12,23 @@ use Illuminate\Support\Carbon;
 
 class TransactionHelper {
 
+    public static function generateTransactionNumber() {
+
+        $currentYear = Carbon::now()->format('ymd');
+
+        $count = Transaction::count();
+
+        $sequence = sprintf('%09d', $count + 1);
+
+        return  'TXN-'.$currentYear . $sequence;
+    }
+
     public static function makeTransaction(float $amount, string $particular, $type, Carbon $transactionDate ,$extraParams = null) {
 
         if(!in_array($type, TransactionType::LIST)) throw new Exception("Transaction type is not supported.", 1);
 
         return Transaction::create([
-            'transaction_number' => TransactionNumber::generateTransactionNumber(),
+            'transaction_number' => self::generateTransactionNumber(),
             'amount' => $amount,
             'type' => $type,
             'transaction_date' => $transactionDate->format('Y-m-d'),

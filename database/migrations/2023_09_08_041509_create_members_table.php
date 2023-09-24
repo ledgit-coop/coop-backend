@@ -36,6 +36,7 @@ return new class extends Migration
             $table->boolean('oriented')->default(false);
             $table->date('member_at');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
