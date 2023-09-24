@@ -24,7 +24,7 @@ class ExportFile {
                 ->setNodeBinary(config('browsershot.node_path'))
                 ->setNpmBinary(config('browsershot.npm_path'))
                 ->setChromePath(config('browsershot.chrome_path'))
-                ->savePdf($storagePath);   
+                ->savePdf("test.pdf");   
         
         return $Storage->url($path);
     }
