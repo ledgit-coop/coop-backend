@@ -12,11 +12,11 @@ class ExportFile {
  
         $Storage = Storage::disk('public');        
         $Storage->makeDirectory($path);
-        $path = $Storage->path($path. $filename);
-
-        dd($path);
+        $path = $path. $filename;
+        $storagePath = $Storage->path($path);
+     
         // Transform to pdf
-        $pdf = Browsershot::html($view)
+        Browsershot::html($view)
                 ->newHeadless()
                 ->noSandbox()
                 ->emulateMedia('print')
@@ -24,10 +24,7 @@ class ExportFile {
                 ->setNodeBinary(config('browsershot.node_path'))
                 ->setNpmBinary(config('browsershot.npm_path'))
                 ->setChromePath(config('browsershot.chrome_path'))
-                ->savePdf($path);
-
-        
-        
+                ->savePdf($storagePath);   
         
         return $Storage->url($path);
     }
@@ -36,7 +33,6 @@ class ExportFile {
  
         $view = view('exports.loans.agreement', compact('loan'));
 
-        return $view;
         $filename = $loan->member->full_name . "-" . $loan->loan_number . ".pdf";
         $path =  "loans/$loan->id/agreements/";
         

@@ -9,6 +9,7 @@
     <style>
         * {
             font-family: Arial, Helvetica, sans-serif !important;
+            font-size: 10px;
         }
 
         table {
@@ -17,7 +18,7 @@
     </style>
 </head>
 <body>
-    <div class="p-5">
+    <div class="">
         <table class="table table-bordered">
             <thead>
                 <tr>
