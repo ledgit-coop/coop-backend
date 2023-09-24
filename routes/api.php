@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LoanFeeTemplateController;
 use App\Http\Controllers\LoanProductController;
@@ -23,7 +24,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/login', [LoginController::class, 'login']);
+Route::post('/login', [LoginController::class, 'login'])->middleware('guest');
+Route::post('/password-reset', [PasswordResetController::class, 'reset'])->name('password.reset')->middleware('guest');
+Route::post('/password-reset/request', [PasswordResetController::class, 'request'])->name('password.request')->middleware('guest');
+
 Route::get('/loans/download/{loan}', [LoanController::class, 'download'])->name('loans.download');
 
 Route::middleware('auth:sanctum')->group(function() {
