@@ -12,7 +12,17 @@ class Helper {
     }
 
     public static function isDataImageValid(string $imageUrl) {
-        return self::isBase64(self::extractBase64ImagePart($imageUrl));
+
+        // Split the URL at the comma to separate the data type from the Base64 data
+        $urlParts = explode(',', $imageUrl, 2);
+
+        if (count($urlParts) === 2) {
+            // The Base64 data is in $urlParts[1]
+            $base64Data = $urlParts[1];
+            $imageUrl = $base64Data;
+        }
+                
+        return self::isBase64($imageUrl);
     }
 
     public static function extractBase64ImagePart(string $imageUrl) {

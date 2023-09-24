@@ -151,70 +151,79 @@ class MemberController extends Controller
             'telephone_number',
         ]);
 
-  
-        foreach ($data as $key => $value) {
-            $member->{$key} = $value;
+        try {
+            DB::beginTransaction();
+
+
+            foreach ($data as $key => $value) {
+                $member->{$key} = $value;
+            }
+
+            // Upload image
+            if(!empty($request->profile_picture_url) && Helper::isDataImageValid($request->profile_picture_url)) {
+                $member->profile_picture_url = Uploading::memberImage($member, $request->profile_picture_url);
+            }
+
+            $member->save();
+
+            $member->member_addresses()->updateOrCreate([
+                'type' => 'permanent'
+            ],
+            [
+                ...$request->permanent_address,
+            ],);
+
+            $member->member_addresses()->updateOrCreate([
+                'type' => 'present'
+            ],
+            [
+                ...$request->present_address,
+            ],);
+
+            $member->member_related_people()->updateOrCreate(
+                [
+                    'type' => 'father',
+                ],
+                [
+                    
+                    ...$request->father,
+                ] 
+            );
+
+
+            $member->member_related_people()->updateOrCreate(
+                [
+                    'type' => 'mother',
+                ],
+                [
+                    
+                    ...$request->mother,
+                ] 
+            );
+
+
+            $member->member_related_people()->updateOrCreate(
+                [
+                    'type' => 'spouse',
+                ],
+                [
+                    
+                    ...$request->spouse,
+                ] 
+            );
+
+            $member->beneficiaries()->delete();
+
+            $member->beneficiaries()->createMany([...$request->beneficiaries]);
+            
+            DB::commit();
+
+            return response()->json(Member::find($member->id));
+            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
         }
-
-        // Upload image
-        if(Helper::isDataImageValid($request->profile_picture_url)) {
-            $member->profile_picture_url = Uploading::memberImage($member, $request->profile_picture_url);
-        }
-
-        $member->save();
-
-        $member->member_addresses()->updateOrCreate([
-            'type' => 'permanent'
-        ],
-        [
-            ...$request->permanent_address,
-        ],);
-
-        $member->member_addresses()->updateOrCreate([
-            'type' => 'present'
-        ],
-        [
-            ...$request->present_address,
-        ],);
-
-        $member->member_related_people()->updateOrCreate(
-            [
-                'type' => 'father',
-            ],
-            [
-                
-                ...$request->father,
-            ] 
-        );
-
-
-        $member->member_related_people()->updateOrCreate(
-            [
-                'type' => 'mother',
-            ],
-            [
-                
-                ...$request->mother,
-            ] 
-        );
-
-
-        $member->member_related_people()->updateOrCreate(
-            [
-                'type' => 'spouse',
-            ],
-            [
-                
-                ...$request->spouse,
-            ] 
-        );
-
-        $member->beneficiaries()->delete();
-
-        $member->beneficiaries()->createMany([...$request->beneficiaries]);
-
-        
-        return response()->json(Member::find($member->id));
     }
 
     public function show($id)
