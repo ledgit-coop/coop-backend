@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LoanFeeTemplateController;
 use App\Http\Controllers\LoanProductController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\RepaymentController;
 use App\Http\Controllers\UserController;
@@ -50,11 +51,11 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/loan-repayments', [RepaymentController::class, 'index'])->name('loan-repayments');
     Route::post('/loan-repayments/{loanRepayment}', [RepaymentController::class, 'store'])->name('loan-repayments.store');
 
-
+    Route::resource('logs', LogController::class)->except(['create', 'edit']);
 
     Route::resource('members', MemberController::class)->except(['create', 'edit']);
     Route::post('/members/accounts/add/{id}/{account_id}', [MemberController::class, 'addAccount'])->name('members.account.add');
-    Route::post('/members/update/orientation/{member_number}', [MemberController::class, 'attendedOrientation'])->name('members.update.orientation');
+    Route::post('/members/update/orientation/{member}', [MemberController::class, 'attendedOrientation'])->name('members.update.orientation');
     Route::get('/members/accounts/transaction/{member}', [MemberController::class, 'getAccountTransactions'])->name('members.accounts.transactions.list');
     Route::post('/members/accounts/transaction/{member}', [MemberController::class, 'addAccountTransaction'])->name('members.accounts.transactions.post');
     Route::get('/members/accounts/{member}', [MemberController::class, 'getMemberAccounts'])->name('members.accounts');

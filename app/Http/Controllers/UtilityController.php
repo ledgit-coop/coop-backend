@@ -78,7 +78,7 @@ class UtilityController extends Controller
         $members = $members->get()->map(function($data){
             return [
                 'value' => $data->id,
-                'label' => $data->full_name . $data->member_number,
+                'label' => $data->full_name . ' - ' . $data->member_number,
                 'extra' => [
                     'guarantor_twice' => false,
                 ]

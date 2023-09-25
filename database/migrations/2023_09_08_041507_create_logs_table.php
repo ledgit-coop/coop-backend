@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,8 +18,11 @@ return new class extends Migration
             $table->id();
             $table->string('model');
             $table->integer('model_id');
-            $table->enum('type', ['upload', 'note']);
+            $table->enum('type', ['comment', 'system', 'upload']);
             $table->text('content');
+            $table->string('parent_model')->nullable();
+            $table->integer('parent_model_id')->nullable();
+            $table->foreignIdFor(User::class, 'created_by');
             $table->timestamps();
         });
     }

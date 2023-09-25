@@ -27,6 +27,7 @@ class MemberController extends Controller
         $limit = $request->limit ?? 10;
         
         $members = Member::select([
+            'id',
             'member_number',
             'surname', 
             'first_name',
@@ -226,10 +227,8 @@ class MemberController extends Controller
         }
     }
 
-    public function show($id)
+    public function show(Member $member)
     {
-        $member = Member::where('member_number', $id)->firstOrFail();
-
         return [
         
             'id' => $member->id,
@@ -264,12 +263,9 @@ class MemberController extends Controller
         ];
     }
 
-    public function destroy($id)
+    public function destroy(Member $member)
     {
-        $member = Member::where('member_number', $id)->firstOrFail();
-
         $member->delete();
-
         return true;
     }
 
@@ -295,9 +291,8 @@ class MemberController extends Controller
         return response('Account created.');
     }
 
-    public function attendedOrientation($member_number) {
+    public function attendedOrientation(Member $member) {
         
-        $member = Member::where('member_number', $member_number)->firstOrFail();
         $member->oriented = true;
         $member->save();
 
