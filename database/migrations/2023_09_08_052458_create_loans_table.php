@@ -84,6 +84,8 @@ return new class extends Migration
             $table->decimal('pre_termination_panalty', 10, 2)->nullable();
             $table->enum('pre_termination_panalty_method', LoanPenaltyMethod::LIST)->nullable();
 
+            $table->date('next_payroll_date')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
         });

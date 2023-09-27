@@ -62,7 +62,9 @@ class Loan extends Model
 
         'pre_termination_fee',
         'pre_termination_panalty',
-        'pre_termination_panalty_method'
+        'pre_termination_panalty_method',
+        
+        'next_payroll_date'
     ];
 
     protected $casts = [
@@ -78,6 +80,7 @@ class Loan extends Model
         'interest_amount' => 'integer',
         'due_amount' => 'integer',
         'released_date' => 'datetime:Y-m-d',
+        'next_payroll_date' => 'datetime:Y-m-d',
     ];
     
     // Define the foreign key relationships to the Member and LoanProduct models

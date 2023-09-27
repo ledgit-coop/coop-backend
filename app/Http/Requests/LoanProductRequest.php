@@ -49,8 +49,7 @@ class LoanProductRequest extends FormRequest
             'penalty' => 'nullable|numeric|between:0.00,9999999.99',
             'penalty_grace_period' => 'nullable|numeric|between:0.00,9999999.99',
             'penalty_method' => 'nullable|string',
-            'penalty_duration' => 'nullable|string',
-            
+            'penalty_duration' => 'nullable|string',            
             'pre_termination_panalty' => 'nullable|numeric|between:0.00,9999999.99',
             'pre_termination_panalty_method' => 'nullable|string',
 

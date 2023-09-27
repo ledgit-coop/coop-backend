@@ -10,6 +10,7 @@ use App\Constants\LoanRepaymentCycle;
 use App\Helpers\LoanCalculator\LoanFee\LoanFee;
 use App\Models\Loan;
 use App\Models\LoanFeeTemplate;
+use Exception;
 use Illuminate\Support\Carbon;
 
 class LoanCalculator {
@@ -68,13 +69,71 @@ class LoanCalculator {
         ];
     }
     
-    protected function calculateLoanSchedule($loanAmount, $interestRate, $loanDuration, $method, $repaymentCount, $repaymentCycle, $durationUnit, $interestFrequency, $released_date) {
+    protected function getPayrollBiweeklyDate(Carbon $next_payroll_date) {
+
+        $daysToAdd = 15;
+    
+        if ($next_payroll_date->day >= 30 && $next_payroll_date->daysInMonth > 30)
+            $daysToAdd++;
+        else if($next_payroll_date->daysInMonth >= 28)
+            $daysToAdd =( 30 - $next_payroll_date->daysInMonth )+ $daysToAdd;
+
+        return ($next_payroll_date->clone())->addDays($daysToAdd);
+    }
+
+    public function getStartDate($repaymentCycle, $released_date, $payroll = false) {
+
+        // Set intial amortization
+        $start_date = new Carbon($released_date);
+        
+        // Compute the cycly by payroll date
+        if($payroll) {
+            if($repaymentCycle == LoanRepaymentCycle::MONTHLY)
+                return $start_date->add('month', 1);
+            elseif($repaymentCycle == LoanRepaymentCycle::BIWEEKLY) {
+                
+                $daysToAdd = 15;
+                $end_of_month = $start_date->clone()->endOfMonth();
+                $daysDiff = $start_date->diffInDays($end_of_month);
+                $daysInMonth = $start_date->daysInMonth;
+            
+                if($daysDiff > 0 && $daysDiff < 15) {
+                    if($daysInMonth > 30) {
+                        $daysToAdd += ($start_date->daysInMonth - 30); // Excess of 30 days
+                    }
+                    else if($daysInMonth < 30)
+                    {
+                        $daysToAdd -= (30 - $start_date->daysInMonth);
+                       
+                    }
+                }
+                return $start_date->add('day', $daysToAdd);
+
+            } else {
+                throw new Exception("Payroll repayment cycle not supported.", 1);
+                
+            }
+        }
+        else
+            return $start_date->add(...LoanRepaymentCycle::CARBON[$repaymentCycle])->setDay($start_date->day);
+    }
+
+    protected function calculateLoanSchedule($loanAmount, $interestRate, $loanDuration, $method, $repaymentCount, $repaymentCycle, $durationUnit, $interestFrequency, $released_date, $next_payroll_date = null) {
         
         $loanSchedule = [];
     
+        $start_date = new Carbon($next_payroll_date ? $next_payroll_date : $released_date);
+        $isPayroll = !(!$next_payroll_date);
         // Set intial amortization
-        $start_date = new Carbon($released_date);
-        $start_date->add(...LoanRepaymentCycle::CARBON[$repaymentCycle])->setDay($start_date->day);
+        $start_date = $this->getStartDate($repaymentCycle, $start_date, $isPayroll);
+        //$start_date->add(...LoanRepaymentCycle::CARBON[$repaymentCycle])->setDay($start_date->day);
+
+        // Next payroll date will be applied only in biweekly and monthly
+        if($next_payroll_date && in_array($repaymentCycle, [LoanRepaymentCycle::BIWEEKLY, LoanRepaymentCycle::MONTHLY])) {
+            
+            if($repaymentCycle == LoanRepaymentCycle::BIWEEKLY)
+                $next_payroll_date = new Carbon($next_payroll_date);
+        }
     
         if ($method === LoanInterestMethod::FLAT_RATE) {
             // Fixed Interest Method
@@ -111,8 +170,9 @@ class LoanCalculator {
                     $description,
                 ))->toArray();
 
-                $start_date->add(...LoanRepaymentCycle::CARBON[$repaymentCycle])->setDay($start_date->day);
-            } 
+                //$start_date->add(...LoanRepaymentCycle::CARBON[$repaymentCycle])->setDay($start_date->day);
+                $start_date = $this->getStartDate($repaymentCycle, $start_date, $isPayroll);
+            }
         } 
         // elseif ($method === LoanInterestMethod::REDUCING_BALANCE_EQUAL_INSTALLMENTS) {
         //     // Reducing Balance Method
@@ -148,7 +208,8 @@ class LoanCalculator {
         $repaymentCycle,
         $durationUnit,
         $interestFrequency,
-        $released_date) {
+        $released_date,
+        $next_payroll_date = null) {
 
         $loanSchedule = $this->calculateLoanSchedule(
             $loanAmount,
@@ -159,7 +220,8 @@ class LoanCalculator {
             $repaymentCycle,
             $durationUnit,
             $interestFrequency,
-            $released_date
+            $released_date,
+            $next_payroll_date
         );
 
         $totalPrincipal = 0;
@@ -195,6 +257,7 @@ class LoanCalculator {
             $loan->loan_duration_type, 
             $loan->loan_interest_period, 
             $loan->released_date,
+            $loan->next_payroll_date
         );
     }
 

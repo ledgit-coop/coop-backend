@@ -37,7 +37,7 @@ class LoanCalculatorRequest extends FormRequest
             'loan_duration_type' => ['required', 'string', 'in:' . implode(',', LoanDurationPeriod::LIST)],
             'loan_interest_period' => ['required', 'string', 'in:' . implode(',', LoanInterestPeriod::LIST)],
             'released_date' => 'required|date|date_format:Y-m-d',
-
+            'next_payroll_date' => 'nullable|date|date_format:Y-m-d',
             'fees.*.loan_fee_template_id' => 'nullable|numeric|between:0.00,999.99',
             'fees.*.fee' => 'nullable',
         ];

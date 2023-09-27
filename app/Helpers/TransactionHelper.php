@@ -7,6 +7,7 @@ use App\Models\Loan;
 use App\Models\LoanSchedule;
 use App\Models\Member;
 use App\Models\Transaction;
+use App\Models\User;
 use Exception;
 use Illuminate\Support\Carbon;
 
@@ -23,7 +24,7 @@ class TransactionHelper {
         return  'TXN-'.$currentYear . $sequence;
     }
 
-    public static function makeTransaction(float $amount, string $particular, $type, Carbon $transactionDate ,$extraParams = null) {
+    public static function makeTransaction(float $amount, string $particular, $type, Carbon $transactionDate, $created_by = 'System' ,$extraParams = null) {
 
         if(!in_array($type, TransactionType::LIST)) throw new Exception("Transaction type is not supported.", 1);
 
@@ -34,6 +35,7 @@ class TransactionHelper {
             'transaction_date' => $transactionDate->format('Y-m-d'),
             'particular' => $particular,
             'parameters' => $extraParams ? json_encode($extraParams) : null,
+            'created_by' => $created_by,
         ]);
     }
 
@@ -45,18 +47,20 @@ class TransactionHelper {
             "Membership payment made by $name - $number",
             TransactionType::REVENUE,
             $paidDate,
+            'System',
             [
                 'member_id' => $member->id
             ]
         );
     }
 
-    public static function makeExpenses(string $particular, Carbon $transactionDate, float $amount) {
+    public static function makeExpenses(string $particular, Carbon $transactionDate, float $amount, User $created_by) {
         return self::makeTransaction(
             $amount,
             $particular,
             TransactionType::EXPENSE,
             $transactionDate,
+            $created_by->name,
         );
     }
 
@@ -68,6 +72,7 @@ class TransactionHelper {
             "Loan amortization - $date/Loan #: $loan_number",
             TransactionType::PAYMENT,
             $transactionDate,
+            'System',
             [
                 "loan_id" => $schedule->loan->id,
                 "loan_schedule_id" => $schedule->id,
@@ -83,6 +88,7 @@ class TransactionHelper {
             "Loan Pre-Termination - $date/Loan #: $loan_number",
             TransactionType::REVENUE,
             $transactionDate,
+            'System',
             [
                 "loan_id" => $loan->id,
             ]

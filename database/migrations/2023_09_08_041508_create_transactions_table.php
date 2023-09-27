@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('particular')->nullable();
             $table->json('parameters')->nullable();
             $table->boolean('posted')->default(false);
+            $table->string('created_by')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

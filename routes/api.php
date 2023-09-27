@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\ExpensesController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LoanFeeTemplateController;
 use App\Http\Controllers\LoanProductController;
@@ -39,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::resource('users', UserController::class)->except(['create', 'edit']);
     Route::resource('accounts', AccountController::class)->except(['create', 'edit']);
+    Route::resource('expenses', ExpensesController::class)->except(['create', 'edit']);
     Route::resource('loan-products', LoanProductController::class)->except(['create', 'edit']);
     Route::resource('loan-fees', LoanFeeTemplateController::class)->except(['create', 'edit']);
     Route::post('/loan-fees/{loanFee}/toggle', [LoanFeeTemplateController::class, 'toggle'])->name('loan-fees.toggle');

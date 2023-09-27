@@ -101,6 +101,7 @@ class LoanController extends Controller
 
             'pre_termination_panalty',
             'pre_termination_panalty_method',
+            'next_payroll_date'
         ]);
 
         $data['loan_number'] = LoanHelper::generateUniqueTransactionNumber();
@@ -176,6 +177,7 @@ class LoanController extends Controller
 
             'pre_termination_panalty',
             'pre_termination_panalty_method',
+            'next_payroll_date'
         ]);
 
         foreach ($data as $key => $value) {

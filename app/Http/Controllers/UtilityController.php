@@ -118,6 +118,7 @@ class UtilityController extends Controller
             $request->loan_duration_type, 
             $request->loan_interest_period, 
             $request->released_date,
+            $request->next_payroll_date
         );
 
         return response()->json($result);
