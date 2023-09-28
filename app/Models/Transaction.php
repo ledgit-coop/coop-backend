@@ -21,4 +21,9 @@ class Transaction extends Model
         'posted',
         'created_by',
     ];
+
+    protected $casts = [
+        'amount' => 'integer',
+        'posted' => 'bool'
+    ];
 }
