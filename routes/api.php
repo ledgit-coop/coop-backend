@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExpensesController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LoanFeeTemplateController;
@@ -37,6 +38,8 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/me', function (Request $request) {
         return $request->user();
     });
+
+    Route::get('/dashboard/counts', [DashboardController::class, 'counts'])->name('dashboard.counts');
 
     Route::resource('users', UserController::class)->except(['create', 'edit']);
     Route::resource('accounts', AccountController::class)->except(['create', 'edit']);
