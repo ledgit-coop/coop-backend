@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('parent_model')->nullable();
             $table->integer('parent_model_id')->nullable();
             $table->foreignIdFor(User::class, 'created_by');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

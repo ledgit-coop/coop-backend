@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Constants\AccountType;
 use App\Constants\AddressResidencyStatus;
+use App\Constants\MemberLoanStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -69,6 +70,19 @@ class Member extends Model
             get: function() {
                 $address = $this->member_addresses()->where('type', AddressResidencyStatus::PRESENT)->first();
                 return $address ? $address->full_address : '';
+            }
+        );
+    }
+
+    protected function guarantoredTwice(): Attribute
+    {
+        return Attribute::make(
+            get: function() {
+                $id = $this->id;
+                return Loan::where('status', '<>', MemberLoanStatus::CLOSED)->where(function($guarantor) use($id) {
+                    $guarantor->orWhere('guarantor_first_id', $id)
+                    ->orWhere('guarantor_second_id', $id);
+                })->count() >= 2;
             }
         );
     }

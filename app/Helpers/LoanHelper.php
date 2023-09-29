@@ -97,15 +97,24 @@ class LoanHelper {
                 // Check if there is a next amortization schedule.
                 $nextSchedule = self::getNextSchedule($schedule);
 
-                if ($nextSchedule && $excessPayment > 0) {
-                    // Offset the excess payment to the next amortization.
-                    self::updatePayment($nextSchedule, $excessPayment);
-                }
+                if($excessPayment > 0)
+                    if ($nextSchedule) {
+                        // Offset the excess payment to the next amortization.
+                        return self::updatePayment($nextSchedule, $excessPayment);
+                    } else {
+                        // No next schedule payment put all excess to the last payment
+                        $schedule->amount_paid += $excessPayment;
+                        $schedule->save();
+                    }
+
             } else {
                 // Payment amount is less than the outstanding balance.
                 $schedule->amount_paid += $paymentAmount;
                 $schedule->save();
             }
+
+            // Log Payment
+            LogHelper::logLoanPayment($schedule);
 
             return $schedule;
         }

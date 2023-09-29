@@ -36,7 +36,7 @@ class LogController extends Controller
         if($request->sortField && $request->sortOrder)
             $logs->orderBy($request->sortField, $request->sortOrder);
         else
-            $logs->orderBy('created_at', 'desc');
+            $logs->orderBy('created_at', 'desc')->orderBy('id', 'asc');
 
         $logs->with('user');
 

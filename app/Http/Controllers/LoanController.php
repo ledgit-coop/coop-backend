@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Constants\MemberLoanStatus;
 use App\Helpers\Exports\ExportFile;
 use App\Helpers\LoanHelper;
+use App\Helpers\LogHelper;
 use App\Helpers\TransactionHelper;
 use App\Http\Requests\LoanApplicationRequest;
 use App\Models\Loan;
@@ -112,6 +113,7 @@ class LoanController extends Controller
         if($request->loan_fees)
             $loan->loan_fees()->createMany($request->loan_fees);
 
+        LogHelper::logLoanCreated($loan);
         LoanHelper::makeSchedule($loan);
 
         return response()->json($loan);
@@ -235,6 +237,8 @@ class LoanController extends Controller
     
             $loan->status = $request->status;
             $loan->save();
+
+            LogHelper::logLoanStatusChange($loan);
             
             DB::commit();
             

@@ -73,17 +73,20 @@ class UtilityController extends Controller
         return response()->json($accounts);
     }
 
-    public function guarantorDropdown() {
+    public function guarantorDropdown(Request $request) {
         $members = Member::on();
+        
+        if($request->member_id)
+            $members->where('id', '<>', $request->member_id);
+
         $members = $members->get()->map(function($data){
             return [
                 'value' => $data->id,
                 'label' => $data->full_name . ' - ' . $data->member_number,
-                'extra' => [
-                    'guarantor_twice' => false,
-                ]
+                'disabled' => $data->guarantored_twice,
             ];
         });
+
 
         return response()->json($members);
     }

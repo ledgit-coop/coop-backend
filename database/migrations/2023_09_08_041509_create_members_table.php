@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\MemberStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,7 +22,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('name_extension')->nullable();
-            $table->enum('status', ['active', 'terminated'])->default('active');
+            $table->enum('status', MemberStatus::LIST)->default('active');
             $table->date('date_of_birth')->nullable();
             $table->string('place_of_birth')->nullable();
             $table->string('gender')->nullable();
