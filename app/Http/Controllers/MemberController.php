@@ -325,7 +325,7 @@ class MemberController extends Controller
 
                 $account->transactions()->createMany([
                     [
-                        'transaction_number' => AccountHelper::generateAccount(),
+                        'transaction_number' => AccountHelper::generateTransactionNumber(),
                         'particular' => "Share Capital Deposit",
                         'transaction_date' => $request->transaction_date,
                         'amount' => $request->amount,
@@ -341,7 +341,7 @@ class MemberController extends Controller
 
                 $account->transactions()->createMany([
                     [
-                        'transaction_number' => AccountHelper::generateAccount(),
+                        'transaction_number' => AccountHelper::generateTransactionNumber(),
                         'particular' => "Share Capital Withdrawal",
                         'transaction_date' => $request->transaction_date,
                         'amount' => (-$request->amount),
@@ -358,7 +358,7 @@ class MemberController extends Controller
 
                 $account->transactions()->createMany([
                     [
-                        'transaction_number' => AccountHelper::generateAccount(),
+                        'transaction_number' => AccountHelper::generateTransactionNumber(),
                         'particular' => $request->particular,
                         'transaction_date' => $request->transaction_date,
                         'amount' => $request->amount,

@@ -40,6 +40,8 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::get('/dashboard/counts', [DashboardController::class, 'counts'])->name('dashboard.counts');
+    Route::get('/dashboard/cash-flow', [DashboardController::class, 'cashFlow'])->name('dashboard.cash-flow');
+    Route::get('/dashboard/recent-loans', [DashboardController::class, 'recentLoans'])->name('dashboard.recent-loans');
 
     Route::resource('users', UserController::class)->except(['create', 'edit']);
     Route::resource('accounts', AccountController::class)->except(['create', 'edit']);

@@ -2,7 +2,6 @@
 
 namespace App\Helpers;
 
-use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\MemberAccount;
 use Illuminate\Support\Carbon;
@@ -12,10 +11,23 @@ class AccountHelper {
     public static function generateAccount() {
 
         $currentYear = Carbon::now()->format('ym');
+        
+        $latest = MemberAccount::first();
+        $count = $latest ? $latest->id : 0;
 
-        $count = MemberAccount::count();
+        $sequence = sprintf('%09d', $count + 1);
 
-        $sequence = sprintf('%010d', $count + 1);
+        return  $currentYear . $sequence;
+    }
+
+    public static function generateTransactionNumber() {
+
+        $currentYear = Carbon::now()->format('ym');
+        
+        $latest = AccountTransaction::first();
+        $count = $latest ? $latest->id : 0;
+
+        $sequence = sprintf('%06d', $count + 1);
 
         return  $currentYear . $sequence;
     }
