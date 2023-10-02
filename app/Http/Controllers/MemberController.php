@@ -77,6 +77,10 @@ class MemberController extends Controller
             'oriented',
             'mobile_number',
             'telephone_number',
+            'in_case_emergency_person',
+            'in_case_emergency_address',
+            'in_case_emergency_contact',
+            'civil_status',
         ]);
 
         $data['member_number'] = MemberHelper::generateID();
@@ -152,6 +156,10 @@ class MemberController extends Controller
             'mobile_number',
             'telephone_number',
             'member_number',
+            'in_case_emergency_person',
+            'in_case_emergency_address',
+            'in_case_emergency_contact',
+            'civil_status',
         ]);
 
         try {
@@ -378,7 +386,7 @@ class MemberController extends Controller
 
                 $account->transactions()->createMany([
                     [
-                        'transaction_number' => AccountHelper::generateAccount(),
+                        'transaction_number' => AccountHelper::generateAccount($member),
                         'particular' => $request->particular,
                         'transaction_date' => $request->transaction_date,
                         'amount' => (-$request->amount),

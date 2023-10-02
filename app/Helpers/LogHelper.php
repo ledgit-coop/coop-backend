@@ -28,7 +28,7 @@ class LogHelper {
     public static function logLoanCreated(Loan $loan) {
         return self::create(
             LogTypes::SYSTEM,
-            'Loan created and status set to ' . $loan->status,
+            "Loan ($loan->loan_number) created",
             Loan::class,
             $loan->id,
             Member::class,
@@ -39,7 +39,7 @@ class LogHelper {
     public static function logLoanStatusChange(Loan $loan) {
         return self::create(
             LogTypes::SYSTEM,
-            'Status updated to ' . $loan->status,
+            "Loan ($loan->loan_number) status updated to $loan->status",
             Loan::class,
             $loan->id,
             Member::class,
@@ -48,9 +48,10 @@ class LogHelper {
     }
 
     public static function logLoanPayment(LoanSchedule $schedule) {
+        $loan = $schedule->loan;
         return self::create(
             LogTypes::SYSTEM,
-            'Payment recorded amounting ' . number_format($schedule->amount_paid, 2),
+            "Loan ($loan->loan_number) payment recorded amounting " . number_format($schedule->amount_paid, 2),
             LoanSchedule::class,
             $schedule->id,
             Loan::class,

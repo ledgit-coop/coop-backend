@@ -41,6 +41,10 @@ class MemberRequest extends FormRequest
             'mobile_number' => 'nullable|string|max:255',
             'telephone_number' => 'nullable|string|max:255',
             'oriented' => 'nullable|boolean',
+            'civil_status' => 'nullable|string|max:255',
+            'in_case_emergency_person' => 'nullable|string|max:255',
+            'in_case_emergency_address' => 'nullable|string',
+            'in_case_emergency_contact' => 'nullable|string|max:255',
 
             'permanent_address.house_block_lot'=> 'nullable|string|max:255',
             'permanent_address.street'=> 'nullable|string|max:255',

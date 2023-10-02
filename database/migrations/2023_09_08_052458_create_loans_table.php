@@ -30,8 +30,8 @@ return new class extends Migration
             $table->foreignIdFor(Member::class, 'member_id')->constrained()->onDelete('cascade');
             $table->foreignIdFor(LoanProduct::class, 'loan_product_id')->constrained()->onDelete('cascade');
             $table->foreignIdFor(MemberAccount::class, 'member_account_id')->constrained()->onDelete('cascade');
-            $table->foreignIdFor(Member::class, 'guarantor_first_id');
-            $table->foreignIdFor(Member::class, 'guarantor_second_id');
+            $table->foreignIdFor(Member::class, 'guarantor_first_id')->nullable()->constrained()->onDelete('restrict');
+            $table->foreignIdFor(Member::class, 'guarantor_second_id')->nullable()->constrained()->onDelete('restrict');
 
             $table->string('loan_number')->unique();
             $table->string('email')->nullable();

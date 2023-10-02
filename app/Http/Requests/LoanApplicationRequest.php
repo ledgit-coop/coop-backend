@@ -32,7 +32,7 @@ class LoanApplicationRequest extends FormRequest
         return [
 
             'guarantor_first_id' => 'required|exists:members,id',
-            'guarantor_second_id' => 'required|exists:members,id',
+            'guarantor_second_id' => 'nullable|exists:members,id',
             'member_id' => 'required|exists:members,id',
             'loan_product_id' => 'required|exists:loan_products,id',
             'member_account_id'  => 'required|exists:member_accounts,id',

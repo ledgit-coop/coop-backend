@@ -30,7 +30,27 @@ class MemberAddress extends Model
     protected function fullAddress(): Attribute
     {
         return Attribute::make(
-            get: fn () => ucwords("$this->house_block_lot, $this->street, $this->subdivision_village, $this->barangay, $this->city_municipality, $this->province, $this->zipcode"),
+            get: function() {
+                $components = [
+                    $this->house_block_lot,
+                    $this->street,
+                    $this->subdivision_village,
+                    $this->barangay,
+                    $this->city_municipality,
+                    $this->province,
+                    $this->zip_code,
+                ];
+            
+                // Filter out empty address components
+                $filteredComponents = array_filter($components, function($component) {
+                    return !empty($component);
+                });
+            
+                // Concatenate the non-empty address components
+                $fullAddress = implode(', ', $filteredComponents);
+            
+                return preg_replace('/^\s+|\s+$/m', '', rtrim($fullAddress, ','));
+            },
         );
     }
 

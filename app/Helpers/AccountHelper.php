@@ -3,21 +3,22 @@
 namespace App\Helpers;
 
 use App\Models\AccountTransaction;
+use App\Models\Member;
 use App\Models\MemberAccount;
 use Illuminate\Support\Carbon;
 
 class AccountHelper {
 
-    public static function generateAccount() {
+    public static function generateAccount(Member $member) {
+
+        $account_count = $member->member_accounts->count();
+        
+        $numbers = explode("-",$member->member_number);
+        $count = abs($numbers[count($numbers) - 1]);
 
         $currentYear = Carbon::now()->format('ym');
-        
-        $latest = MemberAccount::first();
-        $count = $latest ? $latest->id : 0;
-
-        $sequence = sprintf('%09d', $count + 1);
-
-        return  $currentYear . $sequence;
+       
+        return  $member->member_number .'-'. $currentYear . $count + ($account_count + 1);
     }
 
     public static function generateTransactionNumber() {

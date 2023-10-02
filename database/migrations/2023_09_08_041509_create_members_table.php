@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('name_extension')->nullable();
+            $table->string('civil_status')->nullable();
             $table->enum('status', MemberStatus::LIST)->default('active');
             $table->date('date_of_birth')->nullable();
             $table->string('place_of_birth')->nullable();
@@ -36,6 +37,11 @@ return new class extends Migration
             $table->string('telephone_number')->nullable();
             $table->boolean('oriented')->default(false);
             $table->date('member_at');
+
+            $table->string('in_case_emergency_person')->nullable();
+            $table->text('in_case_emergency_address')->nullable();
+            $table->string('in_case_emergency_contact')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
         });
