@@ -11,14 +11,13 @@ class AccountHelper {
 
     public static function generateAccount(Member $member) {
 
-        $account_count = $member->member_accounts->count();
-        
-        $numbers = explode("-",$member->member_number);
-        $count = abs($numbers[count($numbers) - 1]);
+        $account_count = MemberAccount::count();
 
         $currentYear = Carbon::now()->format('ym');
+
+        $sequence = sprintf('%06d', $account_count + 1);
        
-        return  $member->member_number .'-'. $currentYear . $count + ($account_count + 1);
+        return  "ACN-" . $sequence .'-'. $currentYear . + ($account_count + 1);
     }
 
     public static function generateTransactionNumber() {
