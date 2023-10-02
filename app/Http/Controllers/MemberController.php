@@ -10,6 +10,7 @@ use App\Helpers\MemberHelper;
 use App\Helpers\Uploading;
 use App\Http\Requests\AddAccountTransactionRequest;
 use App\Http\Requests\MemberRequest;
+use App\Http\Requests\MemberUpdateRequest;
 use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\Member;
@@ -130,7 +131,7 @@ class MemberController extends Controller
         }
     }
 
-    public function update(MemberRequest $request, Member $member)
+    public function update(MemberUpdateRequest $request, Member $member)
     {
         $data = $request->only([
             'surname',
@@ -150,6 +151,7 @@ class MemberController extends Controller
             'oriented',
             'mobile_number',
             'telephone_number',
+            'member_number',
         ]);
 
         try {
@@ -157,6 +159,7 @@ class MemberController extends Controller
 
 
             foreach ($data as $key => $value) {
+                Log::info("$key : $value");
                 $member->{$key} = $value;
             }
 
