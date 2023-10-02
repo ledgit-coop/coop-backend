@@ -11,7 +11,8 @@ class AccountHelper {
 
     public static function generateAccount(Member $member) {
 
-        $account_count = MemberAccount::count();
+        $account_count = MemberAccount::orderBy('id', 'desc')->first();
+        $account_count = $account_count ? abs($account_count->id) : 0;
 
         $currentYear = Carbon::now()->format('ym');
 
