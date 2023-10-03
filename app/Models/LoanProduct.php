@@ -35,14 +35,14 @@ class LoanProduct extends Model
     ];
 
     protected $casts = [
-        'pre_termination_panalty' => 'integer',
-        'default_principal_amount' => 'integer',
-        'min_principal_amount' => 'integer',
-        'max_principal_amount' => 'integer',
-        'default_loan_interest' => 'integer',
-        'default_loan_duration' => 'integer',
-        'penalty' => 'integer',
-        'default_number_of_repayments' => 'integer',
+        'pre_termination_panalty' => 'double',
+        'default_principal_amount' => 'double',
+        'min_principal_amount' => 'double',
+        'max_principal_amount' => 'double',
+        'default_loan_interest' => 'double',
+        'default_loan_duration' => 'double',
+        'penalty' => 'double',
+        'default_number_of_repayments' => 'double',
         'fees' => 'array',
     ];
 

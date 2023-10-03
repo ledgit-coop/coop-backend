@@ -19,6 +19,6 @@ class LoanFeeTemplate extends Model
 
     protected $casts = [
         'enabled' => 'boolean',
-        'fee' => 'integer'
+        'fee' => 'double'
     ];
 }
