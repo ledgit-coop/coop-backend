@@ -35,14 +35,15 @@ class LoanSchedule extends Model
 
     protected $casts = [
         'due_date' => 'datetime:Y-m-d',
-        'principal_amount' => 'integer',
-        'interest_amount' => 'integer',
-        'principal_balance' => 'integer',
-        'fee_amount' => 'integer',
+        'principal_amount' => 'double',
+        'interest_amount' => 'double',
+        'principal_balance' => 'double',
+        'fee_amount' => 'double',
         'is_maturity' => 'boolean',
         'overdue' => 'boolean',
         'paid' => 'boolean',
-        'penalty_amount' => 'integer',
+        'penalty_amount' => 'double',
+        'due_amount' => 'double'
     ];
 
     protected $appends = [
