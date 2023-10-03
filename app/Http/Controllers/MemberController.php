@@ -53,6 +53,8 @@ class MemberController extends Controller
 
         if($request->sortField && $request->sortOrder)
             $members->orderBy($request->sortField, $request->sortOrder);
+        else
+            $members->orderBy('type');
 
         return $members->paginate($limit);
     }

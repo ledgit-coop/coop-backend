@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\AccountType;
 use App\Helpers\LoanCalculator\LoanCalculator;
 use App\Http\Requests\LoanCalculatorRequest;
 use App\Models\Account;
@@ -24,13 +25,28 @@ class UtilityController extends Controller
         });
     }
 
-    public function accountDropdown() {
-        return Account::select('id', 'name')->get()->map(function($data){
+    public function accountDropdown(Request $request) {
+
+        $accounts = Account::select('id', 'name');
+        
+        $member_accounts = [];
+
+        if($request->restrict_member_id) {
+            $member_accounts = MemberAccount::where('member_id', $request->restrict_member_id)
+            ->whereHas('account', function($account) {
+                $account->whereIn('type', [AccountType::REGULAR, AccountType::SHARE_CAPITAL]);
+            })
+            ->get()->pluck('account_id')->toArray();
+        }
+        
+        
+        return response()->json($accounts->get()->map(function($data) use($member_accounts) {
             return [
                 'value' => $data->id,
                 'label' => $data->name,
+                'disabled' => in_array($data->id, $member_accounts),
             ];
-        });
+        }));
     }
 
     public function workIndustryDropdown() {
@@ -62,10 +78,12 @@ class UtilityController extends Controller
                 $account->where('type', $request->type);
             });
 
-        $accounts = $accounts->get()->map(function($data){
+        $accounts = $accounts->get()->map(function($data) {
+            $name = $data->account->name;
+            $holder = $data->account_holder;
             return [
                 'value' => $data->id,
-                'label' => $data->account->name,
+                'label' => "$name - $holder",
             ];
         });
 

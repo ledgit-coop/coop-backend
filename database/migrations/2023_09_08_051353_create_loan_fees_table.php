@@ -22,6 +22,11 @@ return new class extends Migration
             $table->enum('fee_type', LoanFeeType::LIST); // For enhancement: on-top-amotization, against-principal-installment
             $table->enum('fee_method', LoanFeeMethod::LIST);
             $table->boolean('enabled')->default(false);
+
+            $table->boolean('credit_share_capital')->default(false);
+            $table->boolean('credit_regular_savings')->default(false);
+            $table->boolean('credit_revenue')->default(false);
+            
             $table->timestamps();
         });
     }

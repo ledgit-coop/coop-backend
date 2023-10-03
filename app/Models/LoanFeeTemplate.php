@@ -14,11 +14,17 @@ class LoanFeeTemplate extends Model
         'fee',
         'fee_type',
         'fee_method',
-        'enabled'
+        'enabled',
+        'credit_revenue',
+        'credit_share_capital',
+        'credit_regular_savings',
     ];
 
     protected $casts = [
         'enabled' => 'boolean',
-        'fee' => 'double'
+        'fee' => 'double',
+        'credit_revenue'=> 'boolean',
+        'credit_share_capital'=> 'boolean',
+        'credit_regular_savings'=> 'boolean',
     ];
 }

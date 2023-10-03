@@ -209,10 +209,9 @@ class LoanController extends Controller
     {
         $this->validate($request,[
             'status' => 'required|in:'. implode(",", MemberLoanStatus::LIST),
-
             'pre_termination_fee' => 'nullable|numeric',
             'pre_termination_date' => 'nullable|date|date_format:Y-m-d',
-
+            'approved_amount' => 'required_if:status,'. MemberLoanStatus::APPROVED .'|numeric'
         ]);
 
         if($loan->released && !in_array($request->status,[
@@ -223,20 +222,22 @@ class LoanController extends Controller
         try {
             DB::beginTransaction();
 
-            if($request->status === MemberLoanStatus::REQUEST_PRE_TERMINATION) {
+            if($request->status === MemberLoanStatus::REQUEST_PRE_TERMINATION)
                 TransactionHelper::makeLoanPreTerminationFee(
                     $loan,
                     new Carbon($request->pre_termination_date),
                     $request->pre_termination_fee,
                 );
-            }
-    
-            if($request->status === MemberLoanStatus::RELEASED) {
+            else if($request->status === MemberLoanStatus::RELEASED)
                 $loan->released = true;
-            }
+            else if($request->status == MemberLoanStatus::APPROVED)
+                $loan->principal_amount = $request->approved_amount; // Change the approved amount
     
             $loan->status = $request->status;
             $loan->save();
+
+            if($request->status == MemberLoanStatus::APPROVED)
+                LoanHelper::reComputeSchedule($loan); // Recompute if approved
 
             LogHelper::logLoanStatusChange($loan);
             

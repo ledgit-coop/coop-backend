@@ -31,6 +31,9 @@ class LoanFeeTemplateRequest extends FormRequest
             'fee_type' => ['nullable', 'string', 'in:' . implode(',', LoanFeeType::LIST)],
             'fee_method' => ['nullable', 'string', 'in:' . implode(',', LoanFeeMethod::LIST)],
             'enabled' => 'nullable|boolean',
+            'credit_revenue' => 'nullable|boolean',
+            'credit_share_capital' => 'nullable|boolean',
+            'credit_regular_savings' => 'nullable|boolean',
         ];
     }
 }

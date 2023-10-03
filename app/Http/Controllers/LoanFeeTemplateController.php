@@ -36,6 +36,9 @@ class LoanFeeTemplateController extends Controller
             'fee_type',
             'fee_method',
             'enabled',
+            'credit_revenue',
+            'credit_share_capital',
+            'credit_regular_savings'
         ]);
 
         $product = LoanFeeTemplate::create($data);
@@ -56,6 +59,9 @@ class LoanFeeTemplateController extends Controller
             'fee_type',
             'fee_method',
             'enabled',
+            'credit_revenue',
+            'credit_share_capital',
+            'credit_regular_savings'
         ]);
 
         foreach ($data as $key => $value) {
