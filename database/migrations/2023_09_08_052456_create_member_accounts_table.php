@@ -20,8 +20,8 @@ return new class extends Migration
             $table->id();
             $table->string('account_number')->unique();
             $table->string('account_holder');
-            $table->foreignIdFor(Member::class, 'member_id');
-            $table->foreignIdFor(Account::class, 'account_id');
+            $table->foreignIdFor(Member::class, 'member_id')->constrained()->onDelete('cascade');
+            $table->foreignIdFor(Account::class, 'account_id')->constrained()->onDelete('restrict');
             $table->enum('status', AccountStatus::LIST);
             $table->integer('passbook_count')->unsigned()->default(1);
             $table->double('balance')->default(0);

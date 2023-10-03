@@ -36,7 +36,8 @@ class MemberController extends Controller
             'email_address', 
             'gender', 
             'member_at', 
-            'status'
+            'status',
+            'profile_picture_url',
         ]);
         
         if(!empty($filters)) {
@@ -52,7 +53,6 @@ class MemberController extends Controller
 
         if($request->sortField && $request->sortOrder)
             $members->orderBy($request->sortField, $request->sortOrder);
-
 
         return $members->paginate($limit);
     }

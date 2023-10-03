@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('member_beneficiaries', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Member::class, 'member_id');
+            $table->foreignIdFor(Member::class, 'member_id')->constrained()->onDelete('cascade');
             $table->string('name')->nullable();
             $table->date('birthdate')->nullable();
             $table->string('relationship')->nullable();
