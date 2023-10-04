@@ -64,11 +64,11 @@ class LoanHelper {
 
     }
 
-    public static function generateUniqueTransactionNumber() {
+    public static function generateUniqueLoanNumber() {
 
         $currentYear = Carbon::now()->format('ymd');
 
-        $count = Loan::count();
+        $count = Loan::withTrashed()->count();
 
         $sequence = sprintf('%012d', $count + 1);
 

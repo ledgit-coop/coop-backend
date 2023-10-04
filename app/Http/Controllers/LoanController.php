@@ -105,7 +105,7 @@ class LoanController extends Controller
             'next_payroll_date'
         ]);
 
-        $data['loan_number'] = LoanHelper::generateUniqueTransactionNumber();
+        $data['loan_number'] = LoanHelper::generateUniqueLoanNumber();
 
         $loan = Loan::create($data);
 

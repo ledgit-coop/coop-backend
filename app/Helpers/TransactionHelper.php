@@ -17,7 +17,7 @@ class TransactionHelper {
 
         $currentYear = Carbon::now()->format('ymd');
 
-        $latest = Transaction::first();
+        $latest = Transaction::withTrashed()->first();
         $count = $latest ? $latest->id : 0;
 
         $sequence = sprintf('%09d', $count + 1);

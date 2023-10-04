@@ -386,7 +386,7 @@ class MemberController extends Controller
 
                 $account->transactions()->createMany([
                     [
-                        'transaction_number' => AccountHelper::generateAccount($member),
+                        'transaction_number' => AccountHelper::generateAccount(),
                         'particular' => $request->particular,
                         'transaction_date' => $request->transaction_date,
                         'amount' => (-$request->amount),

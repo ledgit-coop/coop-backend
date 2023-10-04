@@ -9,9 +9,9 @@ use Illuminate\Support\Carbon;
 
 class AccountHelper {
 
-    public static function generateAccount(Member $member) {
+    public static function generateAccount() {
 
-        $account_count = MemberAccount::orderBy('id', 'desc')->first();
+        $account_count = MemberAccount::orderBy('id', 'desc')->withTrashed()->first();
         $account_count = $account_count ? abs($account_count->id) : 0;
 
         $currentYear = Carbon::now()->format('ym');
@@ -25,7 +25,7 @@ class AccountHelper {
 
         $currentYear = Carbon::now()->format('ym');
         
-        $latest = AccountTransaction::orderBy('id', 'desc')->first();
+        $latest = AccountTransaction::orderBy('id', 'desc')->withTrashed()->first();
         $count = $latest ? $latest->id : 0;
 
         $sequence = sprintf('%06d', $count + 1);

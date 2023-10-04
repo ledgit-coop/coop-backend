@@ -13,7 +13,7 @@ class MemberHelper {
 
         $currentYear = Carbon::now()->format('y');
 
-        $member = Member::orderBy('member_number', 'desc')->first();
+        $member = Member::withTrashed()->orderBy('member_number', 'desc')->first();
 
         if($member) {
             $numbers = explode("-",$member->member_number);
@@ -36,7 +36,7 @@ class MemberHelper {
     public static function makeAccount(Member $member, Account $account, string $holder) {
         return MemberAccount::create([
             'account_holder' => $holder,
-            'account_number' => AccountHelper::generateAccount($member),
+            'account_number' => AccountHelper::generateAccount(),
             'passbook_count' => 1,
             'member_id' => $member->id,
             'account_id' => $account->id,
