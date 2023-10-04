@@ -35,6 +35,8 @@ return new class extends Migration
             $table->double('penalty_below_maintaining_duration')->nullable();
 
             $table->boolean('below_maintaining_balance')->default(false);
+
+            $table->softDeletes();
             
             $table->timestamps();
         });
