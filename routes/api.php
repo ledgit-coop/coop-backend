@@ -65,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/members/update/orientation/{member}', [MemberController::class, 'attendedOrientation'])->name('members.update.orientation');
     Route::get('/members/accounts/transaction/{member}', [MemberController::class, 'getAccountTransactions'])->name('members.accounts.transactions.list');
     Route::post('/members/accounts/transaction/{member}', [MemberController::class, 'addAccountTransaction'])->name('members.accounts.transactions.post');
+    Route::delete('/members/accounts/{account}', [MemberController::class, 'deleteAccount'])->name('members.accounts.destroy');
     Route::get('/members/accounts/{member}', [MemberController::class, 'getMemberAccounts'])->name('members.accounts');
     Route::post('/members/accounts/status/{member}', [MemberController::class, 'updateStatus'])->name('members.accounts.status.update');    
 

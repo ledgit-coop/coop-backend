@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,6 +26,25 @@ class MemberAccount extends Model
         'penalty_below_maintaining_method',
         'penalty_below_maintaining',
     ];
+
+    protected $appends = [
+        'has_balance',
+    ];
+
+    protected $casts = [
+        'balance' => 'double',
+        'earn_interest_per_anum' => 'double',
+        'maintaining_balance' => 'double',
+    ];
+
+    protected function hasBalance(): Attribute
+    {
+        return Attribute::make(
+            get: function() {
+                return $this->balance > 0;
+            },
+        );
+    }
 
     public function account() {
         return $this->belongsTo(Account::class, 'account_id');

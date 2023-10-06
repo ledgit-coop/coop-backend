@@ -439,4 +439,12 @@ class MemberController extends Controller
 
         return response()->json($transactions->get());
     }
+
+    public function deleteAccount(MemberAccount $account) {
+        if($account->has_balance) throw new Exception("Cannot delete the account that has already a balance.", 1);
+
+        $account->delete();
+        
+        return true;
+    }
 }
