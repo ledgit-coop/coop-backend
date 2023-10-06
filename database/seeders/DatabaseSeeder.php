@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Constants\AccountType;
 use App\Constants\LoanFeeMethod;
 use App\Constants\LoanFeeType;
+use App\Constants\UserType;
 use App\Models\Account;
 use App\Models\LoanFeeTemplate;
 use App\Models\LoanProduct;
@@ -28,6 +29,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
             'password' => bcrypt('password'),
         ]);
+
+        User::factory()->create([
+            'name' => 'System',
+            'email' => 'scheduler@dspacc.com',
+            'password' => '',
+            'type' => UserType::SYSTEM,
+        ]);
+
 
         LoanProduct::create(['name'=> 'Salary Loan', 'locked' => true]);
         LoanProduct::create(['name'=> 'Negosyo Loan', 'locked' => true]);

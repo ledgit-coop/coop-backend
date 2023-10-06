@@ -36,6 +36,8 @@ return new class extends Migration
 
             $table->boolean('below_maintaining_balance')->default(false);
 
+            $table->boolean('start_penalty')->default(false);
+
             $table->softDeletes();
             
             $table->timestamps();

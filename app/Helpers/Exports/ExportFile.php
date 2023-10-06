@@ -31,9 +31,9 @@ class ExportFile {
  
         $view = view('exports.loans.agreement', compact('loan'))->render();
 
-        $filename = $loan->member->full_name . "-" . $loan->loan_number . ".pdf";
-        $path =  "loans/$loan->id/agreements/";
+        // $filename = $loan->member->full_name . "-" . $loan->loan_number . ".pdf";
+        // $path =  "loans/$loan->id/agreements/";
         
-        return self::export($view, $path, $filename);
+        return $view;
     }
 }

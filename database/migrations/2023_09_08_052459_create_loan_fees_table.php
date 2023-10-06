@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignIdFor(LoanFeeTemplate::class, 'loan_fee_template_id')->constrained()->onDelete('restrict');
             $table->double('fee');
             $table->double('amount')->default(0);
+            $table->boolean('posted')->default(false);
             $table->timestamps();
         });
     }

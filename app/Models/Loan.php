@@ -111,6 +111,13 @@ class Loan extends Model
         return $this->belongsTo(Member::class, 'guarantor_second_id');
     }
 
+    protected function paidCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->loan_schedules()->where('paid', true)->count(),
+        );
+    }
+
     protected function overdue(): Attribute
     {
         return Attribute::make(

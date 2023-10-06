@@ -47,6 +47,16 @@ class LoanController extends Controller
         }
         if($request->sortField && $request->sortOrder)
             $loans->orderBy($request->sortField, $request->sortOrder);
+        else
+            $loans->orderByRaw(DB::raw("
+                CASE
+                    WHEN status = 'pending' THEN 2
+                    WHEN status = 'released' THEN 1
+                    WHEN status = 'closed' THEN 0
+                    ELSE 3
+                END desc
+            "))
+            ->orderBy('applied_date', 'asc');
 
         $loans->with('loanProduct');
         $loans->with('member');
@@ -261,7 +271,10 @@ class LoanController extends Controller
 
     public function activeLoans(Member $member) {
         
-        $loanSchedules = Loan::where('member_id', $member->id)->with(['loan_schedules', 'loanProduct'])->get();
+        $loanSchedules = Loan::where('member_id', $member->id)
+            ->with(['loan_schedules', 'loanProduct'])
+            ->where('status', '<>', MemberLoanStatus::CLOSED)
+            ->get();
         $loanSchedules->each(function ($loanSchedule) {
             $loanSchedule->append(['outstanding']);
         });
@@ -280,7 +293,10 @@ class LoanController extends Controller
         $this->validate($request, [
             'document' => 'required|in:agreement,application-form',
         ]);
+
+        $css = file_get_contents(realpath(public_path('bootstrap-5.0.2/css/bootstrap.min.css')));
         
-        return ExportFile::exportAgreement($loan);
+        //return ExportFile::exportAgreement($loan);
+        return response()->json(['view' => ExportFile::exportAgreement($loan), 'css' => $css]);
     }
 }
