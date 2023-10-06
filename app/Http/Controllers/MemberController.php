@@ -45,6 +45,8 @@ class MemberController extends Controller
                 $members->where(function($members) use($filters) {
                     $members->orWhere('member_number', 'like', "%$filters->keyword%")
                     ->orWhere('surname', 'like', "%$filters->keyword%")
+                    ->orWhere('first_name', 'like', "%$filters->keyword%")
+                    ->orWhere('middle_name', 'like', "%$filters->keyword%")
                     ->orWhere('email_address', 'like', "%$filters->keyword%");
                 });
             if(isset($filters->status))
