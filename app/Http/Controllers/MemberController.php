@@ -299,6 +299,16 @@ class MemberController extends Controller
                 "message" => "Account already exists."
             ], 422);
 
+        $holder_exists = MemberAccount::where([
+            'account_holder' => $request->account_holder,
+            'account_id' => $account->id,
+        ])->first();
+
+        if($holder_exists)
+            return response()->json([
+                "message" => "Cannot open an account with the same holder name."
+            ], 422);
+
         MemberHelper::makeAccount($member, $account, $request->account_holder);
         
         return response('Account created.');
