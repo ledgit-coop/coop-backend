@@ -43,12 +43,14 @@ class LoanSchedule extends Model
         'overdue' => 'boolean',
         'paid' => 'boolean',
         'penalty_amount' => 'double',
-        'due_amount' => 'double'
+        'due_amount' => 'double',
+        'outstanding_amount' => 'double'
     ];
 
     protected $appends = [
         'due_humans',
-        'almost_due'
+        'almost_due',
+        'outstanding_amount',
     ];
 
     protected function dueHumans(): Attribute
@@ -90,6 +92,15 @@ class LoanSchedule extends Model
         return Attribute::make(
             get: function() {
                 return Helper::diffDays(Carbon::now(), $this->due_date);
+            }
+        );
+    }
+
+    protected function outstandingAmount(): Attribute
+    {
+        return Attribute::make(
+            get: function() {
+                return $this->due_amount - $this->amount_paid;
             }
         );
     }

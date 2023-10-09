@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\LoanHelper;
+use App\Helpers\LogHelper;
+use App\Helpers\MemberAccounHelper;
 use App\Models\LoanSchedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class RepaymentController extends Controller
 {
@@ -87,12 +90,30 @@ class RepaymentController extends Controller
             'payment_date' => 'required',
         ]);
 
-        $loanRepayment = LoanHelper::updatePayment($loanRepayment, $request->amount_paid, new Carbon($request->payment_date));
-        $loanRepayment->payment_remarks = $request->payment_remarks;
-        $loanRepayment->payment_reference = $request->payment_reference;
-        $loanRepayment->payment_channel = $request->payment_channel;
-        $loanRepayment->save();
+        try {
+            DB::beginTransaction();
 
-        return response()->json($loanRepayment);
+            $paymentDate = new Carbon($request->payment_date);
+
+            $loanRepayment = LoanHelper::updatePayment($loanRepayment, $request->amount_paid, $paymentDate);
+            $loanRepayment->payment_remarks = $request->payment_remarks;
+            $loanRepayment->payment_reference = $request->payment_reference;
+            $loanRepayment->payment_channel = $request->payment_channel;
+            $loanRepayment->save();
+    
+            // Record transaction
+            MemberAccounHelper::recordPayment($loanRepayment, $request->amount_paid, $paymentDate);
+
+            // Log Payment
+            LogHelper::logLoanPayment($loanRepayment);
+    
+            DB::commit();
+
+            return response()->json($loanRepayment);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 }

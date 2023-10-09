@@ -94,10 +94,9 @@ class LoanHelper {
                 // Calculate the excess payment.
                 $excessPayment = $paymentAmount - $outstandingBalance;
 
-                // Check if there is a next amortization schedule.
-                $nextSchedule = self::getNextSchedule($schedule);
-
-                if($excessPayment > 0)
+                if($excessPayment > 0) {
+                    // Check if there is a next amortization schedule.
+                    $nextSchedule = self::getNextSchedule($schedule);
                     if ($nextSchedule) {
                         // Offset the excess payment to the next amortization.
                         return self::updatePayment($nextSchedule, $excessPayment, $paymentDate);
@@ -106,18 +105,13 @@ class LoanHelper {
                         $schedule->amount_paid += $excessPayment;
                         $schedule->save();
                     }
+                }
 
             } else {
                 // Payment amount is less than the outstanding balance.
                 $schedule->amount_paid += $paymentAmount;
                 $schedule->save();
             }
-
-            // Record transaction
-            MemberAccounHelper::recordPayment($schedule, $paymentAmount, $paymentDate);
-
-            // Log Payment
-            LogHelper::logLoanPayment($schedule);
 
             return $schedule;
         }
