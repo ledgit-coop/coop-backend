@@ -16,8 +16,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('account:interest')->daily();
-        $schedule->command('amortization:overdue')->daily();
-        $schedule->command('penalty:check')->daily();
+        $schedule->command('amortization:overdue')->everyTwoMinutes();
+        $schedule->command('penalty:check')->everyTwoMinutes();
         $schedule->command('loan:closing')->everyTwoMinutes();
     }
 

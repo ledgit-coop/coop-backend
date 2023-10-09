@@ -6,6 +6,7 @@ use App\Constants\MemberLoanStatus;
 use App\Helpers\Exports\ExportFile;
 use App\Helpers\LoanHelper;
 use App\Helpers\LogHelper;
+use App\Helpers\MemberAccounHelper;
 use App\Helpers\TransactionHelper;
 use App\Http\Requests\LoanApplicationRequest;
 use App\Models\Loan;
@@ -248,6 +249,10 @@ class LoanController extends Controller
 
             if($request->status == MemberLoanStatus::APPROVED)
                 LoanHelper::reComputeSchedule($loan); // Recompute if approved
+
+            else if($request->status == MemberLoanStatus::RELEASED) {
+                MemberAccounHelper::recordLoan($loan);
+            }
 
             LogHelper::logLoanStatusChange($loan);
             

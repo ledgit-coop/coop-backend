@@ -80,13 +80,14 @@ class RepaymentController extends Controller
     
     public function store(Request $request, LoanSchedule $loanRepayment) {
         $this->validate($request, [
-            'amount_paid' => 'required',
+            'amount_paid' => 'required|numeric|gt:0',
             'payment_remarks' => 'nullable|string',
             'payment_reference' => 'nullable|string',
             'payment_channel' => 'required|string',
+            'payment_date' => 'required',
         ]);
 
-        $loanRepayment = LoanHelper::updatePayment($loanRepayment, $request->amount_paid);
+        $loanRepayment = LoanHelper::updatePayment($loanRepayment, $request->amount_paid, new Carbon($request->payment_date));
         $loanRepayment->payment_remarks = $request->payment_remarks;
         $loanRepayment->payment_reference = $request->payment_reference;
         $loanRepayment->payment_channel = $request->payment_channel;

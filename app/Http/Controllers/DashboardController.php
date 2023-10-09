@@ -38,8 +38,8 @@ class DashboardController extends Controller
         ->whereMonth('transaction_date', $current_date->month)
         ->sum('amount');
 
-        $loan_released = Loan::where('status', MemberLoanStatus::APPROVED)->count();
-        $loan_released_current_month = Loan::where('status', MemberLoanStatus::APPROVED)->whereMonth('released_date', $current_date->month)->count();
+        $loan_released = Loan::where('released', true)->count();
+        $loan_released_current_month = Loan::where('released', true)->whereMonth('released_date', $current_date->month)->count();
 
         $last_week_start_date = (new Carbon())->subWeek()->startOfWeek();
         $last_week_end_date = (new Carbon())->subWeek()->endOfWeek();

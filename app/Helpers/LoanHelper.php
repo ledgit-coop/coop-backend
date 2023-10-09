@@ -75,7 +75,7 @@ class LoanHelper {
         return  $currentYear . $sequence;
     }
 
-    public static function updatePayment(LoanSchedule $schedule, float $paymentAmount)
+    public static function updatePayment(LoanSchedule $schedule, float $paymentAmount, Carbon $paymentDate)
     {
         if(!$schedule->paid) {
             // Check if there is an outstanding balance on this schedule.
@@ -100,7 +100,7 @@ class LoanHelper {
                 if($excessPayment > 0)
                     if ($nextSchedule) {
                         // Offset the excess payment to the next amortization.
-                        return self::updatePayment($nextSchedule, $excessPayment);
+                        return self::updatePayment($nextSchedule, $excessPayment, $paymentDate);
                     } else {
                         // No next schedule payment put all excess to the last payment
                         $schedule->amount_paid += $excessPayment;
@@ -112,6 +112,9 @@ class LoanHelper {
                 $schedule->amount_paid += $paymentAmount;
                 $schedule->save();
             }
+
+            // Record transaction
+            MemberAccounHelper::recordPayment($schedule, $paymentAmount, $paymentDate);
 
             // Log Payment
             LogHelper::logLoanPayment($schedule);
@@ -191,7 +194,10 @@ class LoanHelper {
 
                try {
                     DB::beginTransaction();
-                    $penalty = self::calculateLoanPenalty($schedule->due_amount, $schedule->loan->penalty, $schedule->loan->penalty_method);
+                    
+                    $outstandingBalance = $schedule->due_amount - $schedule->amount_paid;
+                    $penalty = self::calculateLoanPenalty($outstandingBalance, $schedule->loan->penalty, $schedule->loan->penalty_method);
+
                     $schedule->penalty_amount += $penalty; 
                     $schedule->due_amount += $penalty;
                     $schedule->save();
