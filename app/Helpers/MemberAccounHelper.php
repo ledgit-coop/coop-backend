@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Constants\MemberAccountTransactionType;
 use App\Models\Loan;
 use App\Models\LoanSchedule;
 use Illuminate\Support\Carbon;
@@ -19,6 +20,7 @@ class MemberAccounHelper {
             'particular' => "Credited Loan - $loan->loan_number",
             'transaction_date' => $loan->released_date,
             'amount' => $loan->principal_amount,
+            'type' => MemberAccountTransactionType::LOAN_CREDIT
            ]
         ]);
 
@@ -30,6 +32,7 @@ class MemberAccounHelper {
                     'particular' => "(Fees) " . ($fee->loan_fee_template->name),
                     'transaction_date' => $loan->released_date,
                     'amount' => (-$fee->amount),
+                    'type' => MemberAccountTransactionType::LOAN_FEES
                 ]
             ]);
         }
@@ -41,6 +44,7 @@ class MemberAccounHelper {
                 'particular' => "Released Loan - $loan->loan_number",
                 'transaction_date' => $loan->released_date,
                 'amount' => (-$loan->released_amount),
+                'type' => MemberAccountTransactionType::LOAN_RELEASED
             ]
         ]);
     }
@@ -57,6 +61,7 @@ class MemberAccounHelper {
                 'particular' => "Loan Payment - ($due_date) $loan->loan_number",
                 'transaction_date' => $payment_date,
                 'amount' => $paymentAmount,
+                'type' => MemberAccountTransactionType::LOAN_PAYMENT
             ]
         ]);
     }

@@ -12,7 +12,7 @@ class RepaymentController extends Controller
     public function index(Request $request) {
 
         $loans = LoanSchedule::on();
-        $filters = (object) $request->filters ?? [];
+        $filters = ($request->filters ? (object) $request->filters : null)  ?? [];
         $limit = $request->limit ?? 10;
 
         if($request->member_id)

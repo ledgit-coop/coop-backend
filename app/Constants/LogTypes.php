@@ -2,7 +2,6 @@
 
 namespace App\Constants;
 
-
 class LogTypes {
     
     const COMMENT = 'comment';

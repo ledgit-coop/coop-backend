@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\MemberAccountTransactionType;
 use App\Models\MemberAccount;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->double('amount');
             $table->date('transaction_date');
             $table->double('remaining_balance')->default(0);
+            $table->enum('type', MemberAccountTransactionType::LIST)->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
