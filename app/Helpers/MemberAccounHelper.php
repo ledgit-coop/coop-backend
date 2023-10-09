@@ -26,15 +26,17 @@ class MemberAccounHelper {
 
      
         foreach ($loan->loan_fees as $fee) {
-            $account->transactions()->createMany([
-                [
-                    'transaction_number' => AccountHelper::generateTransactionNumber(),
-                    'particular' => "(Fees) " . ($fee->loan_fee_template->name),
-                    'transaction_date' => $loan->released_date,
-                    'amount' => (-$fee->amount),
-                    'type' => MemberAccountTransactionType::LOAN_FEES
-                ]
-            ]);
+            if($fee->amount > 0) {
+                $account->transactions()->createMany([
+                    [
+                        'transaction_number' => AccountHelper::generateTransactionNumber(),
+                        'particular' => "(Fees) " . ($fee->loan_fee_template->name),
+                        'transaction_date' => $loan->released_date,
+                        'amount' => (-$fee->amount),
+                        'type' => MemberAccountTransactionType::LOAN_FEES
+                    ]
+                ]);
+            }
         }
        
 
