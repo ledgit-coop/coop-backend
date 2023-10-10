@@ -3,10 +3,10 @@
 namespace App\Helpers;
 
 use App\Constants\MemberAccountTransactionType;
+use App\Constants\TransactionType;
 use App\Models\Loan;
 use App\Models\LoanSchedule;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class MemberAccounHelper {
 
@@ -38,6 +38,8 @@ class MemberAccounHelper {
                 ]);
             }
         }
+
+        self::recordFeeCredits($loan);
        
 
         $account->transactions()->createMany([
@@ -49,6 +51,44 @@ class MemberAccounHelper {
                 'type' => MemberAccountTransactionType::LOAN_RELEASED
             ]
         ]);
+    }
+
+    public static function recordFeeCredits(Loan $loan) {
+        foreach ($loan->loan_fees as $fee) {
+            if($fee->amount > 0) {
+                $template = $fee->loan_fee_template;
+
+                // Record revenue
+                if($template->credit_revenue) {
+                    TransactionHelper::makeTransaction(
+                        $fee->amount,
+                        ($fee->loan_fee_template->name),
+                        TransactionType::REVENUE,
+                        $loan->released_date,
+                        'System',
+                        [
+                            "loan_id" => $loan->id,
+                        ]
+                    );
+                }
+
+                // Record share capital
+                if($template->credit_share_capital) {
+                    $member_sharecap_acc = $loan->member->share_capital_account;
+                    // Ignore if no share cap
+                    if($member_sharecap_acc) {
+                        $member_sharecap_acc->transactions()->createMany([
+                            [
+                                'transaction_number' => AccountHelper::generateTransactionNumber(),
+                                'particular' => "Share Capital Deposit from Loan ($loan->loan_number) fee",
+                                'transaction_date' => $loan->released_date,
+                                'amount' => $fee->amount,
+                            ]
+                        ]);
+                    }
+                }
+            }
+        }
     }
 
     public static function recordPayment(LoanSchedule $loanSchedule, float $paymentAmount, Carbon $payment_date) {

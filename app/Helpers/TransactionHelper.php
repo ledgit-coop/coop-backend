@@ -16,12 +16,11 @@ class TransactionHelper {
     public static function generateTransactionNumber() {
 
         $currentYear = Carbon::now()->format('ymd');
-
-        $latest = Transaction::withTrashed()->first();
-        $count = $latest ? $latest->id : 0;
+        $latest = Transaction::orderBy('id', 'desc')->withTrashed()->first();
+        $count = $latest ? abs($latest->id) : 0;
 
         $sequence = sprintf('%09d', $count + 1);
-
+        
         return  'TXN-'.$currentYear . $sequence;
     }
 
