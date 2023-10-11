@@ -39,7 +39,7 @@ class AccountTransactionPosting extends Command
             
 
             // Find the ID of the last record
-            $lastRecordId = $account->transactions()->orderBy('transaction_date', 'desc')->orderBy('id','asc')->first();
+            $lastRecordId = $account->transactions()->orderBy('transaction_date', 'desc')->orderBy('id','desc')->first();
 
             if($lastRecordId) {
                 $lastRecordId = $lastRecordId->id;
