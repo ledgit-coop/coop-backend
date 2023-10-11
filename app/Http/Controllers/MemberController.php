@@ -450,6 +450,23 @@ class MemberController extends Controller
         return response()->json($transactions->get());
     }
 
+    public function deleteAccountTransaction(AccountTransaction $transaction) {
+        if($transaction->posted) throw new Exception("Cannot delete the account that has already been posted.", 1);
+
+        try {
+            DB::beginTransaction();
+            
+            $transaction->delete();
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+        
+        return true;
+    }
+
     public function deleteAccount(MemberAccount $account) {
         if($account->has_balance) throw new Exception("Cannot delete the account that has already a balance.", 1);
 

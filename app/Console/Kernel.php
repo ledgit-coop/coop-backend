@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('amortization:overdue')->everyTwoMinutes();
         $schedule->command('penalty:check')->dailyAt('01:00');
         $schedule->command('loan:closing')->dailyAt('01:00');
+        $schedule->command('account-transaction:posting')->everyFiveMinutes();
     }
 
     /**
