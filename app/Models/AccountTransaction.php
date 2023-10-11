@@ -20,11 +20,17 @@ class AccountTransaction extends Model
         'amount',
         'transaction_date',
         'remaining_balance',
+        'posted'
     ];
 
     protected $appends = [
         'transaction_type',
         'account_name',
+    ];
+
+    protected $casts = [
+        'posted' => 'boolean',
+        'amount' => 'double',
     ];
 
 
