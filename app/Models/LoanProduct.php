@@ -49,4 +49,8 @@ class LoanProduct extends Model
     public function loan_product_fees() {
         return $this->hasMany(LoanProductFee::class);
     }
+
+    public function loans() {
+        return $this->hasMany(Loan::class, 'loan_product_id');
+    }
 }

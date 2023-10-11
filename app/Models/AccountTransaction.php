@@ -20,7 +20,8 @@ class AccountTransaction extends Model
         'amount',
         'transaction_date',
         'remaining_balance',
-        'posted'
+        'posted',
+        'type',
     ];
 
     protected $appends = [

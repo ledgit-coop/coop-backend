@@ -6,6 +6,7 @@ use App\Constants\AccountType;
 use App\Constants\ActionTransaction;
 use App\Helpers\AccountHelper;
 use App\Helpers\Helper;
+use App\Helpers\MemberAccounHelper;
 use App\Helpers\MemberHelper;
 use App\Helpers\Uploading;
 use App\Http\Requests\AddAccountTransactionRequest;
@@ -454,9 +455,13 @@ class MemberController extends Controller
         if($transaction->posted) throw new Exception("Cannot delete the account that has already been posted.", 1);
 
         try {
+            $member_account = $transaction->member_account;
+
             DB::beginTransaction();
             
             $transaction->delete();
+
+            MemberAccounHelper::fixAccounBalance($member_account);
 
             DB::commit();
         } catch (\Throwable $th) {

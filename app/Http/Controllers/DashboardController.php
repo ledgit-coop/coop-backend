@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Constants\AccountType;
-use App\Constants\MemberLoanStatus;
+use App\Constants\MemberAccountTransactionType;
 use App\Constants\MemberStatus;
 use App\Constants\TransactionType;
 use App\Models\AccountTransaction;
 use App\Models\Loan;
+use App\Models\LoanProduct;
 use App\Models\LoanSchedule;
 use App\Models\Member;
 use App\Models\MemberAccount;
@@ -112,5 +113,28 @@ class DashboardController extends Controller
         ->get();
 
         return response()->json($loans);
+    }
+
+    public function recentPayments() {
+
+        $recent_payments = AccountTransaction::where('type', MemberAccountTransactionType::LOAN_PAYMENT)
+        ->orderBy('transaction_date', 'desc')
+        ->limit(10)
+        ->get();
+
+        return response()->json($recent_payments);
+    }
+
+    public function activeProductLoans() {
+
+        $products = LoanProduct::get();
+        return response()->json($products->map(function($product) {
+            return [
+                'name' => $product->name,
+                'interest' => $product->default_loan_interest,
+                'period' => $product->loan_interest_period,
+                'count' => $product->loans()->count(),
+            ];
+        }));
     }
 }

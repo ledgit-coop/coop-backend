@@ -6,6 +6,7 @@ use App\Constants\MemberAccountTransactionType;
 use App\Constants\TransactionType;
 use App\Models\Loan;
 use App\Models\LoanSchedule;
+use App\Models\MemberAccount;
 use Illuminate\Support\Carbon;
 
 class MemberAccounHelper {
@@ -106,6 +107,23 @@ class MemberAccounHelper {
                 'type' => MemberAccountTransactionType::LOAN_PAYMENT
             ]
         ]);
+    }
+
+    public static function fixAccounBalance(MemberAccount $account) {
+        $transactions = $account->transactions()->orderBy('transaction_date', 'asc')->orderBy('id', 'asc')->get();
+
+        $balance = 0;
+
+        foreach ($transactions as $transaction) {
+            $balance = $balance + $transaction->amount;
+            $transaction->remaining_balance = $balance;
+            $transaction->save();
+        }
+
+        $account->balance = $balance;
+        $account->save();
+
+        return $account;
     }
 }
 
