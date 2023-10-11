@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Constants\AccountStatus;
 use App\Models\AccountTransaction;
+use App\Models\MemberAccount;
 use Illuminate\Console\Command;
 
 class AccountTransactionPosting extends Command
@@ -28,11 +30,25 @@ class AccountTransactionPosting extends Command
      */
     public function handle()
     {
-        // Find the ID of the last record
-        $lastRecordId = AccountTransaction::orderBy('transaction_date', 'desc')->first()->id;
 
-        // Update the 'posted' column to true for all records except the last one
-        AccountTransaction::where('id', '!=', $lastRecordId)->update(['posted' => true]);
+        $accounts = MemberAccount::where('status', AccountStatus::ACTIVE)->whereHas('transactions', function($transactions) {
+            $transactions->where('posted', false);
+        })->get();
+
+        foreach ($accounts as $account) {
+            
+
+            // Find the ID of the last record
+            $lastRecordId = $account->transactions()->orderBy('transaction_date', 'desc')->first();
+
+            if($lastRecordId) {
+                $lastRecordId = $lastRecordId->id;
+            }
+
+            $account->transactions()->where('id', '!=', $lastRecordId)->update(['posted' => true]);
+        }
+
+  
         
         return Command::SUCCESS;
     }
