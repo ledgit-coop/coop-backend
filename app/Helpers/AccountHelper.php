@@ -45,6 +45,6 @@ class AccountHelper {
         // Calculate the daily earnings
         $dailyEarnings = $principal * $r;
         
-        return (double) number_format($dailyEarnings, 2);
+        return round($dailyEarnings, 3);
     }
 }

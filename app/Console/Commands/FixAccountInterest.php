@@ -8,7 +8,7 @@ use App\Models\MemberAccount;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
-class ComputeAccountEarnInterest extends Command
+class FixAccountInterest extends Command
 {
     /**
      * The name and signature of the console command.

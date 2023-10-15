@@ -10,6 +10,7 @@ use App\Models\LoanSchedule;
 use App\Models\MemberAccount;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MemberAccounHelper {
 
@@ -144,7 +145,7 @@ class MemberAccounHelper {
         return $account;
     }
 
-    public static function computeSavingsEarnInterest(Carbon $date, ) {
+    public static function computeSavingsEarnInterest(Carbon $date) {
 
         $accounts = MemberAccount::where('status', AccountStatus::ACTIVE)
         ->where('below_maintaining_balance', false)
@@ -156,6 +157,7 @@ class MemberAccounHelper {
 
         foreach ($accounts as $account) {
             $interest = AccountHelper::computeEarnInterest($account->balance, $account->earn_interest_per_anum);
+            Log::info("$account->balance : $interest");
             $account->transactions()->createMany([
                 [
                     'transaction_number' => AccountHelper::generateTransactionNumber(),
