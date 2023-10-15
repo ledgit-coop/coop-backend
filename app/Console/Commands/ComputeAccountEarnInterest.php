@@ -17,7 +17,7 @@ class ComputeAccountEarnInterest extends Command
      *
      * @var string
      */
-    protected $signature = 'account:interest';
+    protected $signature = 'account:interest {date?}';
 
     /**
      * The console command description.
@@ -33,12 +33,18 @@ class ComputeAccountEarnInterest extends Command
      */
     public function handle()
     {
-        $now = Carbon::now();
+        $date_arg = $this->argument('date');
+
+        $now = $date_arg ? new Carbon($date_arg) : Carbon::now();
+
         $accounts = MemberAccount::where('status', AccountStatus::ACTIVE)
             ->where('below_maintaining_balance', false)
             ->whereRaw(DB::raw("balance >= maintaining_balance")) // enforce 2nd layer condition
+            ->whereHas('transactions', function($transactions) use($now) {
+                $transactions->whereRaw(DB::raw("date(transaction_date) <= '". $now->format('Y-m-d') ."'"));
+            })
             ->get();
-
+    
         foreach ($accounts as $account) {
             $interest = AccountHelper::computeEarnInterest($account->balance, $account->earn_interest_per_anum);
             $account->transactions()->createMany([
