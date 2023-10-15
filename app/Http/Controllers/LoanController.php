@@ -113,13 +113,15 @@ class LoanController extends Controller
 
             'pre_termination_panalty',
             'pre_termination_panalty_method',
-            'next_payroll_date'
+            'next_payroll_date',
         ]);
 
         $data['loan_number'] = LoanHelper::generateUniqueLoanNumber();
 
-        $loan = Loan::create($data);
+        if($request->is_draft == true)
+            $data['status'] = MemberLoanStatus::DRAFT;
 
+        $loan = Loan::create($data);
 
         if($request->loan_fees)
             $loan->loan_fees()->createMany($request->loan_fees);
@@ -134,7 +136,8 @@ class LoanController extends Controller
     {
         $loan = Loan::where('id', $loan->id)
                 ->with('loanProduct')
-                ->with('member')
+                ->with('member.share_capital_account')
+                ->with('member.savings_accounts')
                 ->with('guarantor_first')
                 ->with('guarantor_second')
                 ->with('member_account.account')
@@ -196,6 +199,9 @@ class LoanController extends Controller
         foreach ($data as $key => $value) {
             $loan->{$key} = $value;
         }
+
+        if(!$request->is_draft && $loan->status = MemberLoanStatus::DRAFT)
+            $loan->status = MemberLoanStatus::PENDING;
 
         $loan->save();
 

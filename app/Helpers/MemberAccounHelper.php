@@ -81,12 +81,28 @@ class MemberAccounHelper {
                         $member_sharecap_acc->transactions()->createMany([
                             [
                                 'transaction_number' => AccountHelper::generateTransactionNumber(),
-                                'particular' => "Share Capital Deposit from Loan ($loan->loan_number) fee",
+                                'particular' => "Share Capital Deposit from Loan ($loan->loan_number)",
+                                'transaction_date' => $loan->released_date,
+                                'amount' => $fee->amount,
+                                'type' => MemberAccountTransactionType::SHARE_CAPITAL
+                            ]
+                        ]);
+                    }
+                }
+
+                if($template->credit_regular_savings) {
+                    $savings_account = $loan->member->savings_accounts()->where('is_holder_member', true)->first();
+                    if($savings_account) {
+                        $savings_account->transactions()->createMany([
+                            [
+                                'transaction_number' => AccountHelper::generateTransactionNumber(),
+                                'particular' => "Savings Deposit from Loan ($loan->loan_number)",
                                 'transaction_date' => $loan->released_date,
                                 'amount' => $fee->amount,
                             ]
                         ]);
                     }
+
                 }
             }
         }

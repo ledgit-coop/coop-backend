@@ -20,6 +20,7 @@ return new class extends Migration
             $table->id();
             $table->string('account_number')->unique();
             $table->string('account_holder');
+            $table->boolean('is_holder_member')->default(false)->comment('Is the account holder a member?');
             $table->foreignIdFor(Member::class, 'member_id')->constrained()->onDelete('cascade');
             $table->foreignIdFor(Account::class, 'account_id')->constrained()->onDelete('restrict');
             $table->enum('status', AccountStatus::LIST);

@@ -18,6 +18,7 @@ class LoanFeeTemplate extends Model
         'credit_revenue',
         'credit_share_capital',
         'credit_regular_savings',
+        'show_to_report',
     ];
 
     protected $casts = [
@@ -26,5 +27,6 @@ class LoanFeeTemplate extends Model
         'credit_revenue'=> 'boolean',
         'credit_share_capital'=> 'boolean',
         'credit_regular_savings'=> 'boolean',
+        'show_to_report' => 'boolean',
     ];
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Constants\AccountType;
 use App\Constants\ActionTransaction;
+use App\Constants\MemberAccountTransactionType;
 use App\Helpers\AccountHelper;
 use App\Helpers\Helper;
 use App\Helpers\MemberAccounHelper;
@@ -290,6 +291,10 @@ class MemberController extends Controller
         $member = Member::findOrFail($id);
         $account = Account::findOrFail($account_id);
 
+        $is_holder_member = strtolower(trim($member->full_name)) == strtolower(trim($request->account_holder));
+        Log::info([$is_holder_member, $member->full_name, $request->account_holder]);
+
+
         $member_account = MemberAccount::where([
             'member_id' => $member->id,
             'account_id' => $account->id,
@@ -310,7 +315,7 @@ class MemberController extends Controller
                 "message" => "Cannot open an account with the same holder name."
             ], 422);
 
-        MemberHelper::makeAccount($member, $account, $request->account_holder);
+        MemberHelper::makeAccount($member, $account, $request->account_holder, $is_holder_member);
         
         return response('Account created.');
     }
@@ -353,6 +358,7 @@ class MemberController extends Controller
                         'particular' => "Share Capital Deposit",
                         'transaction_date' => $request->transaction_date,
                         'amount' => $request->amount,
+                        'type' => MemberAccountTransactionType::SHARE_CAPITAL,
                     ]
                 ]);
                 break;
@@ -369,6 +375,7 @@ class MemberController extends Controller
                         'particular' => "Share Capital Withdrawal",
                         'transaction_date' => $request->transaction_date,
                         'amount' => (-$request->amount),
+                        'type' => MemberAccountTransactionType::SHARE_CAPITAL,
                     ]
                 ]);
                 break;

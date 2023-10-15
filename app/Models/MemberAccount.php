@@ -25,6 +25,8 @@ class MemberAccount extends Model
         'maintaining_balance',
         'penalty_below_maintaining_method',
         'penalty_below_maintaining',
+
+        'is_holder_member',
     ];
 
     protected $appends = [
@@ -35,6 +37,7 @@ class MemberAccount extends Model
         'balance' => 'double',
         'earn_interest_per_anum' => 'double',
         'maintaining_balance' => 'double',
+        'is_holder_member' => 'boolean'
     ];
 
     protected function hasBalance(): Attribute
@@ -44,6 +47,10 @@ class MemberAccount extends Model
                 return $this->balance > 0;
             },
         );
+    }
+
+    public function member() {
+        return $this->belongsTo(Member::class);
     }
 
     public function account() {

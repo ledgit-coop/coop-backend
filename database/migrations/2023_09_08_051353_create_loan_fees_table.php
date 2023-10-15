@@ -26,7 +26,7 @@ return new class extends Migration
             $table->boolean('credit_share_capital')->default(false);
             $table->boolean('credit_regular_savings')->default(false);
             $table->boolean('credit_revenue')->default(false);
-            
+            $table->boolean('show_to_report')->default(false);
             $table->timestamps();
         });
     }

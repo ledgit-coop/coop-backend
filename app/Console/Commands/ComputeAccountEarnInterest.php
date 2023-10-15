@@ -3,9 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Constants\AccountStatus;
-use App\Constants\AccountType;
+use App\Constants\MemberAccountTransactionType;
 use App\Helpers\AccountHelper;
-use App\Models\Account;
 use App\Models\MemberAccount;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -44,10 +43,11 @@ class ComputeAccountEarnInterest extends Command
             $interest = AccountHelper::computeEarnInterest($account->balance, $account->earn_interest_per_anum);
             $account->transactions()->createMany([
                 [
-                    'transaction_number' => AccountHelper::generateUniqueTransactionNumber(),
+                    'transaction_number' => AccountHelper::generateTransactionNumber(),
                     'particular' => "Earned interest",
                     'transaction_date' => $now->format('Y-m-d'),
                     'amount' => $interest,
+                    'type' => MemberAccountTransactionType::INTEREST_EARNED
                 ]
             ]);
         }

@@ -14,6 +14,7 @@ class MemberLoanStatus
     const RELEASED = 'released';
     const REQUEST_PRE_TERMINATION = 'request-pre-termination';
     const PRE_TERMINATED = 'pre-terminated';
+    const DRAFT = 'draft';
 
     const LIST = [
         self::EVALUATION,

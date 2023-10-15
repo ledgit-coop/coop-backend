@@ -30,10 +30,10 @@ class MemberHelper {
     public static function memberCreateDefaults(Member $member) {
         $share_capital = Account::where('key', 'share-capital')->firstOrFail();
         
-        self::makeAccount($member, $share_capital, $member->full_name);
+        self::makeAccount($member, $share_capital, $member->full_name, true);
     }
 
-    public static function makeAccount(Member $member, Account $account, string $holder) {
+    public static function makeAccount(Member $member, Account $account, string $holder, bool $is_member) {
         return MemberAccount::create([
             'account_holder' => $holder,
             'account_number' => AccountHelper::generateAccount(),
@@ -47,6 +47,7 @@ class MemberHelper {
             'penalty_below_maintaining' => $account->penalty_below_maintaining,
             'penalty_below_maintaining_cycle' => $account->penalty_below_maintaining_cycle,
             'penalty_below_maintaining_duration' => $account->penalty_below_maintaining_duration,
+            'is_holder_member' => $is_member
         ]);
     }
 }

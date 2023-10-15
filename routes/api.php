@@ -11,6 +11,7 @@ use App\Http\Controllers\LoanProductController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\RepaymentController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilityController;
 use Illuminate\Http\Request;
@@ -85,5 +86,5 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('/loan-fee-templates', [UtilityController::class, 'loanFees'])->name('loan-fee-templates');
     });
 
-
+    Route::get('/reports/counter', [ReportController::class, 'counter'])->name('dashboard.counter');
 });
