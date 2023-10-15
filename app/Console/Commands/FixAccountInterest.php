@@ -2,14 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Constants\AccountStatus;
-use App\Constants\MemberAccountTransactionType;
-use App\Helpers\AccountHelper;
 use App\Helpers\MemberAccounHelper;
+use App\Models\AccountTransaction;
 use App\Models\MemberAccount;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class ComputeAccountEarnInterest extends Command
 {
@@ -35,9 +32,24 @@ class ComputeAccountEarnInterest extends Command
     public function handle()
     {
         $date_arg = $this->argument('date');
-
+        
         $now = $date_arg ? new Carbon($date_arg) : Carbon::now();
-        MemberAccounHelper::computeSavingsEarnInterest($now);
+
+        $dates = $now->range(Carbon::now(), '1 day');
+
+        $accounts = MemberAccount::get();
+
+        // Delete all records
+        AccountTransaction::where('particular', 'like', '%Earned interest%')->delete();
+
+        foreach ($accounts as $account) {
+            MemberAccounHelper::fixAccounBalance($account);
+        }
+        
+
+        foreach ($dates as $date) {
+            MemberAccounHelper::computeSavingsEarnInterest($date);
+        }
         
         return Command::SUCCESS;
     }

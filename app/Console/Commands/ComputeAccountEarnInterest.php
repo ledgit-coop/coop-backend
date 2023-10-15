@@ -3,8 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Helpers\MemberAccounHelper;
-use App\Models\AccountTransaction;
-use App\Models\MemberAccount;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
@@ -35,16 +33,6 @@ class ComputeAccountEarnInterest extends Command
 
         $now = $date_arg ? new Carbon($date_arg) : Carbon::now();
 
-        $accounts = MemberAccount::get();
-
-        // Delete all records
-        AccountTransaction::where('particular', 'like', '%Earned interest%')->delete();
-
-        foreach ($accounts as $account) {
-            MemberAccounHelper::fixAccounBalance($account);
-        }
-        
-        // Recompute interest
         MemberAccounHelper::computeSavingsEarnInterest($now);
 
         return Command::SUCCESS;
