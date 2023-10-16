@@ -156,7 +156,7 @@ class ReportController extends Controller
         $limit = $request->limit ?? Pagination::PER_PAGE;
 
         $repayments = AccountTransaction::where('type', MemberAccountTransactionType::LOAN_PAYMENT)
-        ->with('member_account')
+        ->with('member_account.member')
         ->orderBy('transaction_date', 'desc')
         ->paginate($limit);
 
