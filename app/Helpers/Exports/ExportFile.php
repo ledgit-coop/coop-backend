@@ -28,12 +28,12 @@ class ExportFile {
     }
 
     public static function exportAgreement(Loan $loan) {
- 
-        $view = view('exports.loans.agreement', compact('loan'))->render();
+        $view = view('exports.loans.agreement', compact('loan'))->render();        
+        return $view;
+    }
 
-        // $filename = $loan->member->full_name . "-" . $loan->loan_number . ".pdf";
-        // $path =  "loans/$loan->id/agreements/";
-        
+    public static function exportLoanTerms(Loan $loan) {
+        $view = view('exports.loans.terms', compact('loan'))->render();        
         return $view;
     }
 }

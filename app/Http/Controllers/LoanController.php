@@ -12,6 +12,7 @@ use App\Helpers\TransactionHelper;
 use App\Http\Requests\LoanApplicationRequest;
 use App\Models\Loan;
 use App\Models\Member;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -303,12 +304,16 @@ class LoanController extends Controller
 
     public function download(Request $request, Loan $loan) {
         $this->validate($request, [
-            'document' => 'required|in:agreement,application-form',
+            'document' => 'required|in:agreement,terms',
         ]);
 
-        $css = file_get_contents(realpath(public_path('bootstrap-5.0.2/css/bootstrap.min.css')));
-        
-        //return ExportFile::exportAgreement($loan);
-        return response()->json(['view' => ExportFile::exportAgreement($loan), 'css' => $css]);
+        if($request->document == 'agreement') {
+            $css = file_get_contents(realpath(public_path('bootstrap-5.0.2/css/bootstrap.min.css')));
+            return response()->json(['view' => ExportFile::exportAgreement($loan), 'css' => $css]);
+        } else if($request->document == 'terms') {
+            return response()->json(['view' => ExportFile::exportLoanTerms($loan)]);
+        } else {
+            throw new Exception("Document not supported.", 1);
+        }
     }
 }
