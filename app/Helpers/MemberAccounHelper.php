@@ -66,7 +66,7 @@ class MemberAccounHelper {
                 if($template->credit_revenue) {
                     TransactionHelper::makeTransaction(
                         $fee->amount,
-                        ($fee->loan_fee_template->name),
+                        "Loan Fee (". $fee->loan_fee_template->name . ") / Loan #: $loan->loan_number",
                         TransactionType::REVENUE,
                         $loan->released_date,
                         'System',

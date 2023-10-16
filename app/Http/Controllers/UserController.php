@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\Pagination;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -9,7 +10,7 @@ class UserController extends Controller
 {
     public function index(Request $request) {
         $filters = (object) $request->filters ?? [];
-        $limit = $request->limit ?? 10;
+        $limit = $request->limit ?? Pagination::PER_PAGE;
         
         $users = User::select([
             'id',

@@ -10,6 +10,7 @@ class ActionTransaction
     const WithdrawSavings = "withdraw-savings";
     const PayAmortization = "pay-amortization";
     const PayMembership = "pay-membership";
+    const PayOrientation = "pay-orientation";
     const PayLoanPreTerminationFee = "pay-loan-pre-termination-fee";
 
     const LIST = [
@@ -20,5 +21,6 @@ class ActionTransaction
         self::PayAmortization,
         self::PayMembership,
         self::PayLoanPreTerminationFee,
+        self::PayOrientation
     ];
 }

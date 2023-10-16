@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\Pagination;
 use App\Http\Requests\LogRequest;
 use App\Http\Requests\LogSaveRequest;
 use App\Models\Log;
@@ -14,7 +15,7 @@ class LogController extends Controller
         $logs = Log::on();
 
         $filters = (object) $request->filters ?? [];
-        $limit = $request->limit ?? 30;
+        $limit = $request->limit ?? Pagination::PER_PAGE;
 
         if($request->module)
             $logs->where(function($logs)  use($request) {

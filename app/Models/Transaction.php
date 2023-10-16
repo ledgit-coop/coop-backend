@@ -20,6 +20,7 @@ class Transaction extends Model
         'parameters',
         'posted',
         'created_by',
+        'transaction_sub_type_id',
     ];
 
     protected $casts = [

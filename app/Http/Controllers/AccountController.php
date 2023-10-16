@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Constants\AccountMaintainingBalanceCycle;
 use App\Constants\AccountMaintainingBalanceMethod;
 use App\Constants\AccountType;
+use App\Constants\Pagination;
 use App\Models\Account;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class AccountController extends Controller
 {
     public function index(Request $request) {
         $filters = (object) $request->filters ?? [];
-        $limit = $request->limit ?? 10;
+        $limit = $request->limit ?? Pagination::PER_PAGE;
         
         $accounts = Account::on();
         

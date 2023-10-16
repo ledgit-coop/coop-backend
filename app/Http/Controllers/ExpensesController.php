@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\Pagination;
 use App\Constants\TransactionType;
 use App\Helpers\TransactionHelper;
 use App\Models\Transaction;
@@ -21,7 +22,7 @@ class ExpensesController extends Controller
         $expenses = Transaction::on();
 
         $filters = (object) $request->filters ?? [];
-        $limit = $request->limit ?? 30;
+        $limit = $request->limit ?? Pagination::PER_PAGE;
 
         $expenses->where('type', TransactionType::EXPENSE);
 

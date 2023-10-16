@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\Pagination;
 use App\Helpers\LoanHelper;
 use App\Helpers\LogHelper;
 use App\Helpers\MemberAccounHelper;
@@ -16,7 +17,7 @@ class RepaymentController extends Controller
 
         $loans = LoanSchedule::on();
         $filters = ($request->filters ? (object) $request->filters : null)  ?? [];
-        $limit = $request->limit ?? 10;
+        $limit = $request->limit ?? Pagination::PER_PAGE;
 
         if($request->member_id)
             $loans->where('member_id', $request->member_id);

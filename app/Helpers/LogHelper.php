@@ -8,7 +8,9 @@ use App\Models\Loan;
 use App\Models\LoanSchedule;
 use App\Models\Log;
 use App\Models\Member;
+use App\Models\Transaction;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class LogHelper {
@@ -28,6 +30,33 @@ class LogHelper {
             'parent_model_id' => $parent_module_id,
             'created_by' => $user->id,
         ]);
+    }
+
+
+    public static function logMembeshipPayment(Member $member, Transaction $transaction) {
+        $date = (new Carbon($transaction->transaction_date))->format('Y-m-d');
+        $amount = number_format($transaction->amount, 2);
+        return self::create(
+            LogTypes::SYSTEM,
+            "Membership payment $date amounting $amount with transaction #: $transaction->transaction_number",
+            Member::class,
+            $member->id,
+            null,
+            null,
+        );
+    }
+
+    public static function logOrientationPayment(Member $member, Transaction $transaction) {
+        $date = (new Carbon($transaction->transaction_date))->format('Y-m-d');
+        $amount = number_format($transaction->amount, 2);
+        return self::create(
+            LogTypes::SYSTEM,
+            "Orientation payment $date amounting $amount with transaction #: $transaction->transaction_number",
+            Member::class,
+            $member->id,
+            null,
+            null,
+        );
     }
 
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\Pagination;
 use App\Http\Requests\LoanFeeTemplateRequest;
 use App\Models\LoanFeeTemplate;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class LoanFeeTemplateController extends Controller
 
         $fees = LoanFeeTemplate::on();
         $filters = (object) $request->filters ?? [];
-        $limit = $request->limit ?? 10;
+        $limit = $request->limit ?? Pagination::PER_PAGE;
         
         if(!empty($filters)) {
             if(isset($filters->keyword))

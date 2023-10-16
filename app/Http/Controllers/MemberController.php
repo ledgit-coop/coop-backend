@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Constants\AccountType;
 use App\Constants\ActionTransaction;
 use App\Constants\MemberAccountTransactionType;
+use App\Constants\Pagination;
 use App\Helpers\AccountHelper;
 use App\Helpers\Helper;
+use App\Helpers\LogHelper;
 use App\Helpers\MemberAccounHelper;
 use App\Helpers\MemberHelper;
+use App\Helpers\TransactionHelper;
 use App\Helpers\Uploading;
 use App\Http\Requests\AddAccountTransactionRequest;
 use App\Http\Requests\MemberRequest;
@@ -19,6 +22,7 @@ use App\Models\Member;
 use App\Models\MemberAccount;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -27,7 +31,7 @@ class MemberController extends Controller
     public function index(Request $request)
     {
         $filters = (object) $request->filters ?? [];
-        $limit = $request->limit ?? 10;
+        $limit = $request->limit ?? Pagination::PER_PAGE;
         
         $members = Member::select([
             'id',
@@ -413,6 +417,21 @@ class MemberController extends Controller
                     ]
                 ]);
                 break;
+            
+            case ActionTransaction::PayMembership:
+                
+                $transaction = TransactionHelper::makeMembershipTransaction($member, new Carbon($request->transaction_date), $request->amount);
+                LogHelper::logMembeshipPayment($member, $transaction);
+
+            break;
+
+            case ActionTransaction::PayOrientation:
+                
+                $transaction = TransactionHelper::makeOrientationPaymentTransaction($member, new Carbon($request->transaction_date), $request->amount);
+                LogHelper::logOrientationPayment($member, $transaction);
+
+            break;
+            
             default:
             throw new Exception("Transaction not supported.");
             break;

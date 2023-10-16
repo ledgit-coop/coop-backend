@@ -11,6 +11,7 @@ use App\Constants\UserType;
 use App\Models\Account;
 use App\Models\LoanFeeTemplate;
 use App\Models\LoanProduct;
+use App\Models\TransactionSubType;
 use App\Models\User;
 use App\Models\WorkIndustry;
 use Illuminate\Database\Seeder;
@@ -24,6 +25,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        TransactionSubType::create(['name'=> 'Membership Fee', 'key' => 'membership-fee', 'locked' => true]);
+        TransactionSubType::create(['name'=> 'Orientation Fee', 'key' => 'orientation-fee', 'locked' => true]);
+
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',

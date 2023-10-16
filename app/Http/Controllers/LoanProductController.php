@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\Pagination;
 use App\Http\Requests\LoanProductRequest;
 use App\Models\LoanProduct;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class LoanProductController extends Controller
 
         $products = LoanProduct::on();
         $filters = (object) $request->filters ?? [];
-        $limit = $request->limit ?? 10;
+        $limit = $request->limit ?? Pagination::PER_PAGE;
  
         if($request->sortField && $request->sortOrder)
             $products->orderBy($request->sortField, $request->sortOrder);

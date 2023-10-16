@@ -2,11 +2,12 @@
 
 namespace App\Helpers;
 
+use App\Constants\TransactionSubTypes;
 use App\Constants\TransactionType;
 use App\Models\Loan;
-use App\Models\LoanSchedule;
 use App\Models\Member;
 use App\Models\Transaction;
+use App\Models\TransactionSubType;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Carbon;
@@ -24,7 +25,13 @@ class TransactionHelper {
         return  'TXN-'.$currentYear . $sequence;
     }
 
-    public static function makeTransaction(float $amount, string $particular, $type, Carbon $transactionDate, $created_by = 'System' ,$extraParams = null) {
+    public static function makeTransaction(
+        float $amount,
+        string $particular,
+        $type,
+        Carbon $transactionDate,
+        $created_by = 'System' ,
+        $extraParams = null) : Transaction {
 
         if(!in_array($type, TransactionType::LIST)) throw new Exception("Transaction type is not supported.", 1);
 
@@ -42,7 +49,7 @@ class TransactionHelper {
     public static function makeMembershipTransaction(Member $member, Carbon $paidDate, float $amount) {
         $name =  $member->full_name;
         $number = $member->member_number;
-        return self::makeTransaction(
+        $transaction = self::makeTransaction(
             $amount,
             "Membership payment made by $name - $number",
             TransactionType::REVENUE,
@@ -52,6 +59,31 @@ class TransactionHelper {
                 'member_id' => $member->id
             ]
         );
+
+        $transaction->transaction_sub_type_id = TransactionSubType::where('key', TransactionSubTypes::MEMBERSHIP_FEE)->firstOrFail()->id;
+        $transaction->saveQuietly();
+
+        return $transaction;
+    }
+
+    public static function makeOrientationPaymentTransaction(Member $member, Carbon $paidDate, float $amount) {
+        $name =  $member->full_name;
+        $number = $member->member_number;
+        $transaction = self::makeTransaction(
+            $amount,
+            "Orientation payment made by $name - $number",
+            TransactionType::REVENUE,
+            $paidDate,
+            'System',
+            [
+                'member_id' => $member->id
+            ]
+        );
+        
+        $transaction->transaction_sub_type_id = TransactionSubType::where('key', TransactionSubTypes::ORIENTATION_FEE)->firstOrFail()->id;
+        $transaction->saveQuietly();
+
+        return $transaction;
     }
 
     public static function makeExpenses(string $particular, Carbon $transactionDate, float $amount, User $created_by) {
@@ -61,22 +93,6 @@ class TransactionHelper {
             TransactionType::EXPENSE,
             $transactionDate,
             $created_by->name,
-        );
-    }
-
-    public static function makeLoanPayment(LoanSchedule $schedule, Carbon $transactionDate, float $amount) {
-        $date = $schedule->due_date;
-        $loan_number = $schedule->loan->loan_number;
-        return self::makeTransaction(
-            $amount,
-            "Loan amortization - $date/Loan #: $loan_number",
-            TransactionType::PAYMENT,
-            $transactionDate,
-            'System',
-            [
-                "loan_id" => $schedule->loan->id,
-                "loan_schedule_id" => $schedule->id,
-            ]
         );
     }
     
