@@ -66,10 +66,15 @@ class ReportController extends Controller
             ];
         });
 
+        $total_loan_released_amount = Loan::whereBetween('released_date', [$request->from, $request->to])
+            ->where('released', true)
+            ->sum('principal_amount');
+
         return response()->json([
             'total_share_capital_amount' => $share_capital_total_amount,
             'total_savings_account_amount' => $total_savings_account_amount,
             'total_expenses_amount' => $total_expenses_amount,
+            'total_loan_released_amount' => $total_loan_released_amount,
             'total_all_fees' => $total_all_fees,
             'total_sub_types' => $sub_types
         ]);
