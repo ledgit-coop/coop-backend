@@ -39,9 +39,7 @@ class AccountHelper {
     }
 
     public static function computeEarnInterest($principal, $annualInterestRate) {
-        // Convert the annual interest rate to a decimal
-        // Convert the annual interest rate to a decimal
-        $r = ($annualInterestRate / 100) / 365;
+        $r = ($annualInterestRate / 100) / 12;
         // Calculate the daily earnings
         $dailyEarnings = $principal * $r;
         

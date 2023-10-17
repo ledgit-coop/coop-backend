@@ -15,11 +15,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('account:interest')->daily();
+        $schedule->command('account:interest')->lastDayOfMonth('23:59');
         $schedule->command('amortization:overdue')->everyTwoMinutes();
         $schedule->command('penalty:check')->dailyAt('01:00');
         $schedule->command('loan:closing')->dailyAt('01:00');
-        $schedule->command('account-transaction:posting')->everyFifteenMinutes();
+        $schedule->command('account-transaction:posting')->dailyAt('23:59');
     }
 
     /**

@@ -27,6 +27,12 @@ class DatabaseSeeder extends Seeder
     {
         TransactionSubType::create(['name'=> 'Membership Fee', 'key' => 'membership-fee', 'locked' => true]);
         TransactionSubType::create(['name'=> 'Orientation Fee', 'key' => 'orientation-fee', 'locked' => true]);
+        TransactionSubType::create(['name'=> 'Interest Earned', 'key' => 'interest-earned', 'locked' => true]);
+        TransactionSubType::create(['name'=> 'Loan Payment', 'key' => 'loan-payment', 'locked' => true]);
+        TransactionSubType::create(['name'=> 'Loan Fee', 'key' => 'loan-fee', 'locked' => true]);
+        TransactionSubType::create(['name'=> 'Loan Released', 'key' => 'loan-released', 'locked' => true]);
+        TransactionSubType::create(['name'=> 'Loan Credit', 'key' => 'loan-credit', 'locked' => true]);
+        TransactionSubType::create(['name'=> 'Share Capital', 'key' => 'share-capital', 'locked' => true]);
 
         User::factory()->create([
             'name' => 'Test User',
