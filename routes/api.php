@@ -93,4 +93,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/reports/loans-released', [ReportController::class, 'loansReleased'])->name('report.loan-released');
     Route::get('/reports/loans-repayments', [ReportController::class, 'repayments'])->name('report.loan-repayments');
     Route::get('/reports/savings-transactions', [ReportController::class, 'savingsAccountTransactions'])->name('report.savings-transactions');
+    
+    Route::get('/reports/charts/revenue', [ReportController::class, 'revenueChart'])->name('report.chart.revenue');
+    Route::get('/reports/charts/loans-released', [ReportController::class, 'loansReleasedChart'])->name('report.chart.loan-released');
 });

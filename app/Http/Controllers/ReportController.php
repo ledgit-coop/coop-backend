@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Constants\AccountTransactionType;
 use App\Constants\AccountType;
 use App\Constants\MemberAccountTransactionType;
 use App\Constants\Pagination;
@@ -10,6 +9,7 @@ use App\Constants\TransactionType;
 use App\Models\AccountTransaction;
 use App\Models\Loan;
 use App\Models\LoanFee;
+use App\Models\LoanProduct;
 use App\Models\Transaction;
 use App\Models\TransactionSubType;
 use Illuminate\Http\Request;
@@ -145,7 +145,6 @@ class ReportController extends Controller
         return response()->json($loans);
     }
 
-
     public function repayments(Request $request) {
 
         $this->validate($request, [
@@ -186,5 +185,44 @@ class ReportController extends Controller
 
 
         return response()->json($transactions);
+    }
+
+    public function loansReleasedChart(Request $request) {
+                
+        $this->validate($request, [
+            'from' => 'required|date|date_format:Y-m-d',
+            'to' => 'required|date|date_format:Y-m-d',
+        ]);
+
+        $products = LoanProduct::get();
+        return response()->json($products->map(function($product) use($request) {
+
+            $loans = $product->loans()
+                ->whereBetween('released_date', [$request->from, $request->to]);
+            return [
+                'name' => $product->name,
+                'count' => $loans->where('released', true)->count(),
+            ];
+        }));
+    }
+
+    public function revenueChart(Request $request) {
+          
+        $this->validate($request, [
+            'from' => 'required|date|date_format:Y-m-d',
+            'to' => 'required|date|date_format:Y-m-d',
+        ]);
+        
+        $revenues = Transaction::select(
+            DB::raw("case when transaction_sub_type_id is null then 'Others' else transaction_sub_types.name end as `name`"),
+            DB::raw("sum(amount) as amount")
+        )
+        ->leftJoin('transaction_sub_types', 'transaction_sub_types.id', '=', 'transactions.transaction_sub_type_id')
+        ->where('type', TransactionType::REVENUE)
+        ->whereBetween('transaction_date', [$request->from, $request->to])
+        ->groupBy("transactions.transaction_sub_type_id")
+        ->get();
+
+        return response()->json($revenues);
     }
 }
