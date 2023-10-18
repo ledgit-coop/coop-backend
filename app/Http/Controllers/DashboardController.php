@@ -25,8 +25,11 @@ class DashboardController extends Controller
 
         $members = Member::where('status', MemberStatus::ACTIVE)->count();
 
-        $overdue_loans = LoanSchedule::where('overdue', true)->count();
-        $overdue_loans_current_month = LoanSchedule::where('overdue', true)->whereMonth('due_date', $current_date->month)->count();
+        $overdue_loans = LoanSchedule::where('overdue', true)->where('paid', false)->count();
+        $overdue_loans_current_month = LoanSchedule::where('overdue', true)
+            ->where('paid', false)
+            ->whereMonth('due_date', $current_date->month)
+            ->count();
 
         $shared_capital_total = MemberAccount::whereHas('account', function($account) {
             $account->where('type', AccountType::SHARE_CAPITAL);

@@ -10,6 +10,7 @@ use App\Models\AccountTransaction;
 use App\Models\Loan;
 use App\Models\LoanFee;
 use App\Models\LoanProduct;
+use App\Models\LoanSchedule;
 use App\Models\Transaction;
 use App\Models\TransactionSubType;
 use Illuminate\Http\Request;
@@ -66,6 +67,18 @@ class ReportController extends Controller
             ];
         });
 
+        $total_collected_interest_amount = LoanSchedule::where('paid', true)
+            ->whereBetween('due_date', [$request->from, $request->to])
+            ->sum('interest_amount');
+
+        $total_collected_penalty_amount = LoanSchedule::where('paid', true)
+            ->whereBetween('due_date', [$request->from, $request->to])
+            ->sum('penalty_amount');
+
+        $total_collected_amortization = LoanSchedule::where('paid', true)
+            ->whereBetween('due_date', [$request->from, $request->to])
+            ->sum('amount_paid');
+            
         $total_loan_released_amount = Loan::whereBetween('released_date', [$request->from, $request->to])
             ->where('released', true)
             ->sum('principal_amount');
@@ -75,6 +88,9 @@ class ReportController extends Controller
             'total_savings_account_amount' => $total_savings_account_amount,
             'total_expenses_amount' => $total_expenses_amount,
             'total_loan_released_amount' => $total_loan_released_amount,
+            'total_collected_interest_amount' => $total_collected_interest_amount,
+            'total_collected_penalty_amount' => $total_collected_penalty_amount,
+            'total_collected_amortization' => $total_collected_amortization,
             'total_all_fees' => $total_all_fees,
             'total_sub_types' => $sub_types
         ]);
@@ -228,6 +244,28 @@ class ReportController extends Controller
         ->groupBy("transactions.transaction_sub_type_id")
         ->get();
 
-        return response()->json($revenues);
+
+        $total_loans_collected = LoanSchedule::select(
+                DB::raw("sum(penalty_amount) as penalty_amount"),
+                DB::raw("sum(interest_amount) as interest_amount")
+            )
+            ->whereBetween('due_date', [$request->from, $request->to])
+            ->where('paid', true)
+            ->first();
+
+
+        return response()->json([
+            ...$revenues,
+            ...[
+                [
+                    'name' => 'Collected Loan Penalties',
+                    'amount' => $total_loans_collected->penalty_amount,
+                ],
+                [
+                    'name' => 'Collected Loan Interest',
+                    'amount' => $total_loans_collected->interest_amount,
+                ]
+            ]
+        ]);
     }
 }
