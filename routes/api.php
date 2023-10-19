@@ -10,6 +10,7 @@ use App\Http\Controllers\LoanFeeTemplateController;
 use App\Http\Controllers\LoanProductController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\PublicController;
 use App\Http\Controllers\RepaymentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
@@ -32,7 +33,7 @@ Route::post('/login', [LoginController::class, 'login'])->middleware('guest');
 Route::post('/password-reset', [PasswordResetController::class, 'reset'])->name('password.reset')->middleware('guest');
 Route::post('/password-reset/request', [PasswordResetController::class, 'request'])->name('password.request')->middleware('guest');
 
-Route::get('/loans/download/{loan}', [LoanController::class, 'download'])->name('loans.download');
+Route::post('/public/send-email', [PublicController::class, 'mail'])->name('public.mail')->middleware('guest');
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/logout', [LoginController::class, 'logout']);
@@ -57,7 +58,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/loans/active-loans/{member}', [LoanController::class, 'activeLoans'])->name('loans.active');
     Route::post('/loans/status/{loan}', [LoanController::class, 'updateStatus'])->name('loans.status');
     Route::get('/loans/schedule/{loan}', [LoanController::class, 'loanSchedule'])->name('loans.schedule');
-
+    Route::get('/loans/download/{loan}', [LoanController::class, 'download'])->name('loans.download');
     Route::get('/loan-repayments', [RepaymentController::class, 'index'])->name('loan-repayments');
     Route::post('/loan-repayments/{loanRepayment}', [RepaymentController::class, 'store'])->name('loan-repayments.store');
 
