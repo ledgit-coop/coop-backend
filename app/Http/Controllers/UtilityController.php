@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Constants\AccountType;
+use App\Constants\FinancialTypes;
 use App\Helpers\LoanCalculator\LoanCalculator;
 use App\Http\Requests\LoanCalculatorRequest;
 use App\Models\Account;
@@ -10,6 +11,7 @@ use App\Models\LoanFeeTemplate;
 use App\Models\LoanProduct;
 use App\Models\Member;
 use App\Models\MemberAccount;
+use App\Models\TransactionSubType;
 use App\Models\WorkIndustry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -159,5 +161,10 @@ class UtilityController extends Controller
     
     public function loanFees() {
         return response()->json(LoanFeeTemplate::where('enabled', true)->get());
+    }
+
+    public function getTransactionSubTypeExpenses() {
+        $types = TransactionSubType::where('type', FinancialTypes::EXPENSES)->orderBy('name')->get();
+        return response()->json($types);
     }
 }

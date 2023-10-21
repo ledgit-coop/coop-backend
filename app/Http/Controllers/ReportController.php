@@ -239,7 +239,7 @@ class ReportController extends Controller
             DB::raw("sum(amount) as amount")
         )
         ->leftJoin('transaction_sub_types', 'transaction_sub_types.id', '=', 'transactions.transaction_sub_type_id')
-        ->where('type', TransactionType::REVENUE)
+        ->where('transactions.type', TransactionType::REVENUE)
         ->whereBetween('transaction_date', [$request->from, $request->to])
         ->groupBy("transactions.transaction_sub_type_id")
         ->get();

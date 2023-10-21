@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\FinancialTypes;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,7 +18,9 @@ return new class extends Migration
             $table->id();
             $table->string('key')->unique();
             $table->string('name');
+            $table->enum('type', FinancialTypes::LIST)->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -24,9 +24,14 @@ class ExpensesController extends Controller
         $filters = (object) $request->filters ?? [];
         $limit = $request->limit ?? Pagination::PER_PAGE;
 
+        $expenses->with('transaction_sub_type');
         $expenses->where('type', TransactionType::EXPENSE);
 
         if(!empty($filters)) {
+
+            if(isset($filters->transaction_sub_type_id))
+                $expenses->where('transaction_sub_type_id', $filters->transaction_sub_type_id);
+
             if(isset($filters->keyword))
                 $expenses->where('particular', 'like', "%$filters->keyword%");
         }
@@ -49,6 +54,7 @@ class ExpensesController extends Controller
         $this->validate($request, [
             'amount' => 'nullable|numeric|between:0.00,9999999.99',
             'particular' => 'required|string',
+            'transaction_sub_type_id' => 'required|exists:transaction_sub_types,id',
             'date' => 'required|date|date_format:Y-m-d',
         ]);
 
@@ -58,6 +64,9 @@ class ExpensesController extends Controller
             $request->amount,
             Auth::user()
         );
+
+        $expense->transaction_sub_type_id = $request->transaction_sub_type_id;
+        $expense->saveQuietly();
 
         return response()->json($expense);
     }
@@ -84,6 +93,7 @@ class ExpensesController extends Controller
     {
         $this->validate($request, [
             'amount' => 'nullable|numeric|between:0.00,9999999.99',
+            'transaction_sub_type_id' => 'required|exists:transaction_sub_types,id',
             'particular' => 'required|string',
             'date' => 'required|date|date_format:Y-m-d',
         ]);
@@ -91,6 +101,8 @@ class ExpensesController extends Controller
         $expense->amount = $request->amount;
         $expense->particular = $request->particular;
         $expense->transaction_date = $request->date;
+        $expense->transaction_sub_type_id = $request->transaction_sub_type_id;
+
         $expense->save();
         
         return response()->json($expense);

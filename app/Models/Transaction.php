@@ -27,4 +27,8 @@ class Transaction extends Model
         'amount' => 'double',
         'posted' => 'bool'
     ];
+
+    public function transaction_sub_type() {
+        return $this->belongsTo(TransactionSubType::class);
+    }
 }
