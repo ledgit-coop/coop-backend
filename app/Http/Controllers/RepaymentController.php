@@ -42,9 +42,13 @@ class RepaymentController extends Controller
                     });
                 });
             if(isset($filters->due_date)) {
-                $date = new Carbon($filters->due_date);
-                $loans->where('due_date', $date->format('Y-m-d'));
+                $dates = [
+                    (new Carbon($filters->due_date[0]))->format('Y-m-d'),
+                    (new Carbon($filters->due_date[1]))->format('Y-m-d'),
+                ];
+                $loans->whereBetween('due_date', $dates);
             }
+
             if(isset($filters->status)) {
                 $date = Carbon::now();
                 switch ($filters->status) {

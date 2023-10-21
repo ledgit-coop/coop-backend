@@ -89,7 +89,16 @@ class DashboardController extends Controller
         $revenue = Transaction::select('amount', DB::raw("month(transaction_date) as month"))
             ->where('type', TransactionType::REVENUE)->whereYear('transaction_date', $year)->get();
 
+        $total_loans_collected = LoanSchedule::select(
+                DB::raw("sum(penalty_amount) as penalty_amount"),
+                DB::raw("sum(interest_amount) as interest_amount")
+            )
+            ->whereYear('due_date', $year)
+            ->where('paid', true)
+            ->first();
+
         $cashflow = [];
+        
         for ($i=1; $i <= 12; $i++) { 
             $cashflow[] = [
                 'month' => Carbon::now()->setMonth($i)->format("M"),
@@ -97,7 +106,7 @@ class DashboardController extends Controller
                 'flow' => [
                     'share_capital' => $share_capital->where('month', $i)->sum('amount'),
                     'expenses' => $expenses->where('month', $i)->sum('amount'),
-                    'revenue' => $revenue->where('month', $i)->sum('amount'),
+                    'revenue' => $revenue->where('month', $i)->sum('amount') + ($total_loans_collected ? ($total_loans_collected->penalty_amount + $total_loans_collected->interest_amount) : 0),
                 ]
             ];
         }

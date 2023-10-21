@@ -32,6 +32,15 @@ class ExpensesController extends Controller
             if(isset($filters->transaction_sub_type_id))
                 $expenses->where('transaction_sub_type_id', $filters->transaction_sub_type_id);
 
+            if(isset($filters->transaction_dates)) {
+                $dates = [
+                    (new Carbon($filters->transaction_dates[0]))->format('Y-m-d'),
+                    (new Carbon($filters->transaction_dates[1]))->format('Y-m-d'),
+                ];
+
+                $expenses->whereBetween('transaction_date', $dates);
+            }
+
             if(isset($filters->keyword))
                 $expenses->where('particular', 'like', "%$filters->keyword%");
         }
