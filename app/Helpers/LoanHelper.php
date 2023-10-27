@@ -155,7 +155,7 @@ class LoanHelper {
 
     public static function applyAmortizationPenalty(LoanSchedule $schedule) {
         // Past due grace period and not paid
-        if(abs($schedule->due_days) > $schedule->penalty_grace_period && $schedule->paid == false) {
+        if(abs($schedule->due_days) > $schedule->loan->penalty_grace_period && $schedule->paid == false) {
             $now = Carbon::now();
             $latest_penalty = $schedule->latest_penalty();
             $extended_penalty = false;
