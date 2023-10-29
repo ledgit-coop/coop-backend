@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExpensesController;
+use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LoanFeeTemplateController;
 use App\Http\Controllers\LoanProductController;
@@ -51,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::resource('users', UserController::class)->except(['create', 'edit']);
     Route::resource('accounts', AccountController::class)->except(['create', 'edit']);
     Route::resource('expenses', ExpensesController::class)->except(['create', 'edit']);
+    Route::resource('revenues', IncomeController::class)->except(['create', 'edit']);
     Route::resource('loan-products', LoanProductController::class)->except(['create', 'edit']);
     Route::resource('transaction-types', TransactionTypeController::class)->except(['create', 'edit']);
 
@@ -88,7 +90,10 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('/guarantors/dropdown', [UtilityController::class, 'guarantorDropdown'])->name('guarantors.dropdown');
         Route::get('/loan-calculator', [UtilityController::class, 'loanCalculator'])->name('loan-calculator.calculate');
         Route::get('/loan-fee-templates', [UtilityController::class, 'loanFees'])->name('loan-fee-templates');
+
+        Route::get('/transaction-sub-types/dropdown', [UtilityController::class, 'getTransactionSubTypesDropdown'])->name('transaction-sub-types.dropdown');
         Route::get('/transaction-sub-types/expenses', [UtilityController::class, 'getTransactionSubTypeExpenses'])->name('transaction-sub-types.expenses');
+        Route::get('/transaction-sub-types/revenues', [UtilityController::class, 'getTransactionSubTypeRevenues'])->name('transaction-sub-types.revenues');
     });
 
     Route::get('/reports/counter', [ReportController::class, 'counter'])->name('report.counter');

@@ -12,10 +12,15 @@ class LoanFee extends Model
     protected $fillable = [
         'amount',
         'fee',
-        'loan_fee_template_id'
+        'loan_fee_template_id',
+        'loan_id',
     ];
 
     public function loan_fee_template() {
         return $this->belongsTo(LoanFeeTemplate::class, 'loan_fee_template_id');
+    }
+
+    public function loan() {
+        return $this->belongsTo(Loan::class);
     }
 }

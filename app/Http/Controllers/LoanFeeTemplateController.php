@@ -11,7 +11,7 @@ class LoanFeeTemplateController extends Controller
 {
     public function index(Request $request) {
 
-        $fees = LoanFeeTemplate::on();
+        $fees = LoanFeeTemplate::with('transaction_sub_type');
         $filters = (object) $request->filters ?? [];
         $limit = $request->limit ?? Pagination::PER_PAGE;
         
@@ -41,6 +41,7 @@ class LoanFeeTemplateController extends Controller
             'credit_share_capital',
             'credit_regular_savings',
             'show_to_report',
+            'transaction_sub_type_id',
         ]);
 
         $product = LoanFeeTemplate::create($data);
@@ -65,6 +66,7 @@ class LoanFeeTemplateController extends Controller
             'credit_share_capital',
             'credit_regular_savings',
             'show_to_report',
+            'transaction_sub_type_id',
         ]);
 
         foreach ($data as $key => $value) {

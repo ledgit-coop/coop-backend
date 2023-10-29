@@ -19,6 +19,7 @@ class LoanFeeTemplate extends Model
         'credit_share_capital',
         'credit_regular_savings',
         'show_to_report',
+        'transaction_sub_type_id',
     ];
 
     protected $casts = [
@@ -29,4 +30,8 @@ class LoanFeeTemplate extends Model
         'credit_regular_savings'=> 'boolean',
         'show_to_report' => 'boolean',
     ];
+
+    public function transaction_sub_type() {
+        return $this->belongsTo(TransactionSubType::class);
+    }
 }

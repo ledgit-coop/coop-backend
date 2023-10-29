@@ -59,12 +59,13 @@ class MemberAccounHelper {
 
     public static function recordFeeCredits(Loan $loan) {
         foreach ($loan->loan_fees as $fee) {
-            if($fee->amount > 0) {
-                $template = $fee->loan_fee_template;
 
-                // Record revenue
-                if($template->credit_revenue) {
-                    TransactionHelper::makeTransaction(
+            if($fee->amount > 0) {
+
+                $template = $fee->loan_fee_template;
+                
+                if($template->credit_revenue && $template->transaction_sub_type_id) {
+                    $transaction = TransactionHelper::makeTransaction(
                         $fee->amount,
                         "Loan Fee (". $fee->loan_fee_template->name . ") / Loan #: $loan->loan_number",
                         TransactionType::REVENUE,
@@ -74,10 +75,14 @@ class MemberAccounHelper {
                             "loan_id" => $loan->id,
                         ]
                     );
-                }
 
+                    if($template->transaction_sub_type_id) {
+                        $transaction->transaction_sub_type_id = $template->transaction_sub_type_id;
+                        $transaction->save();
+                    }
+                }
                 // Record share capital
-                if($template->credit_share_capital) {
+                else if($template->credit_share_capital) {
                     $member_sharecap_acc = $loan->member->share_capital_account;
                     // Ignore if no share cap
                     if($member_sharecap_acc) {
@@ -92,8 +97,8 @@ class MemberAccounHelper {
                         ]);
                     }
                 }
-
-                if($template->credit_regular_savings) {
+                // Record regular savings
+                else if($template->credit_regular_savings) {
                     $savings_account = $loan->member->savings_accounts()->where('is_holder_member', true)->first();
                     if($savings_account) {
                         $savings_account->transactions()->createMany([

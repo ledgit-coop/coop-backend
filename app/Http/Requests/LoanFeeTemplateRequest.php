@@ -35,6 +35,7 @@ class LoanFeeTemplateRequest extends FormRequest
             'credit_share_capital' => 'nullable|boolean',
             'credit_regular_savings' => 'nullable|boolean',
             'show_to_report' => 'nullable|boolean',
+            'transaction_sub_type_id' => 'nullable|exists:transaction_sub_types,id',
         ];
     }
 }

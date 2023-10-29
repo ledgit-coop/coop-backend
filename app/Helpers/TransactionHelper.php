@@ -95,6 +95,16 @@ class TransactionHelper {
             $created_by->name,
         );
     }
+
+    public static function makeIncome(string $particular, Carbon $transactionDate, float $amount, User $created_by) {
+        return self::makeTransaction(
+            $amount,
+            $particular,
+            TransactionType::REVENUE,
+            $transactionDate,
+            $created_by->name,
+        );
+    }
     
     public static function makeLoanPreTerminationFee(Loan $loan, Carbon $transactionDate, float $amount) {
         $date = $transactionDate->format('Y-m-d');

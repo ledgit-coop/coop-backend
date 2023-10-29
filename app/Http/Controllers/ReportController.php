@@ -8,7 +8,6 @@ use App\Constants\Pagination;
 use App\Constants\TransactionType;
 use App\Models\AccountTransaction;
 use App\Models\Loan;
-use App\Models\LoanFee;
 use App\Models\LoanProduct;
 use App\Models\LoanSchedule;
 use App\Models\Transaction;
@@ -46,24 +45,10 @@ class ReportController extends Controller
             ->whereBetween('transaction_date', [$request->from, $request->to])
             ->sum('amount');
 
-        $sub_types = TransactionSubType::get()->map(function($transaction) {
+        $sub_types = TransactionSubType::get()->map(function($transaction) use($request) {
             return [
                 'name' => "Total $transaction->name amount",
-                'amount' => $transaction->transactions()->sum('amount')
-            ];
-        });
-
-        $total_all_fees = LoanFee::select(['loan_fee_template_id', DB::raw("sum(amount) as total")])
-        ->whereHas('loan_fee_template', function($template) {
-            $template->where('show_to_report', true);
-        })
-        ->with('loan_fee_template')
-        ->groupBy('loan_fee_template_id')
-        ->get()
-        ->map(function($fee) {
-            return [
-                'name' => "Total " . $fee->loan_fee_template->name . " amount",
-                'amount' => $fee->total,
+                'amount' => $transaction->transactions()->whereBetween('transaction_date', [$request->from, $request->to])->sum('amount')
             ];
         });
 
@@ -83,6 +68,43 @@ class ReportController extends Controller
             ->where('released', true)
             ->sum('principal_amount');
 
+        $total_loans_collection = LoanSchedule::select([
+            DB::raw("sum(due_amount) as total_due_amount"),
+            DB::raw("sum(amount_paid) as total_amount_paid"),
+        ])->whereHas('loan', function($loan) {
+            $loan->where('released', true);
+        })
+        ->whereBetween('due_date', [$request->from, $request->to])
+        ->where('paid', false)->first();
+        $total_loans_collection = $total_loans_collection ? ($total_loans_collection->total_due_amount - $total_loans_collection->total_amount_paid) : 0;
+
+        // ------ ALL TIME REPORTS --------
+
+        $all_time_total_loans_collection = LoanSchedule::whereHas('loan', function($loan) {
+            $loan->where('released', true);
+        })
+        ->where('paid', false)->sum('due_amount');
+
+        $all_time_total_loans_collected = LoanSchedule::whereHas('loan', function($loan) {
+                $loan->where('released', true);
+            })
+            ->where('paid', true)
+            ->sum('amount_paid');
+
+        $all_time_share_capital_total_amount = AccountTransaction::where('type', MemberAccountTransactionType::SHARE_CAPITAL)
+        ->whereHas('member_account', function ($acc) {
+            $acc->whereHas('member');
+        })
+        ->sum('amount');
+
+        $all_time_total_loan_released_amount = Loan::where('released', true)
+            ->sum('principal_amount');
+
+        $all_time_interest_loan_interest = Loan::where('released', true)
+            ->sum('interest_amount');
+
+        // ------  END ALL TIME REPORT  ------
+
         return response()->json([
             'total_share_capital_amount' => $share_capital_total_amount,
             'total_savings_account_amount' => $total_savings_account_amount,
@@ -91,8 +113,15 @@ class ReportController extends Controller
             'total_collected_interest_amount' => $total_collected_interest_amount,
             'total_collected_penalty_amount' => $total_collected_penalty_amount,
             'total_collected_amortization' => $total_collected_amortization,
-            'total_all_fees' => $total_all_fees,
-            'total_sub_types' => $sub_types
+            'total_loans_collection' => $total_loans_collection,
+            'total_all_fees' => [], // @TODO: Remove
+            'total_sub_types' => $sub_types,
+
+            'all_time_total_loans_collection' => $all_time_total_loans_collection,
+            'all_time_share_capital_total_amount' => $all_time_share_capital_total_amount,
+            'all_time_total_loan_released_amount' => $all_time_total_loan_released_amount,
+            'all_time_interest_loan_interest' => $all_time_interest_loan_interest,
+            'all_time_total_loans_collected' => $all_time_total_loans_collected,
         ]);
     }
 
@@ -126,8 +155,13 @@ class ReportController extends Controller
         $limit = $request->limit ?? Pagination::PER_PAGE;
 
         $expenses = Transaction::where('type', TransactionType::EXPENSE)
-            ->whereBetween('transaction_date', [$request->filters['from'], $request->filters['to']])
-            ->paginate($limit);
+            ->with('transaction_sub_type')
+            ->whereBetween('transaction_date', [$request->filters['from'], $request->filters['to']]);
+        
+        if(isset($request->filters['transaction_sub_type_id']) && !empty($request->filters['transaction_sub_type_id']))
+            $expenses->where('transaction_sub_type_id', $request->filters['transaction_sub_type_id']);
+
+        $expenses = $expenses->paginate($limit);
 
         return response()->json($expenses);
     }
@@ -137,15 +171,22 @@ class ReportController extends Controller
         $this->validate($request, [
             'filters.from' => 'required|date|date_format:Y-m-d',
             'filters.to' => 'required|date|date_format:Y-m-d',
+            'transaction_sub_type_id' => 'nullable',
         ]);
 
         $limit = $request->limit ?? Pagination::PER_PAGE;
 
-        $expenses = Transaction::where('type', TransactionType::REVENUE)
-            ->whereBetween('transaction_date', [$request->filters['from'], $request->filters['to']])
-            ->paginate($limit);
+        $revenues = Transaction::where('type', TransactionType::REVENUE)
+            ->with('transaction_sub_type')
+            ->whereNotNull('transaction_sub_type_id')
+            ->whereBetween('transaction_date', [$request->filters['from'], $request->filters['to']]);
+        
+        if(isset($request->filters['transaction_sub_type_id']) && !empty($request->filters['transaction_sub_type_id']))
+            $revenues->where('transaction_sub_type_id', $request->filters['transaction_sub_type_id']);
 
-        return response()->json($expenses);
+        $revenues = $revenues->paginate($limit);
+
+        return response()->json($revenues);
     }
 
     public function loansReleased(Request $request) {

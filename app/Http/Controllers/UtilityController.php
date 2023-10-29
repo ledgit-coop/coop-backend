@@ -104,6 +104,9 @@ class UtilityController extends Controller
                 'value' => $data->id,
                 'label' => $data->full_name . ' - ' . $data->member_number,
                 'disabled' => $data->guarantored_twice,
+                'extra' => [
+                    'twice' => $data->guarantored_twice,
+                ]
             ];
         });
 
@@ -165,6 +168,24 @@ class UtilityController extends Controller
 
     public function getTransactionSubTypeExpenses() {
         $types = TransactionSubType::where('type', FinancialTypes::EXPENSES)->orderBy('name')->get();
+        return response()->json($types);
+    }
+
+    public function getTransactionSubTypeRevenues() {
+        $types = TransactionSubType::where('type', FinancialTypes::REVENUES)->orderBy('name')->get();
+        return response()->json($types);
+    }
+
+    public function getTransactionSubTypesDropdown(Request $request) {
+        
+        $types = TransactionSubType::orderBy('name');
+
+        // Filter by types
+        if($request->types)
+            $types->whereIn('type', is_array($request->types) ? $request->types : [$request->types]);
+
+        $types = $types->get();
+
         return response()->json($types);
     }
 }
