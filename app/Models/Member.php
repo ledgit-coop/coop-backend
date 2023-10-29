@@ -17,7 +17,6 @@ class Member extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'oriented',
         'member_number',
         'surname',
         'status',
@@ -37,7 +36,8 @@ class Member extends Model
         'mobile_number',
         'telephone_number',
         'oriented',
-        'profile_picture_url'
+        'profile_picture_url',
+        'paid_membership',
     ];
 
     protected $appends = [

@@ -36,6 +36,7 @@ return new class extends Migration
             $table->string('mobile_number')->nullable();
             $table->string('telephone_number')->nullable();
             $table->boolean('oriented')->default(false);
+            $table->boolean('paid_membership')->default(false);
             $table->date('member_at');
 
             $table->string('in_case_emergency_person')->nullable();

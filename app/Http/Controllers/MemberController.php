@@ -57,6 +57,23 @@ class MemberController extends Controller
                 });
             if(isset($filters->status))
                 $members->where('status', $filters->status);
+
+            if(isset($filters->others)) {
+                switch ($filters->others) {
+                    case 'not-paid-membership':
+                        $members->where('paid_membership', false);
+                        break;
+                    case 'not-attended-orientation':
+                        $members->where('oriented', false);
+                        break;
+                    case 'already-paid-membership':
+                        $members->where('paid_membership', true);
+                        break;
+                    case 'already-attended-orientation':
+                        $members->where('paid_membership', true);
+                        break;
+                }
+            }
         }
 
         if($request->sortField && $request->sortOrder)
@@ -422,6 +439,8 @@ class MemberController extends Controller
                 
                 $transaction = TransactionHelper::makeMembershipTransaction($member, new Carbon($request->transaction_date), $request->amount);
                 LogHelper::logMembeshipPayment($member, $transaction);
+                $member->paid_membership = true;
+                $member->save();
 
             break;
 
