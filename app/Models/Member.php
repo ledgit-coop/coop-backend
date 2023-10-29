@@ -47,7 +47,9 @@ class Member extends Model
 
     protected $casts = [
         'member_at' => 'datetime:Y-m-d',
-        'date_of_birth' => 'datetime:Y-m-d'
+        'date_of_birth' => 'datetime:Y-m-d',
+        'paid_membership' => 'boolean',
+        'oriented' => 'boolean',
     ];
     
     protected function age(): Attribute
