@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Constants\AccountType;
+use App\Constants\FinancialTypes;
 use App\Constants\MemberAccountTransactionType;
 use App\Constants\Pagination;
 use App\Constants\TransactionType;
@@ -176,7 +177,9 @@ class ReportController extends Controller
 
         $limit = $request->limit ?? Pagination::PER_PAGE;
 
-        $revenues = Transaction::where('type', TransactionType::REVENUE)
+        $revenues = Transaction::whereHas('transaction_sub_type', function($subType) {
+                $subType->where('type', FinancialTypes::REVENUES);
+            })
             ->with('transaction_sub_type')
             ->whereNotNull('transaction_sub_type_id')
             ->whereBetween('transaction_date', [$request->filters['from'], $request->filters['to']]);

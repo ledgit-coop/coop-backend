@@ -63,6 +63,9 @@ class TransactionTypeController extends Controller
 
     public function destroy(TransactionSubType $transactionType)
     {
+        if($transactionType->locked)
+            throw new Exception("Cannot delete since currently being locked.");  
+
         if($transactionType->transactions()->exists())
             throw new Exception("Cannot delete since currently being in used in the system.");  
 

@@ -31,7 +31,12 @@ class LoanProduct extends Model
         'penalty_method',
 
         'pre_termination_panalty',
-        'pre_termination_panalty_method'
+        'pre_termination_panalty_method',
+
+        'disbursement_transaction_sub_type_id',
+        'principal_transaction_sub_type_id',
+        'interest_transaction_sub_type_id',
+        'penalty_transaction_sub_type_id',
     ];
 
     protected $casts = [
@@ -44,6 +49,11 @@ class LoanProduct extends Model
         'penalty' => 'double',
         'default_number_of_repayments' => 'double',
         'fees' => 'array',
+        
+        'disbursement_transaction_sub_type_id' => 'integer',
+        'principal_transaction_sub_type_id' => 'integer',
+        'interest_transaction_sub_type_id' => 'integer',
+        'penalty_transaction_sub_type_id' => 'integer',
     ];
 
     public function loan_product_fees() {
@@ -52,5 +62,25 @@ class LoanProduct extends Model
 
     public function loans() {
         return $this->hasMany(Loan::class, 'loan_product_id');
+    }
+
+    public function disbursementTransaction()
+    {
+        return $this->belongsTo(TransactionSubType::class, 'disbursement_transaction_sub_type_id');
+    }
+
+    public function principalTransaction()
+    {
+        return $this->belongsTo(TransactionSubType::class, 'principal_transaction_sub_type_id');
+    }
+
+    public function interestTransaction()
+    {
+        return $this->belongsTo(TransactionSubType::class, 'interest_transaction_sub_type_id');
+    }
+
+    public function penaltyTransaction()
+    {
+        return $this->belongsTo(TransactionSubType::class, 'penalty_transaction_sub_type_id');
     }
 }

@@ -524,4 +524,17 @@ class MemberController extends Controller
         
         return true;
     }
+
+    public function download(Request $request, Member $member) {
+        $this->validate($request, [
+            'document' => 'required|in:profile',
+        ]);
+        
+        if($request->document == 'profile') {
+            $view = view('exports.members.profile', compact('member'))->render();
+            return response()->json(['view' => $view]);
+        } else {
+            throw new Exception("Document not supported.", 1);
+        }
+    }
 }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('key')->unique();
             $table->string('name');
             $table->enum('type', FinancialTypes::LIST)->nullable();
+            $table->boolean('locked', false);
             $table->timestamps();
             $table->softDeletes();
         });

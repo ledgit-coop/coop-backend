@@ -45,6 +45,11 @@ class LoanProductController extends Controller
 
             'pre_termination_panalty',
             'pre_termination_panalty_method',
+
+            'disbursement_transaction_sub_type_id',
+            'principal_transaction_sub_type_id',
+            'interest_transaction_sub_type_id',
+            'penalty_transaction_sub_type_id',
         ]);
 
         $product = LoanProduct::create($data);
@@ -86,6 +91,11 @@ class LoanProductController extends Controller
 
             'pre_termination_panalty',
             'pre_termination_panalty_method',
+
+            'disbursement_transaction_sub_type_id',
+            'principal_transaction_sub_type_id',
+            'interest_transaction_sub_type_id',
+            'penalty_transaction_sub_type_id',
         ]);
 
         foreach ($data as $key => $value) {

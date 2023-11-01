@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Constants\AccountType;
+use App\Constants\FinancialTypes;
 use App\Constants\MemberAccountTransactionType;
 use App\Constants\MemberStatus;
 use App\Constants\TransactionType;
@@ -84,18 +85,27 @@ class DashboardController extends Controller
             ->get();
 
         $expenses = Transaction::select('amount', DB::raw("month(transaction_date) as month"))
-            ->where('type', TransactionType::EXPENSE)->whereYear('transaction_date', $year)->get();
+            ->whereHas('transaction_sub_type', function($subType) {
+                $subType->where('type', FinancialTypes::EXPENSES);
+            })
+            ->whereYear('transaction_date', $year)->get();
 
         $revenue = Transaction::select('amount', DB::raw("month(transaction_date) as month"))
-            ->where('type', TransactionType::REVENUE)->whereYear('transaction_date', $year)->get();
+            ->whereHas('transaction_sub_type', function($subType) {
+                $subType->where('type', FinancialTypes::REVENUES);
+            })
+            ->whereYear('transaction_date', $year)
+            ->get();
 
         $total_loans_collected = LoanSchedule::select(
                 DB::raw("sum(penalty_amount) as penalty_amount"),
-                DB::raw("sum(interest_amount) as interest_amount")
+                DB::raw("sum(interest_amount) as interest_amount"),
+                DB::raw("month(due_date) as month")
             )
             ->whereYear('due_date', $year)
             ->where('paid', true)
-            ->first();
+            ->groupBy(DB::raw("MONTH(due_date)"))
+            ->get();
 
         $cashflow = [];
         
@@ -106,7 +116,11 @@ class DashboardController extends Controller
                 'flow' => [
                     'share_capital' => $share_capital->where('month', $i)->sum('amount'),
                     'expenses' => $expenses->where('month', $i)->sum('amount'),
-                    'revenue' => $revenue->where('month', $i)->sum('amount') + ($total_loans_collected ? ($total_loans_collected->penalty_amount + $total_loans_collected->interest_amount) : 0),
+                    'revenue' => $revenue->where('month', $i)->sum('amount') + 
+                        (
+                            $total_loans_collected->where('month', $i)->sum('penalty_amount') + 
+                            $total_loans_collected->where('month', $i)->sum('interest_amount')
+                        )
                 ]
             ];
         }

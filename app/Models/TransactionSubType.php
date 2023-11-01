@@ -15,7 +15,10 @@ class TransactionSubType extends Model
         'name',
         'key',
         'type',
+        'locked',
     ];
+
+    protected $casts = ['locked'];
 
     public function transactions() {
         return $this->hasMany(Transaction::class);

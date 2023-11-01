@@ -53,6 +53,10 @@ class LoanProductRequest extends FormRequest
             'pre_termination_panalty' => 'nullable|numeric|between:0.00,9999999.99',
             'pre_termination_panalty_method' => 'nullable|string',
 
+            'disbursement_transaction_sub_type_id' => 'required|exists:transaction_sub_types,id',
+            'principal_transaction_sub_type_id' => 'required|exists:transaction_sub_types,id',
+            'interest_transaction_sub_type_id' => 'required|exists:transaction_sub_types,id',
+            'penalty_transaction_sub_type_id' => 'required|exists:transaction_sub_types,id',
         ];
     }
 }

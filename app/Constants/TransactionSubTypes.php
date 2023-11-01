@@ -12,6 +12,7 @@ class TransactionSubTypes
     const LOAN_RELEASED = 'loan-released';
     const LOAN_CREDIT = 'loan-credit';
     const SHARE_CAPITAL = 'share-capital';
+    const LOAN_DISBURSEMENT = 'loan-disbursement';
 
     const LIST = [
         self::MEMBERSHIP_FEE,
