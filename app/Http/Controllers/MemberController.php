@@ -163,10 +163,10 @@ class MemberController extends Controller
                 $member->name_extension,
                 $member->civil_status,
                 $member->status,
-                $member->date_of_birth,
+                $member->date_of_birth->format("Y-m-d"),
                 $member->place_of_birth,
                 $member->gender,
-                $member->date_hired,
+                $member->date_hired->format("Y-m-d"),
                 $member->department,
                 $member->position,
                 $member->employee_no,
@@ -182,7 +182,7 @@ class MemberController extends Controller
                 $member->in_case_emergency_person,
                 $member->in_case_emergency_address,
                 $member->in_case_emergency_contact,
-                $member->member_at,
+                $member->member_at->format("Y-m-d"),
             ];
         })->values();
 
