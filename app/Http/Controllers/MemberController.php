@@ -81,6 +81,119 @@ class MemberController extends Controller
 
         return $members->paginate($limit);
     }
+
+    public function exportMembersCSV(Request $request)
+    {
+        $filters = (object) $request->filters ?? [];
+        $limit = $request->limit ?? Pagination::PER_PAGE;
+        
+        $members = Member::on();
+        
+        if(!empty($filters)) {
+            if(isset($filters->keyword))
+                $members->where(function($members) use($filters) {
+                    $members->orWhere('member_number', 'like', "%$filters->keyword%")
+                    ->orWhere('surname', 'like', "%$filters->keyword%")
+                    ->orWhere('first_name', 'like', "%$filters->keyword%")
+                    ->orWhere('middle_name', 'like', "%$filters->keyword%")
+                    ->orWhere('email_address', 'like', "%$filters->keyword%");
+                });
+            if(isset($filters->status))
+                $members->where('status', $filters->status);
+
+            if(isset($filters->others)) {
+                switch ($filters->others) {
+                    case 'not-paid-membership':
+                        $members->where('paid_membership', false);
+                        break;
+                    case 'not-attended-orientation':
+                        $members->where('oriented', false);
+                        break;
+                    case 'already-paid-membership':
+                        $members->where('paid_membership', true);
+                        break;
+                    case 'already-attended-orientation':
+                        $members->where('paid_membership', true);
+                        break;
+                }
+            }
+        }
+
+        if($request->sortField && $request->sortOrder)
+            $members->orderBy($request->sortField, $request->sortOrder);
+
+        $members = $members->limit($limit)->get();
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=members.csv');
+
+        $output = fopen('php://output', 'w');
+
+        $columnNames = [
+            'Member Number',
+            'Surname',
+            'First Name',
+            'Middle Name',
+            'Name Extension',
+            'Civil Status',
+            'Status',
+            'Date of Birth',
+            'Place of Birth',
+            'Gender',
+            'Date Hired',
+            'Department',
+            'Position',
+            'Employee No',
+            'TIN No',
+            'Email Address',
+            'Mobile Number',
+            'Telephone Number',
+            'Present Address',
+            'Permanent Address',
+            'Spouse Name',
+            'Father\'s Name',
+            'Mothers\'s Name',
+            'In Case of Emergency Person',
+            'In Case of Emergency Address',
+            'In Case of Emergency Contact',
+            'Member At',
+        ];
+
+        fputcsv($output, $columnNames);
+
+        foreach ($members as $member) {
+            fputcsv($output, [
+                $member->member_number,
+                $member->surname,
+                $member->first_name,
+                $member->middle_name,
+                $member->name_extension,
+                $member->civil_status,
+                $member->status,
+                $member->date_of_birth,
+                $member->place_of_birth,
+                $member->gender,
+                $member->date_hired,
+                $member->department,
+                $member->position,
+                $member->employee_no,
+                $member->tin_no,
+                $member->email_address,
+                $member->mobile_number,
+                $member->telephone_number,
+                $member->full_present_address,
+                $member->full_permanent_address,
+                $member->spouse->full_name,
+                $member->father->full_name,
+                $member->mother->full_name,
+                $member->in_case_emergency_person,
+                $member->in_case_emergency_address,
+                $member->in_case_emergency_contact,
+                $member->member_at,
+            ]);
+        }
+
+    }
     
     public function store(MemberRequest $request)
     {

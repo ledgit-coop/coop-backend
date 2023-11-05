@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,6 +23,13 @@ class MemberRelatedPeople extends Model
         'contact_number',
         'type',
     ];
+
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => ucwords("$this->first_name $this->middle_name $this->surname"),
+        );
+    }
 
     public function member()
     {

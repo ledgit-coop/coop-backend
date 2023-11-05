@@ -70,6 +70,8 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::resource('logs', LogController::class)->except(['create', 'edit']);
 
     Route::resource('members', MemberController::class)->except(['create', 'edit']);
+    Route::get('/members/export/csv', [MemberController::class, 'exportMembersCSV'])->name('members.export.add');
+    
     Route::post('/members/accounts/add/{id}/{account_id}', [MemberController::class, 'addAccount'])->name('members.account.add');
     Route::post('/members/update/orientation/{member}', [MemberController::class, 'attendedOrientation'])->name('members.update.orientation');
     Route::get('/members/accounts/transaction/{member}', [MemberController::class, 'getAccountTransactions'])->name('members.accounts.transactions.list');
