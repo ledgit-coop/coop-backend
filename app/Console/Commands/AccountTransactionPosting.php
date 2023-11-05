@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Constants\AccountStatus;
-use App\Models\AccountTransaction;
 use App\Models\MemberAccount;
 use Illuminate\Console\Command;
 
@@ -36,19 +35,8 @@ class AccountTransactionPosting extends Command
         })->get();
 
         foreach ($accounts as $account) {
-            
-
-            // Find the ID of the last record
-            $lastRecordId = $account->transactions()->orderBy('transaction_date', 'desc')->orderBy('id','desc')->first();
-
-            if($lastRecordId) {
-                $lastRecordId = $lastRecordId->id;
-            }
-
-            $account->transactions()->where('id', '!=', $lastRecordId)->update(['posted' => true]);
+            $account->transactions()->update(['posted' => true]);
         }
-
-  
         
         return Command::SUCCESS;
     }

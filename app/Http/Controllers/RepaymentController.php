@@ -9,6 +9,7 @@ use App\Helpers\MemberAccounHelper;
 use App\Models\LoanSchedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class RepaymentController extends Controller
@@ -95,16 +96,23 @@ class RepaymentController extends Controller
             'payment_date' => 'required',
         ]);
 
+        $user = Auth::user();
+
         try {
             DB::beginTransaction();
 
             $paymentDate = new Carbon($request->payment_date);
 
-            $loanRepayment = LoanHelper::updatePayment($loanRepayment, $request->amount_paid, $paymentDate);
-            $loanRepayment->payment_remarks = $request->payment_remarks;
-            $loanRepayment->payment_reference = $request->payment_reference;
-            $loanRepayment->payment_channel = $request->payment_channel;
-            $loanRepayment->save();
+            $loanRepayment = LoanHelper::updatePayment(
+                $loanRepayment,
+                $request->amount_paid,
+                $paymentDate,
+                $user,
+                $request->payment_remarks,
+                $request->payment_reference,
+                $request->payment_channel
+
+            );
     
             // Record transaction
             MemberAccounHelper::recordPayment($loanRepayment, $request->amount_paid, $paymentDate);

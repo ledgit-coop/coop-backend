@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Constants\TransactionSubTypes;
 use App\Constants\TransactionType;
 use App\Models\Loan;
+use App\Models\LoanSchedule;
 use App\Models\Member;
 use App\Models\Transaction;
 use App\Models\TransactionSubType;
@@ -119,6 +120,57 @@ class TransactionHelper {
                 "loan_id" => $loan->id,
             ]
         );
+    }
+
+    public static function makeLoanAmortizationPayment(LoanSchedule $amortization, User $created_by) {
+        $loan = $amortization->loan;
+        $product = $loan->loan_product;
+        $date = $amortization->due_date->format('Y-m-d');
+
+        $penaltyTransaction = $product->penaltyTransaction;
+        $interestTransaction = $product->interestTransaction;
+        $principalTransaction = $product->principalTransaction;
+
+        if($principalTransaction) {
+            $transaction = self::makeTransaction(
+                $amortization->principal_amount,
+                "Loan Principal Amortization Payment - $date/Loan #: $loan->loan_number",
+                TransactionType::PAYMENT,
+                $amortization->due_date,
+                $created_by->name,
+            );
+
+            $transaction->transaction_sub_type_id = $principalTransaction->id;
+            $transaction->saveQuietly();
+
+        }
+
+        if($penaltyTransaction) {
+            $transaction = self::makeTransaction(
+                $amortization->principal_amount,
+                "Loan Penalty Payment - $date/Loan #: $loan->loan_number",
+                TransactionType::PAYMENT,
+                $amortization->due_date,
+                $created_by->name,
+            );
+
+            $transaction->transaction_sub_type_id = $penaltyTransaction->id;
+            $transaction->saveQuietly();
+        }
+
+        if($interestTransaction) {
+            $transaction = self::makeTransaction(
+                $amortization->principal_amount,
+                "Loan Interest Payment - $date/Loan #: $loan->loan_number",
+                TransactionType::PAYMENT,
+                $amortization->due_date,
+                $created_by->name,
+            );
+
+            $transaction->transaction_sub_type_id = $interestTransaction->id;
+            $transaction->saveQuietly();
+        }
+
     }
 }
 

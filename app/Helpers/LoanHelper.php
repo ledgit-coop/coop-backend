@@ -7,7 +7,7 @@ use App\Constants\LoanPenaltyMethod;
 use App\Helpers\LoanCalculator\LoanCalculator;
 use App\Models\Loan;
 use App\Models\LoanSchedule;
-use App\Models\Log;
+use App\Models\User;
 use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -75,7 +75,14 @@ class LoanHelper {
         return  $currentYear . $sequence;
     }
 
-    public static function updatePayment(LoanSchedule $schedule, float $paymentAmount, Carbon $paymentDate)
+    public static function updatePayment(
+        LoanSchedule $schedule, 
+        float $paymentAmount, 
+        Carbon $paymentDate, 
+        User $createdBy,
+        $remarks = null, 
+        $reference = null, 
+        $paymentChannel = null)
     {
         if(!$schedule->paid) {
             // Check if there is an outstanding balance on this schedule.
@@ -84,6 +91,9 @@ class LoanHelper {
             // Round the payment amount to two decimal places.
             $paymentAmount = round($paymentAmount, 2);
 
+            $schedule->payment_remarks = $remarks;
+            $schedule->payment_reference = $reference;
+            $schedule->payment_channel = $paymentChannel;
 
             if ($paymentAmount >= $outstandingBalance) {
                 // Payment amount exceeds or equals the outstanding balance.
@@ -99,7 +109,7 @@ class LoanHelper {
                     $nextSchedule = self::getNextSchedule($schedule);
                     if ($nextSchedule) {
                         // Offset the excess payment to the next amortization.
-                        return self::updatePayment($nextSchedule, $excessPayment, $paymentDate);
+                        return self::updatePayment($nextSchedule, $excessPayment, $paymentDate, $createdBy, $remarks, $reference, $paymentChannel);
                     } else {
                         // No next schedule payment put all excess to the last payment
                         $schedule->amount_paid += $excessPayment;
@@ -112,6 +122,9 @@ class LoanHelper {
                 $schedule->amount_paid += $paymentAmount;
                 $schedule->save();
             }
+
+            // record accounting
+            TransactionHelper::makeLoanAmortizationPayment($schedule, $createdBy);
 
             return $schedule;
         }
