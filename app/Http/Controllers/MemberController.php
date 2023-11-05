@@ -124,11 +124,6 @@ class MemberController extends Controller
 
         $members = $members->limit($limit)->get();
 
-        header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename=members.csv');
-
-        $output = fopen('php://output', 'w');
-
         $columnNames = [
             'Member Number',
             'Surname',
@@ -159,10 +154,8 @@ class MemberController extends Controller
             'Member At',
         ];
 
-        fputcsv($output, $columnNames);
-
-        foreach ($members as $member) {
-            fputcsv($output, [
+        $members = $members->map(function($member) {
+            return [
                 $member->member_number,
                 $member->surname,
                 $member->first_name,
@@ -190,9 +183,13 @@ class MemberController extends Controller
                 $member->in_case_emergency_address,
                 $member->in_case_emergency_contact,
                 $member->member_at,
-            ]);
-        }
+            ];
+        })->values();
 
+        return response()->json([
+            $columnNames,
+            ...$members,
+        ]);
     }
     
     public function store(MemberRequest $request)
