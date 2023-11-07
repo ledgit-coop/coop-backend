@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Constants\MemberLoanStatus;
 use App\Helpers\LoanHelper;
 use App\Models\LoanSchedule;
 use Illuminate\Console\Command;
@@ -33,7 +34,10 @@ class LoanPenaltyCheck extends Command
             ->where('loan_schedules.overdue', true)
             ->join('loans', 'loan_schedules.loan_id', '=', 'loans.id')
             ->where('loan_schedules.paid', false)
+            ->with('loan')
             ->whereNotNull('loans.penalty')
+            ->where('loans.released', true)
+            ->where('loans.status', '<>', MemberLoanStatus::CLOSED)
             ->get();
   
         foreach ($loan_schedules as $loan_schedule) {

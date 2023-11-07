@@ -204,6 +204,8 @@ class LoanController extends Controller
 
         if(!$request->is_draft && $loan->status = MemberLoanStatus::DRAFT)
             $loan->status = MemberLoanStatus::PENDING;
+        else if($request->is_draft == true)
+            $loan->status = MemberLoanStatus::DRAFT;
 
         $loan->save();
 

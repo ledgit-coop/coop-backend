@@ -89,16 +89,16 @@ class Loan extends Model
     // Define the foreign key relationships to the Member and LoanProduct models
     public function member()
     {
-        return $this->belongsTo(Member::class);
+        return $this->belongsTo(Member::class, 'member_id');
     }
 
     public function loanProduct()
     {
-        return $this->belongsTo(LoanProduct::class);
+        return $this->belongsTo(LoanProduct::class, 'loan_product_id');
     }
 
     public function loan_schedules() {
-        return $this->hasMany(LoanSchedule::class);
+        return $this->hasMany(LoanSchedule::class, 'loan_id');
     }
 
     public function member_account() {
@@ -131,8 +131,7 @@ class Loan extends Model
     {
         return Attribute::make(
             get: function() {
-                $schedules = $this->loan_schedules;
-                return $this->due_amount - $schedules->sum('amount_paid');
+                return $this->due_amount - $this->loan_schedules()->sum('amount_paid');
             }
         );
     }
