@@ -82,6 +82,8 @@ class Loan extends Model
         'released_date' => 'datetime:Y-m-d',
         'next_payroll_date' => 'datetime:Y-m-d',
         'released' => 'boolean',
+        'number_of_children' => 'integer',
+        'age' => 'integer'
     ];
     
     // Define the foreign key relationships to the Member and LoanProduct models
