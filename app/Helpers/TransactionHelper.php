@@ -147,7 +147,7 @@ class TransactionHelper {
 
         if($penaltyTransaction) {
             $transaction = self::makeTransaction(
-                $amortization->principal_amount,
+                $amortization->penalty_amount,
                 "Loan Penalty Payment - $date/Loan #: $loan->loan_number",
                 TransactionType::PAYMENT,
                 $amortization->due_date,
@@ -160,7 +160,7 @@ class TransactionHelper {
 
         if($interestTransaction) {
             $transaction = self::makeTransaction(
-                $amortization->principal_amount,
+                $amortization->interest_amount,
                 "Loan Interest Payment - $date/Loan #: $loan->loan_number",
                 TransactionType::PAYMENT,
                 $amortization->due_date,
