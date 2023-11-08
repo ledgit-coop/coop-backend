@@ -93,5 +93,27 @@ class LogHelper {
             $schedule->loan->id,
         );
     }
+
+    public static function logLoanScheduleUpdate(LoanSchedule $schedule) {
+        $message = "Loan schedule fields has been updated: ";
+        $fieldMessage = [];
+
+        foreach ($schedule->getDirty() as $key => $value) {
+            $new = $value;
+            $old = $schedule->getOriginal($key);
+            $fieldMessage[] = str_replace("_", " ", $key) . " from $old to $new";
+        }
+
+        $message .= implode(",", $fieldMessage);
+
+        return self::create(
+            LogTypes::SYSTEM,
+            $message,
+            LoanSchedule::class,
+            $schedule->id,
+            Loan::class,
+            $schedule->loan->id,
+        );
+    }
 }
 

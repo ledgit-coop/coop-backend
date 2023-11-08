@@ -11,6 +11,7 @@ use App\Helpers\MemberAccounHelper;
 use App\Helpers\TransactionHelper;
 use App\Http\Requests\LoanApplicationRequest;
 use App\Models\Loan;
+use App\Models\LoanSchedule;
 use App\Models\Member;
 use Exception;
 use Illuminate\Http\Request;
@@ -316,6 +317,44 @@ class LoanController extends Controller
             return response()->json(['view' => ExportFile::exportLoanTerms($loan)]);
         } else {
             throw new Exception("Document not supported.", 1);
+        }
+    }
+
+
+    public function updateLoanSchedule(Request $request, LoanSchedule $schedule)
+    {
+        $this->validate($request, [
+            'due_date' => 'required|date|date_format:Y-m-d',
+            'principal_amount' => 'required|numeric|between:0.00,9999999.99',
+            'interest_amount' => 'required|numeric|between:0.00,9999999.99',
+            'penalty_amount' => 'required|numeric|between:0.00,9999999.99',
+            'amount_paid' => 'required|numeric|between:0.00,9999999.99',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $schedule->due_date = $request->due_date;
+            $schedule->principal_amount = $request->principal_amount;
+            $schedule->interest_amount = $request->interest_amount;
+            $schedule->penalty_amount = $request->penalty_amount;
+            $schedule->amount_paid = $request->amount_paid;
+            $schedule->due_amount = (
+                $schedule->principal_amount + $schedule->interest_amount + $schedule->penalty_amount
+            );
+
+            // @Note: this must be excuted first before saving
+            LogHelper::logLoanScheduleUpdate($schedule);
+
+            $schedule->save();
+
+            DB::commit();
+     
+            return response()->json($schedule);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
         }
     }
 }

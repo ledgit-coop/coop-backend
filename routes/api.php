@@ -64,8 +64,10 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/loans/status/{loan}', [LoanController::class, 'updateStatus'])->name('loans.status');
     Route::get('/loans/schedule/{loan}', [LoanController::class, 'loanSchedule'])->name('loans.schedule');
     Route::get('/loans/download/{loan}', [LoanController::class, 'download'])->name('loans.download');
+    Route::post('/loans/schedule/{schedule}', [LoanController::class, 'updateLoanSchedule'])->name('loans.schedule.update');
+
     Route::get('/loan-repayments', [RepaymentController::class, 'index'])->name('loan-repayments');
-    Route::post('/loan-repayments/{loanRepayment}', [RepaymentController::class, 'store'])->name('loan-repayments.store');
+    Route::post('/loan-repayments/{loanRepayment}', [RepaymentController::class, 'store'])->name('loan-repayments.store');    
 
     Route::resource('logs', LogController::class)->except(['create', 'edit']);
 
