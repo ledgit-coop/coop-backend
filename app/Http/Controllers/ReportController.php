@@ -42,13 +42,10 @@ class ReportController extends Controller
             ->whereBetween('transaction_date', [$request->from, $request->to])
             ->sum('amount');
 
-        $total_expenses_amount = Transaction::where('type', TransactionType::EXPENSE)
-            ->whereBetween('transaction_date', [$request->from, $request->to])
-            ->sum('amount');
-
         $sub_types = TransactionSubType::get()->map(function($transaction) use($request) {
+            $name = strtolower($transaction->name);
             return [
-                'name' => "Total $transaction->name amount",
+                'name' => "Total $name amount",
                 'amount' => $transaction->transactions()->whereBetween('transaction_date', [$request->from, $request->to])->sum('amount')
             ];
         });
@@ -98,6 +95,11 @@ class ReportController extends Controller
         })
         ->sum('amount');
 
+        $all_time_total_expenses_amount = Transaction::whereHas('transaction_sub_type', function($type) {
+                $type->where('type', FinancialTypes::EXPENSES);
+            })
+            ->sum('amount');
+
         $all_time_total_loan_released_amount = Loan::where('released', true)
             ->sum('principal_amount');
 
@@ -109,7 +111,7 @@ class ReportController extends Controller
         return response()->json([
             'total_share_capital_amount' => $share_capital_total_amount,
             'total_savings_account_amount' => $total_savings_account_amount,
-            'total_expenses_amount' => $total_expenses_amount,
+            'all_time_total_expenses_amount' => $all_time_total_expenses_amount,
             'total_loan_released_amount' => $total_loan_released_amount,
             'total_collected_interest_amount' => $total_collected_interest_amount,
             'total_collected_penalty_amount' => $total_collected_penalty_amount,
