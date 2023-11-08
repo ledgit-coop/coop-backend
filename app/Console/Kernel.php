@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('penalty:check')->dailyAt('01:00');
         $schedule->command('loan:closing')->dailyAt('01:00');
         $schedule->command('account-transaction:posting')->dailyAt('23:59');
+        $schedule->command('account:fix-balances')->dailyAt('01:00');
     }
 
     /**
