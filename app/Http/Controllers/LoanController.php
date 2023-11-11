@@ -11,6 +11,7 @@ use App\Helpers\MemberAccounHelper;
 use App\Helpers\TransactionHelper;
 use App\Http\Requests\LoanApplicationRequest;
 use App\Models\Loan;
+use App\Models\LoanProduct;
 use App\Models\LoanSchedule;
 use App\Models\Member;
 use Exception;
@@ -124,15 +125,30 @@ class LoanController extends Controller
         if($request->is_draft == true)
             $data['status'] = MemberLoanStatus::DRAFT;
 
-        $loan = Loan::create($data);
+        
+        $loan_product = LoanProduct::findOrFail($request->loan_product_id);
 
-        if($request->loan_fees)
-            $loan->loan_fees()->createMany($request->loan_fees);
+        if(Loan::where('loan_product_id', $request->loan_product_id)->where('member_id', $request->member_id)
+            ->where('status', '<>', MemberLoanStatus::CLOSED)->exists())
+            abort(422, "($loan_product->name) Member has already an existing loan.");
+            
+        try {
+            DB::beginTransaction();
 
-        LogHelper::logLoanCreated($loan);
-        LoanHelper::makeSchedule($loan);
+            $loan = Loan::create($data);
 
-        return response()->json($loan);
+            if($request->loan_fees)
+                $loan->loan_fees()->createMany($request->loan_fees);
+    
+            LogHelper::logLoanCreated($loan);
+            LoanHelper::makeSchedule($loan);
+            DB::commit();
+
+            return response()->json($loan);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     public function show(Loan $loan)
@@ -199,32 +215,41 @@ class LoanController extends Controller
             'next_payroll_date'
         ]);
 
-        foreach ($data as $key => $value) {
-            $loan->{$key} = $value;
-        }
+        try {
+            DB::beginTransaction();
 
-        if(!$request->is_draft && $loan->status = MemberLoanStatus::DRAFT)
-            $loan->status = MemberLoanStatus::PENDING;
-        else if($request->is_draft == true)
-            $loan->status = MemberLoanStatus::DRAFT;
-
-        $loan->save();
-
-        if($request->loan_fees)
-        {
-            foreach ($request->loan_fees as $fee) {
-                $loan->loan_fees()->updateOrCreate([
-                    'loan_fee_template_id' => $fee['loan_fee_template_id']
-                ],
-                [
-                    ...$fee,
-                ],);
+            foreach ($data as $key => $value) {
+                $loan->{$key} = $value;
             }
+    
+            if(!$request->is_draft && $loan->status = MemberLoanStatus::DRAFT)
+                $loan->status = MemberLoanStatus::PENDING;
+            else if($request->is_draft == true)
+                $loan->status = MemberLoanStatus::DRAFT;
+    
+            $loan->save();
+    
+            if($request->loan_fees)
+            {
+                foreach ($request->loan_fees as $fee) {
+                    $loan->loan_fees()->updateOrCreate([
+                        'loan_fee_template_id' => $fee['loan_fee_template_id']
+                    ],
+                    [
+                        ...$fee,
+                    ],);
+                }
+            }
+    
+            LoanHelper::reComputeSchedule($loan);
+    
+            return response()->json($loan);
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
         }
-
-        LoanHelper::reComputeSchedule($loan);
-
-        return response()->json($loan);
     }
 
     public function updateStatus(Request $request, Loan $loan)
