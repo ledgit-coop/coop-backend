@@ -243,9 +243,9 @@ class LoanController extends Controller
     
             LoanHelper::reComputeSchedule($loan);
     
-            return response()->json($loan);
-
             DB::commit();
+
+            return response()->json($loan);
         } catch (\Throwable $th) {
             DB::rollBack();
             throw $th;
