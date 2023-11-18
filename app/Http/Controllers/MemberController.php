@@ -81,7 +81,7 @@ class MemberController extends Controller
 
         return $members->paginate($limit);
     }
-
+    
     public function exportMembersCSV(Request $request)
     {
         $filters = (object) $request->filters ?? [];
@@ -210,6 +210,7 @@ class MemberController extends Controller
             'email_address',
             'member_at',
             'oriented',
+            'paid_membership',
             'mobile_number',
             'telephone_number',
             'in_case_emergency_person',
@@ -259,6 +260,21 @@ class MemberController extends Controller
                 ]
             ]);
             
+
+            if(isset($request->record_membership_payment) && isset($request->membership_fee_amount)) {
+                $transaction = TransactionHelper::makeMembershipTransaction($member, new Carbon($request->member_at), $request->membership_fee_amount);
+                LogHelper::logMembeshipPayment($member, $transaction);
+                $member->paid_membership = true;
+                $member->save();
+            }
+
+            if($request->record_orientation_fee && $request->orientation_fee_amount && $request->orientation_date) {
+                $transaction = TransactionHelper::makeOrientationPaymentTransaction($member, new Carbon($request->orientation_date), $request->orientation_fee_amount);
+                LogHelper::logOrientationPayment($member, $transaction);
+                $member->oriented = true;
+                $member->save();
+            }
+
             DB::commit();
 
             return response()->json(Member::find($member->id));
@@ -472,8 +488,6 @@ class MemberController extends Controller
     }
 
     public function addAccountTransaction(AddAccountTransactionRequest $request, Member $member) {
-
-        
         switch ($request->transaction_type) {
 
             case ActionTransaction::DepositShareCapital:

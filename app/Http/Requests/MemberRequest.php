@@ -41,6 +41,14 @@ class MemberRequest extends FormRequest
             'mobile_number' => 'nullable|string|max:255',
             'telephone_number' => 'nullable|string|max:255',
             'oriented' => 'nullable|boolean',
+
+            'paid_membership' => 'nullable|boolean',
+            'record_membership_payment' => 'nullable|boolean',
+            'record_orientation_fee' => 'nullable|boolean',
+            'orientation_date' => 'nullable|date|date_format:Y-m-d',
+            'membership_fee_amount' => 'nullable|numeric|between:0.00,9999999.99',
+            'orientation_fee_amount' => 'nullable|numeric|between:0.00,9999999.99',
+            
             'civil_status' => 'nullable|string|max:255',
             'in_case_emergency_person' => 'nullable|string|max:255',
             'in_case_emergency_address' => 'nullable|string',
