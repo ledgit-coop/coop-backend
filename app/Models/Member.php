@@ -8,6 +8,7 @@ use App\Constants\MemberLoanStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -90,6 +91,16 @@ class Member extends Model
         );
     }
 
+    protected function firstGuarantees(): HasMany
+    {
+        return $this->hasMany(Loan::class, 'guarantor_first_id');
+    }
+
+    protected function secondGuarantees(): HasMany
+    {
+        return $this->hasMany(Loan::class, 'guarantor_second_id');
+    }
+
     protected function fullPermanentAddress(): Attribute
     {
         return Attribute::make(
@@ -152,6 +163,10 @@ class Member extends Model
         return $this->hasOne(MemberAccount::class)->whereHas('account', function($account) {
             $account->where('type', AccountType::SHARE_CAPITAL);
         });
+    }
+
+    public function loans() {
+        return $this->hasMany(Loan::class, 'member_id');
     }
 
     public function savings_accounts() {

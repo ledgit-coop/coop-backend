@@ -2,30 +2,10 @@
 
 namespace App\Helpers\Exports;
 
+use App\Models\AnnualReturn;
 use App\Models\Loan;
-use Exception;
-use Illuminate\Support\Facades\Storage;
-use mikehaertl\wkhtmlto\Pdf;
-use Spatie\Browsershot\Browsershot;
 
 class ExportFile {
-    public static function export(string $view, string $path, string $filename) {
- 
-        $Storage = Storage::disk('public');        
-        $Storage->makeDirectory($path);
-        $path = $path. $filename;
-        $storagePath = $Storage->path($path);
-        
-        $pdf = new Pdf(array(
-            'binary' => '/home/whtmcawt/etc/dspacc.com/wktohtml/local/bin/wkhtmltopdf',
-        ));
-        $pdf->addPage($view);
-
-        if (!$pdf->saveAs($storagePath))
-            throw new Exception($pdf->getError(), 1);
-
-        return $Storage->url($path);
-    }
 
     public static function exportAgreement(Loan $loan) {
         $view = view('exports.loans.agreement', compact('loan'))->render();        
@@ -34,6 +14,11 @@ class ExportFile {
 
     public static function exportLoanTerms(Loan $loan) {
         $view = view('exports.loans.terms', compact('loan'))->render();        
+        return $view;
+    }
+
+    public static function exportNetSurplus(AnnualReturn $netSurplus, $memberShareCapitals, $memberLoanInterest, $dates) {
+        $view = view('exports.net-surplus.report', compact('netSurplus', 'memberShareCapitals', 'dates', 'memberLoanInterest'))->render();        
         return $view;
     }
 }

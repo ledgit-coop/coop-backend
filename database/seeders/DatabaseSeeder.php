@@ -11,6 +11,7 @@ use App\Constants\UserType;
 use App\Models\Account;
 use App\Models\LoanFeeTemplate;
 use App\Models\LoanProduct;
+use App\Models\Setting;
 use App\Models\TransactionSubType;
 use App\Models\User;
 use App\Models\WorkIndustry;
@@ -101,5 +102,37 @@ class DatabaseSeeder extends Seeder
         Account::create(['name'=> 'Negosyo Loan', 'type' => AccountType::REGULAR, 'key' => 'negosyo-loan']);
         Account::create(['name'=> 'Salary Loan', 'type' => AccountType::REGULAR, 'key' => 'salary-loan']);
         Account::create(['name'=> 'Other Loan', 'type' => AccountType::REGULAR, 'key' => 'other-loan']);
+
+        Setting::create([
+            'key' => 'allocation-reserve-fund',
+            'name' => 'Allocation of reserve fund',
+            'value' => '10',
+        ]);
+
+        Setting::create([
+            'key' => 'educational-training-fund',
+            'name' => 'Allocation of training fund',
+            'value' => '10',
+        ]);
+
+        Setting::create([
+            'key' => 'optional-fund',
+            'name' => 'Allocation of optional fund',
+            'value' => '10',
+        ]);
+        
+
+
+        Setting::create([
+            'key' => 'remainder-patronage-refund',
+            'name' => 'Allocation of remainder of patronage refund',
+            'value' => '50',
+        ]);
+        
+        Setting::create([
+            'key' => 'remainder-interest-share-capital',
+            'name' => 'Allocation of remainder of interest share capital',
+            'value' => '50',
+        ]);
     }
 }

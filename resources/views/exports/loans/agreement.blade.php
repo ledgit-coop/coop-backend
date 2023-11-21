@@ -17,9 +17,8 @@
         }
 
          th, td {
-        border: 0.01rem solid black !important;
-        border-collapse: collapse !important;
-
+            border: 0.01rem solid black !important;
+            border-collapse: collapse !important;
         }
             
        

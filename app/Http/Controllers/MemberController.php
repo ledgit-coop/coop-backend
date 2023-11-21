@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Constants\AccountType;
 use App\Constants\ActionTransaction;
 use App\Constants\MemberAccountTransactionType;
+use App\Constants\MemberLoanStatus;
 use App\Constants\Pagination;
 use App\Helpers\AccountHelper;
 use App\Helpers\Helper;
@@ -18,6 +19,8 @@ use App\Http\Requests\MemberRequest;
 use App\Http\Requests\MemberUpdateRequest;
 use App\Models\Account;
 use App\Models\AccountTransaction;
+use App\Models\Loan;
+use App\Models\Log as ModelsLog;
 use App\Models\Member;
 use App\Models\MemberAccount;
 use Exception;
@@ -72,6 +75,20 @@ class MemberController extends Controller
                     case 'already-attended-orientation':
                         $members->where('paid_membership', true);
                         break;
+                    case 'guarantor-twice':
+                        $members->whereRaw(
+                            DB::raw("
+                                (select count(*) from loans where loans.status <> '". MemberLoanStatus::CLOSED ."' and (loans.guarantor_first_id = members.id or loans.guarantor_second_id = members.id)) >= 2
+                            ")
+                        );
+                    break;
+                    case 'guarantor-once':
+                        $members->whereRaw(
+                            DB::raw("
+                                (select count(*) from loans where loans.status <> '". MemberLoanStatus::CLOSED ."' and (loans.guarantor_first_id = members.id or loans.guarantor_second_id = members.id)) >= 1
+                            ")
+                        );
+                    break;
                 }
             }
         }
@@ -114,6 +131,20 @@ class MemberController extends Controller
                         break;
                     case 'already-attended-orientation':
                         $members->where('paid_membership', true);
+                        break;
+                    case 'gurantor-twice':
+                        $members->whereRaw(
+                            DB::raw("
+                                (select count(*) from loans where loans.status <> '". MemberLoanStatus::CLOSED ."' and (guarantor_first_id = members.id or guarantor_second_id = members.id)) > 2
+                            ")
+                        );
+                        break;
+                    case 'guarantor-once':
+                        $members->whereRaw(
+                            DB::raw("
+                                (select count(*) from loans where loans.status <> '". MemberLoanStatus::CLOSED ."' and (loans.guarantor_first_id = members.id or loans.guarantor_second_id = members.id)) >= 1
+                            ")
+                        );
                         break;
                 }
             }
@@ -660,5 +691,58 @@ class MemberController extends Controller
         } else {
             throw new Exception("Document not supported.", 1);
         }
+    }
+
+    public function overview(Member $member) {
+        $recentActivities = ModelsLog::where(function($logs) use($member) {
+            $logs->where('model', Member::class)
+            ->where('model_id', $member->id);
+            // Checks if parent from other logs
+            $logs->orWhere(function($logs) use($member) {
+                $logs->where('parent_model', Member::class)
+                ->where('parent_model_id', $member->id);
+            });
+        })
+        ->orderBy('updated_at', 'desc')
+        ->limit(5)
+        ->get();
+
+        $activeLoans = $member->loans()->where('released', true)->with('loan_product')->get()->map(function($loan) {
+            return [
+                'interest' => $loan->loan_interest,
+                'period' => $loan->loan_interest_period,
+                'amount' => $loan->principal_amount,
+                'name' => $loan->loan_product->name,
+            ];
+        });
+
+        $pendingLoans = $member->loans()->where('released', false)->with('loan_product')->get()->map(function($loan) {
+            return [
+                'interest' => $loan->loan_interest,
+                'applied_date' => $loan->applied_date,
+                'period' => $loan->loan_interest_period,
+                'status' => $loan->status,
+                'amount' => $loan->principal_amount,
+                'name' => $loan->loan_product->name,
+            ];
+        });
+
+        $savingsAccounts = $member->member_accounts()->whereHas('account', function($account) {
+            $account->where('type', AccountType::SAVINGS);
+        })->with('account')->get();
+        
+        $gauranteeLoans = Loan::with('loan_product')->with('member')->where('status', '<>', MemberLoanStatus::CLOSED)->where(function($guarantor) use($member) {
+            $guarantor->orWhere('guarantor_first_id', $member->id)
+            ->orWhere('guarantor_second_id', $member->id);
+        })->get();
+        
+
+        return response()->json([
+            'recent_activities' => $recentActivities,
+            'active_loans' => $activeLoans,
+            'pending_loans' => $pendingLoans,
+            'savings_accounts' => $savingsAccounts,
+            'gaurantee_loans' => $gauranteeLoans,
+        ]);
     }
 }

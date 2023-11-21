@@ -11,9 +11,11 @@ use App\Http\Controllers\LoanFeeTemplateController;
 use App\Http\Controllers\LoanProductController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\NetSurplusController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\RepaymentController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TransactionTypeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilityController;
@@ -56,6 +58,10 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::resource('loan-products', LoanProductController::class)->except(['create', 'edit']);
     Route::resource('transaction-types', TransactionTypeController::class)->except(['create', 'edit']);
 
+    Route::resource('net-surplus', NetSurplusController::class)->except(['create', 'edit', 'update']);
+    Route::resource('settings', SettingsController::class)->only(['index', 'store']);
+
+
     Route::resource('loan-fees', LoanFeeTemplateController::class)->except(['create', 'edit']);
     Route::post('/loan-fees/{loanFee}/toggle', [LoanFeeTemplateController::class, 'toggle'])->name('loan-fees.toggle');
 
@@ -82,6 +88,8 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::delete('/members/accounts/{account}', [MemberController::class, 'deleteAccount'])->name('members.accounts.destroy');
     Route::get('/members/accounts/{member}', [MemberController::class, 'getMemberAccounts'])->name('members.accounts');
     Route::post('/members/accounts/status/{member}', [MemberController::class, 'updateStatus'])->name('members.accounts.status.update');    
+    
+    Route::get('/members/overview/{member}', [MemberController::class, 'overview'])->name('members.overview');
 
     Route::group(['prefix' => 'utility', 'name' => 'utility.'], function() {
         Route::get('/members/dropdown', [UtilityController::class, 'memberDropdown'])->name('members.dropdown');

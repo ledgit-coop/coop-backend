@@ -60,5 +60,19 @@ class Helper {
         $now = $firstDate->startOfDay();
         return round($now->floatDiffInDays($due_date, false));
     }
+
+    public static function generateMonthYearArray(Carbon $start, Carbon $end) {
+        $months = [];
+        while ($start->lessThanOrEqualTo($end)) {
+            $months[] = [
+                'year' => $start->year,
+                'digit' => $start->format('m'),
+                'month' => $start->format('F'),
+            ];
+            $start->addMonth();
+        }
+    
+        return $months;
+    }
 }
 
