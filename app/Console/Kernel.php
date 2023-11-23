@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('loan:closing')->dailyAt('01:00');
         $schedule->command('account-transaction:posting')->dailyAt('23:59');
         $schedule->command('account:fix-balances')->dailyAt('01:00');
+        $schedule->command('loan-schedules:fix')->everyFifteenMinutes();
     }
 
     /**
