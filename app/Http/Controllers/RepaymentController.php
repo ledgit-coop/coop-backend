@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\MemberLoanStatus;
 use App\Constants\Pagination;
 use App\Helpers\LoanHelper;
 use App\Helpers\LogHelper;
@@ -22,7 +23,9 @@ class RepaymentController extends Controller
 
         $loans = LoanPayment::select('loans.*', DB::raw('IFNULL(MaxDueDate.due_date, "") AS due_date'))
             ->with('member')
-            ->with('loan_product');
+            ->with('loan_product')
+            ->where('status', '<>', MemberLoanStatus::CLOSED)
+            ->where('released', true);
 
         if(!empty($filters)) {
             if(isset($filters->keyword))

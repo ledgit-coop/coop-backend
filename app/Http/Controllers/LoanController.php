@@ -222,11 +222,18 @@ class LoanController extends Controller
                 $loan->{$key} = $value;
             }
     
-            if(!$request->is_draft && $loan->status = MemberLoanStatus::DRAFT)
+            if(!$request->is_draft && $loan->status = MemberLoanStatus::DRAFT) {
                 $loan->status = MemberLoanStatus::PENDING;
-            else if($request->is_draft == true)
+                $loan->released = false;
+            }
+            else if($request->is_draft == true) {
                 $loan->status = MemberLoanStatus::DRAFT;
+                $loan->released = false;
+            }
     
+            if($loan->needsRecomputation())
+                LoanHelper::reComputeSchedule($loan);
+
             $loan->save();
     
             if($request->loan_fees)
@@ -241,7 +248,7 @@ class LoanController extends Controller
                 }
             }
     
-            LoanHelper::reComputeSchedule($loan);
+
     
             DB::commit();
 

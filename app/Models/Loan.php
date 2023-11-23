@@ -162,4 +162,22 @@ class Loan extends Model
     public function loan_product() {
         return $this->belongsTo(LoanProduct::class, 'loan_product_id');
     }
+
+    // Determine fields that the schedules needs to be recomputed
+    protected $recomputationFlag = [
+        'principal_amount', 
+        'loan_interest', 
+        'loan_duration', 
+        'interest_method', 
+        'number_of_repayments', 
+        'repayment_cycle', 
+        'loan_duration_type', 
+        'loan_interest_period', 
+        'released_date',
+        'next_payroll_date'
+    ];
+
+    public function needsRecomputation() : bool {
+        return $this->isDirty($this->recomputationFlag);
+    }
 }

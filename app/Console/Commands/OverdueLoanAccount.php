@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Constants\MemberLoanStatus;
 use App\Models\LoanSchedule;
 use Illuminate\Console\Command;
 
@@ -30,6 +31,10 @@ class OverdueLoanAccount extends Command
     {
         $amortizations = LoanSchedule::where('overdue', false)
             ->where('paid', false)
+            ->whereHas('loan', function($loan) {
+                $loan->where('status', '<>', MemberLoanStatus::CLOSED)
+                ->where('released', true);
+            })
             ->get();
 
         foreach ($amortizations as $schedule) {
