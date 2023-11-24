@@ -652,8 +652,7 @@ class MemberController extends Controller
     }
 
     public function deleteAccountTransaction(AccountTransaction $transaction) {
-        if($transaction->posted) throw new Exception("Cannot delete the account that has already been posted.", 1);
-
+        
         try {
             $member_account = $transaction->member_account;
 
