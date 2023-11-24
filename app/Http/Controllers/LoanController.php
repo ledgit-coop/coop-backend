@@ -142,6 +142,8 @@ class LoanController extends Controller
     
             LogHelper::logLoanCreated($loan);
             LoanHelper::makeSchedule($loan);
+            LoanHelper::updateLoanFees($loan);
+
             DB::commit();
 
             return response()->json($loan);
@@ -230,12 +232,6 @@ class LoanController extends Controller
                 $loan->status = MemberLoanStatus::DRAFT;
                 $loan->released = false;
             }
-    
-            if($loan->needsRecomputation())
-                LoanHelper::reComputeSchedule($loan);
-
-            $loan->save();
-    
             if($request->loan_fees)
             {
                 foreach ($request->loan_fees as $fee) {
@@ -247,9 +243,14 @@ class LoanController extends Controller
                     ],);
                 }
             }
-    
 
-    
+            LoanHelper::updateLoanFees($loan);
+
+            if($loan->needsRecomputation())
+                LoanHelper::reComputeSchedule($loan);
+
+            $loan->save();
+            
             DB::commit();
 
             return response()->json($loan);

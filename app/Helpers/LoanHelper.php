@@ -18,22 +18,7 @@ class LoanHelper {
 
         $calculator = new LoanCalculator();
 
-        $fees = $loan->loan_fees;
-        foreach ($fees as $fee) {
-            $calculator->addFeeOnTemplate(
-                $fee->loan_fee_template,
-                $fee->fee,
-                $loan->principal_amount,
-            );
-        }
-
         $computation = $calculator->makeLoanSchedule($loan);
-
-        if($computation['fees']) {
-            foreach ($computation['fees'] as $fee) {
-                $loan->loan_fees()->where('loan_fee_template_id', $fee->id)->update([ 'amount' => $fee->amount ]);
-            }
-        }
 
         $loan->released_amount = $computation['released_amount'];
         $loan->interest_amount = $computation['total_interest'];
@@ -54,6 +39,30 @@ class LoanHelper {
         });
  
         $loan->loan_schedules()->createMany($schedules);
+    }
+
+    public static function updateLoanFees(Loan $loan) {
+        $calculator = new LoanCalculator();
+
+        $fees = $loan->loan_fees;
+        foreach ($fees as $fee) {
+            $calculator->addFeeOnTemplate(
+                $fee->loan_fee_template,
+                $fee->fee,
+                $loan->principal_amount,
+            );
+        }
+
+        $computation = $calculator->makeLoanSchedule($loan);
+
+        if($computation['fees']) {
+            foreach ($computation['fees'] as $fee) {
+                $loan->loan_fees()->where('loan_fee_template_id', $fee->id)->update([ 'amount' => $fee->amount ]);
+            }
+        }
+
+        $loan->released_amount = $computation['released_amount'];
+        $loan->save();
     }
 
     public static function reComputeSchedule(Loan $loan) {
