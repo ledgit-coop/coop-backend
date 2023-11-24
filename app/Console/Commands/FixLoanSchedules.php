@@ -30,7 +30,8 @@ class FixLoanSchedules extends Command
     {
         // Reset the paid flag if the amount paid is less than 0
         LoanSchedule::where('paid', true)->where('amount_paid', '<=', '0')->update([
-            'paid' => true
+            'paid' => true,
+            'overdue' => false,
         ]);
       
         return Command::SUCCESS;

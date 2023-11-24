@@ -141,11 +141,11 @@ class MemberAccounHelper {
         foreach ($transactions as $transaction) {
             $balance = $balance + $transaction->amount;
             $transaction->remaining_balance = $balance;
-            $transaction->save();
+            $transaction->saveQuietly();
         }
 
         $account->balance = $balance;
-        $account->save();
+        $account->saveQuietly();
 
         return $account;
     }
