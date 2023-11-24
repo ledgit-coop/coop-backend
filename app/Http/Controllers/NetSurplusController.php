@@ -57,7 +57,7 @@ class NetSurplusController extends Controller
         })
         ->join('members', 'members.id', '=', 'member_accounts.member_id')
         ->whereBetween('account_transactions.transaction_date', [$netSurplus->from_date->format("Y-m-d"), $netSurplus->to_date->format("Y-m-d")])
-        ->whereNull('deleted_at')
+        ->whereNull('account_transactions.deleted_at')
         ->get()
         ->groupBy('id');
  
