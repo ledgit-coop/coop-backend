@@ -32,7 +32,7 @@ class FixAccountBalances extends Command
         $accounts = MemberAccount::get();
 
         foreach ($accounts as $account) {
-            if($account->balance != $account->transactions()->sum('amount'))
+            if($account->balance != $account->transactions()->orderBy('transaction_date', 'asc')->sum('amount'))
                 MemberAccounHelper::fixAccounBalance($account);
         }
 
