@@ -668,6 +668,8 @@ class MemberController extends Controller
                 });
             });
 
+        $transactions->orderBy('transaction_date', 'asc')->orderBy('created_at', 'asc');
+
         return response()->json($transactions->get());
     }
 
