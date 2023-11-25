@@ -667,7 +667,6 @@ class MemberController extends Controller
                     $account->where('type', $request->type);
                 });
             });
-        $transactions->orderBy('transaction_date', 'asc');
 
         return response()->json($transactions->get());
     }
