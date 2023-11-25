@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Constants\AccountType;
 use App\Constants\FinancialTypes;
 use App\Constants\MemberAccountTransactionType;
+use App\Constants\MemberLoanStatus;
 use App\Constants\Pagination;
 use App\Constants\TransactionType;
 use App\Models\AccountTransaction;
 use App\Models\Loan;
 use App\Models\LoanProduct;
 use App\Models\LoanSchedule;
+use App\Models\Member;
+use App\Models\MemberAccount;
 use App\Models\Transaction;
 use App\Models\TransactionSubType;
 use Illuminate\Http\Request;
@@ -32,6 +35,15 @@ class ReportController extends Controller
             })
             ->whereBetween('transaction_date', [$request->from, $request->to])
             ->sum('amount');
+
+
+        $mortuary_total_amount = AccountTransaction::where('type', MemberAccountTransactionType::MORTUARY)
+            ->whereHas('member_account', function ($acc) {
+                $acc->whereHas('member');
+            })
+            ->whereBetween('transaction_date', [$request->from, $request->to])
+            ->sum('amount');
+
 
         $total_savings_account_amount = AccountTransaction::whereHas('member_account', function ($acc) {
                 $acc->whereHas('account', function($acc) {
@@ -95,6 +107,12 @@ class ReportController extends Controller
         })
         ->sum('amount');
 
+        $all_time_mortuary_total_amount = AccountTransaction::where('type', MemberAccountTransactionType::MORTUARY)
+        ->whereHas('member_account', function ($acc) {
+            $acc->whereHas('member');
+        })
+        ->sum('amount');
+
         $all_time_total_expenses_amount = Transaction::whereHas('transaction_sub_type', function($type) {
                 $type->where('type', FinancialTypes::EXPENSES);
             })
@@ -110,6 +128,7 @@ class ReportController extends Controller
 
         return response()->json([
             'total_share_capital_amount' => $share_capital_total_amount,
+            'mortuary_total_amount' => $mortuary_total_amount,
             'total_savings_account_amount' => $total_savings_account_amount,
             'all_time_total_expenses_amount' => $all_time_total_expenses_amount,
             'total_loan_released_amount' => $total_loan_released_amount,
@@ -125,6 +144,7 @@ class ReportController extends Controller
             'all_time_total_loan_released_amount' => $all_time_total_loan_released_amount,
             'all_time_interest_loan_interest' => $all_time_interest_loan_interest,
             'all_time_total_loans_collected' => $all_time_total_loans_collected,
+            'all_time_mortuary_total_amount' => $all_time_mortuary_total_amount,
         ]);
     }
 
@@ -146,6 +166,26 @@ class ReportController extends Controller
         ->paginate($limit);
 
         return response()->json($share_capitals);
+    }
+
+    public function mortuaryContributions(Request $request) {
+             
+        $this->validate($request, [
+            'filters.from' => 'required|date|date_format:Y-m-d',
+            'filters.to' => 'required|date|date_format:Y-m-d',
+        ]);
+
+        $limit = $request->limit ?? Pagination::PER_PAGE;
+
+        $mortuaries = AccountTransaction::where('type', MemberAccountTransactionType::MORTUARY)
+        ->whereHas('member_account', function ($acc) {
+            $acc->whereHas('member');
+        })
+        ->with('member_account.member')
+        ->whereBetween('transaction_date', [$request->filters['from'], $request->filters['to']])
+        ->paginate($limit);
+
+        return response()->json($mortuaries);
     }
 
     public function expenses(Request $request) {
@@ -313,5 +353,71 @@ class ReportController extends Controller
                 ]
             ]
         ]);
+    }
+
+    public function memberAlltimeReport(Request $request) {
+
+        $filters = (object) $request->filters ?? [];
+
+        $limit = $request->limit ?? Pagination::PER_PAGE;
+
+        $members = Member::orderBy('member_number', 'asc');
+
+        if(!empty($filters)) {
+            if(isset($filters->keyword))
+                $members->where(function($members) use($filters) {
+                    $members->orWhere('member_number', 'like', "%$filters->keyword%")
+                    ->orWhere('surname', 'like', "%$filters->keyword%")
+                    ->orWhere('first_name', 'like', "%$filters->keyword%")
+                    ->orWhere('middle_name', 'like', "%$filters->keyword%")
+                    ->orWhere('email_address', 'like', "%$filters->keyword%");
+                });
+            if(isset($filters->status))
+                $members->where('status', $filters->status);
+        }
+
+        $members = $members->paginate($limit);
+
+
+        $members->getCollection()->transform(function($member) {
+            return [
+                'id' => $member->id,
+                'member_number' => $member->member_number,
+                'full_name' => $member->full_name,
+                'share_capital_amount' => $member->share_capital_account ? $member->share_capital_account->transactions()->sum('amount') : 0,
+                'mortuary_contributions' => $member->mortuary_account ? $member->mortuary_account->transactions()->sum('amount') : 0,
+                'guarantored_count' => $member->guarantored_count,
+                'pending_loan_count' => $member->loans()->where('released', false)->count(),
+                'closed_loan_count' => $member->loans()->where('released', true)->where('status', MemberLoanStatus::CLOSED)->count(),
+                'active_loan_count' => $member->loans()->where('released', false)->where('status', '<>', MemberLoanStatus::CLOSED)->count(),
+            ];
+        });
+
+        return response()->json($members);
+    }
+
+    public function savingsAccount(Request $request) {
+        
+        $limit = $request->limit ?? Pagination::PER_PAGE;
+        $filters = (object) $request->filters ?? [];
+
+        $accounts = MemberAccount::whereHas('account', function($account) {
+            $account->where('type', AccountType::SAVINGS);
+        })
+        ->with('account');
+
+        if(!empty($filters)) {
+            if(isset($filters->keyword))
+                $accounts->where(function($members) use($filters) {
+                    $members->orWhere('account_number', 'like', "%$filters->keyword%")
+                    ->orWhere('account_holder', 'like', "%$filters->keyword%");
+                });
+            if(isset($filters->status))
+                $accounts->where('status', $filters->status);
+        }
+
+        $accounts = $accounts->paginate($limit);
+        
+        return response()->json($accounts);
     }
 }

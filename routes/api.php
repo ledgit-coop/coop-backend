@@ -110,12 +110,14 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::get('/reports/counter', [ReportController::class, 'counter'])->name('report.counter');
     Route::get('/reports/share-capitals', [ReportController::class, 'shareCapitals'])->name('report.share-capitals');
+    Route::get('/reports/mortuaries', [ReportController::class, 'mortuaryContributions'])->name('report.mortuaries');
     Route::get('/reports/expenses', [ReportController::class, 'expenses'])->name('report.expenses');
     Route::get('/reports/revenues', [ReportController::class, 'revenues'])->name('report.revenues');
     Route::get('/reports/loans-released', [ReportController::class, 'loansReleased'])->name('report.loan-released');
     Route::get('/reports/loans-repayments', [ReportController::class, 'repayments'])->name('report.loan-repayments');
     Route::get('/reports/savings-transactions', [ReportController::class, 'savingsAccountTransactions'])->name('report.savings-transactions');
-    
+    Route::get('/reports/members', [ReportController::class, 'memberAlltimeReport'])->name('report.members');
+    Route::get('/reports/accounts/savings', [ReportController::class, 'savingsAccount'])->name('report.accounts.saving');
     Route::get('/reports/charts/revenue', [ReportController::class, 'revenueChart'])->name('report.chart.revenue');
     Route::get('/reports/charts/loans-released', [ReportController::class, 'loansReleasedChart'])->name('report.chart.loan-released');
 });

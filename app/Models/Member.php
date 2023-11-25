@@ -91,6 +91,19 @@ class Member extends Model
         );
     }
 
+    protected function guarantoredCount(): Attribute
+    {
+        return Attribute::make(
+            get: function() {
+                $id = $this->id;
+                return Loan::where('status', '<>', MemberLoanStatus::CLOSED)->where(function($guarantor) use($id) {
+                    $guarantor->orWhere('guarantor_first_id', $id)
+                    ->orWhere('guarantor_second_id', $id);
+                })->count();
+            }
+        );
+    }
+
     protected function firstGuarantees(): HasMany
     {
         return $this->hasMany(Loan::class, 'guarantor_first_id');
