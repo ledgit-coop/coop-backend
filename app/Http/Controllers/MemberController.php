@@ -443,6 +443,11 @@ class MemberController extends Controller
                 'balance' => $member->share_capital_account->balance,
                 'latest_transaction' => $member->share_capital_account->latest_transaction,
             ] : null,
+            'mortuary' => $member->mortuary_account ? [
+                'id' => $member->mortuary_account->id,
+                'balance' => $member->mortuary_account->balance,
+                'latest_transaction' => $member->mortuary_account->latest_transaction,
+            ] : null,
             'savings_accounts' => $member->savings_accounts->map(function($account) {
                 return [
                     'id' => $account->id,
@@ -470,8 +475,6 @@ class MemberController extends Controller
         $account = Account::findOrFail($account_id);
 
         $is_holder_member = strtolower(trim($member->full_name)) == strtolower(trim($request->account_holder));
-        Log::info([$is_holder_member, $member->full_name, $request->account_holder]);
-
 
         $member_account = MemberAccount::where([
             'member_id' => $member->id,
@@ -555,7 +558,24 @@ class MemberController extends Controller
                     ]
                 ]);
                 break;
+            case ActionTransaction::PayMortuary:
 
+                $account = $member->mortuary_account;
+
+                if(!$account)
+                    throw new Exception("No mortuary account.", 422);
+
+                $account->transactions()->createMany([
+                    [
+                        'transaction_number' => AccountHelper::generateTransactionNumber(),
+                        'particular' => "Mortuary Deposit",
+                        'transaction_date' => $request->transaction_date,
+                        'amount' => $request->amount,
+                        'type' => MemberAccountTransactionType::MORTUARY,
+                    ]
+                ]);
+
+                break;
             case ActionTransaction::DepositSavings:
 
                 $account = $member->savings_accounts()->where('id', $request->member_account_id)->first();

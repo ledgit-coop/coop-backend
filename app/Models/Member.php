@@ -165,6 +165,12 @@ class Member extends Model
         });
     }
 
+    public function mortuary_account() {
+        return $this->hasOne(MemberAccount::class)->whereHas('account', function($account) {
+            $account->where('type', AccountType::MORTUARY);
+        });
+    }
+
     public function loans() {
         return $this->hasMany(Loan::class, 'member_id');
     }

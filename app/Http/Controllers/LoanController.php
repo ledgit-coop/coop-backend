@@ -291,9 +291,10 @@ class LoanController extends Controller
             $loan->status = $request->status;
             $loan->save();
 
-            if($request->status == MemberLoanStatus::APPROVED)
+            if($request->status == MemberLoanStatus::APPROVED) {
+                LoanHelper::updateLoanFees($loan);
                 LoanHelper::reComputeSchedule($loan); // Recompute if approved
-
+            }
             else if($request->status == MemberLoanStatus::RELEASED) {
                 MemberAccounHelper::recordLoan($loan);
             }

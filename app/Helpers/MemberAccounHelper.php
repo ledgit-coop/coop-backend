@@ -3,8 +3,10 @@
 namespace App\Helpers;
 
 use App\Constants\AccountStatus;
+use App\Constants\AccountType;
 use App\Constants\MemberAccountTransactionType;
 use App\Constants\TransactionType;
+use App\Models\Account;
 use App\Models\Loan;
 use App\Models\LoanSchedule;
 use App\Models\MemberAccount;
@@ -96,6 +98,27 @@ class MemberAccounHelper {
                             ]
                         ]);
                     }
+                }
+                // Record mortuary
+                else if($template->credit_mortuary) {
+                    $member = $loan->member;
+                    $mortuary_account = $member->mortuary_account;
+
+                    if(!$mortuary_account) {
+                        $account = Account::where('type', AccountType::MORTUARY)->first();
+                        $mortuary_account = MemberHelper::makeAccount($member, $account, $member->full_name, true);
+                    }
+                   
+                    $mortuary_account->transactions()->createMany([
+                        [
+                            'transaction_number' => AccountHelper::generateTransactionNumber(),
+                            'particular' => "Mortuary Deposit from Loan ($loan->loan_number)",
+                            'transaction_date' => $loan->released_date,
+                            'amount' => $fee->amount,
+                            'type' => MemberAccountTransactionType::MORTUARY
+                        ]
+                    ]);
+                   
                 }
                 // Record regular savings
                 else if($template->credit_regular_savings) {

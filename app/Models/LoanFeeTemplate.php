@@ -17,6 +17,7 @@ class LoanFeeTemplate extends Model
         'enabled',
         'credit_revenue',
         'credit_share_capital',
+        'credit_mortuary',
         'credit_regular_savings',
         'show_to_report',
         'transaction_sub_type_id',
@@ -27,6 +28,7 @@ class LoanFeeTemplate extends Model
         'fee' => 'double',
         'credit_revenue'=> 'boolean',
         'credit_share_capital'=> 'boolean',
+        'credit_mortuary' => 'boolean',
         'credit_regular_savings'=> 'boolean',
         'show_to_report' => 'boolean',
     ];

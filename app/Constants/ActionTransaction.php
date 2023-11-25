@@ -11,6 +11,7 @@ class ActionTransaction
     const PayAmortization = "pay-amortization";
     const PayMembership = "pay-membership";
     const PayOrientation = "pay-orientation";
+    const PayMortuary = "pay-mortuary";
     const PayLoanPreTerminationFee = "pay-loan-pre-termination-fee";
 
     const LIST = [
@@ -21,6 +22,7 @@ class ActionTransaction
         self::PayAmortization,
         self::PayMembership,
         self::PayLoanPreTerminationFee,
-        self::PayOrientation
+        self::PayOrientation,
+        self::PayMortuary,
     ];
 }
