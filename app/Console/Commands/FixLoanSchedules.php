@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\LoanSchedule;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class FixLoanSchedules extends Command
 {
@@ -30,8 +31,12 @@ class FixLoanSchedules extends Command
     {
         // Reset the paid flag if the amount paid is less than 0
         LoanSchedule::where('paid', true)->where('amount_paid', '<=', '0')->update([
-            'paid' => true,
+            'paid' => false,
             'overdue' => false,
+        ]);
+
+        LoanSchedule::where('paid', false)->whereRaw(DB::raw("amount_paid=due_amount"))->update([
+            'paid' => true,
         ]);
       
         return Command::SUCCESS;
