@@ -110,6 +110,9 @@ class LoanHelper {
                 $schedule->paid = true;
                 $schedule->save();
 
+                // record accounting and only if paid
+                TransactionHelper::makeLoanAmortizationPayment($schedule, $createdBy);
+
                 // Calculate the excess payment.
                 $excessPayment = $paymentAmount - $outstandingBalance;
 
@@ -131,9 +134,6 @@ class LoanHelper {
                 $schedule->amount_paid += $paymentAmount;
                 $schedule->save();
             }
-
-            // record accounting
-            TransactionHelper::makeLoanAmortizationPayment($schedule, $createdBy);
 
             return $schedule;
         }

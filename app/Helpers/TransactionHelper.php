@@ -140,6 +140,7 @@ class TransactionHelper {
                 $created_by->name,
                 [
                     "loan_id" => $loan->id,
+                    "loan_schedule_id" => $amortization->id,
                 ]
             );
 
@@ -157,6 +158,7 @@ class TransactionHelper {
                 $created_by->name,
                 [
                     "loan_id" => $loan->id,
+                    "loan_schedule_id" => $amortization->id,
                 ]
             );
 
@@ -173,6 +175,7 @@ class TransactionHelper {
                 $created_by->name,
                 [
                     "loan_id" => $loan->id,
+                    "loan_schedule_id" => $amortization->id,
                 ]
             );
 
