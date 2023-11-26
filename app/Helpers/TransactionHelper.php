@@ -138,6 +138,9 @@ class TransactionHelper {
                 TransactionType::PAYMENT,
                 $amortization->due_date,
                 $created_by->name,
+                [
+                    "loan_id" => $loan->id,
+                ]
             );
 
             $transaction->transaction_sub_type_id = $principalTransaction->id;
@@ -152,6 +155,9 @@ class TransactionHelper {
                 TransactionType::PAYMENT,
                 $amortization->due_date,
                 $created_by->name,
+                [
+                    "loan_id" => $loan->id,
+                ]
             );
 
             $transaction->transaction_sub_type_id = $penaltyTransaction->id;
@@ -165,6 +171,9 @@ class TransactionHelper {
                 TransactionType::PAYMENT,
                 $amortization->due_date,
                 $created_by->name,
+                [
+                    "loan_id" => $loan->id,
+                ]
             );
 
             $transaction->transaction_sub_type_id = $interestTransaction->id;
