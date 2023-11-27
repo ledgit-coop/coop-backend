@@ -16,6 +16,13 @@ class LoanFee extends Model
         'loan_id',
     ];
 
+    protected $casts = [
+        'amount' => 'double',
+        'fee' => 'double',
+        'loan_id' => 'integer',
+        'loan_fee_template_id' => 'integer',
+    ];
+
     public function loan_fee_template() {
         return $this->belongsTo(LoanFeeTemplate::class, 'loan_fee_template_id');
     }
