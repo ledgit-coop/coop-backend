@@ -87,6 +87,14 @@ class LoanSchedule extends Model
         );
     }
 
+    protected function originalDueAmount(): Attribute {
+        return Attribute::make(
+            get: function() {
+                return $this->principal_amount + $this->interest_amount;
+            }
+        );
+    }
+
     protected function dueDays(): Attribute
     {
         return Attribute::make(

@@ -142,7 +142,7 @@
                     <td class="border-left-2">{{ number_format(abs($schedule->principal_balance), 2) }}</td>
                     <td>{{ number_format($schedule->principal_amount, 2)  }}</td>
                     <td>{{ number_format($schedule->interest_amount, 2)  }}</td>
-                    <td>{{ number_format($schedule->due_amount, 2) }}</td>
+                    <td>{{ number_format($schedule->original_due_amount, 2) }}</td>
                     <td class="border-right-2">{{ $schedule->due_date->format('M d, Y') }}</td>
                 </tr>
                 @endforeach
