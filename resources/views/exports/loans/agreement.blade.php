@@ -137,7 +137,7 @@
                     <th>Amortization</th>
                     <th class="border-right-2">Due Date</th>
                 </tr>
-                @foreach($loan->loan_schedules->orderBy('due_date', 'asc')->get() as $schedule)
+                @foreach($loan->loan_schedules()->orderBy('due_date', 'asc')->get() as $schedule)
                 <tr>
                     <td class="border-left-2">{{ number_format(abs($schedule->principal_balance), 2) }}</td>
                     <td>{{ number_format($schedule->principal_amount, 2)  }}</td>
