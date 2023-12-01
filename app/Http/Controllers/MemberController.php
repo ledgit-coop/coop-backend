@@ -306,6 +306,8 @@ class MemberController extends Controller
                 $member->save();
             }
 
+            LogHelper::logMemberCreated($member);
+            
             DB::commit();
 
             return response()->json(Member::find($member->id));

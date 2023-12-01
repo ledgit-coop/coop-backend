@@ -32,6 +32,16 @@ class LogHelper {
         ]);
     }
 
+    public static function logMemberCreated(Member $member) {
+        return self::create(
+            LogTypes::SYSTEM,
+            "Member record created.",
+            Member::class,
+            $member->id,
+            null,
+            null,
+        );
+    }
 
     public static function logMembeshipPayment(Member $member, Transaction $transaction) {
         $date = (new Carbon($transaction->transaction_date))->format('Y-m-d');
