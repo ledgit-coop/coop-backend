@@ -96,7 +96,7 @@ class LogHelper {
         $loan = $schedule->loan;
         return self::create(
             LogTypes::SYSTEM,
-            "Loan ($loan->loan_number) payment recorded amounting " . number_format($schedule->amount_paid, 2),
+            "Loan ($loan->loan_number) payment recorded amounting " . number_format($schedule->amount_paid, 2) . "; Ref #: $schedule->payment_reference",
             LoanSchedule::class,
             $schedule->id,
             Loan::class,
