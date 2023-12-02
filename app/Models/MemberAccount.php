@@ -49,6 +49,15 @@ class MemberAccount extends Model
         );
     }
 
+    protected function accountHolder(): Attribute
+    {
+        return Attribute::make(
+            get: function($value) {
+                return ucwords(strtolower($value));
+            },
+        );
+    }
+
     public function member() {
         return $this->belongsTo(Member::class);
     }

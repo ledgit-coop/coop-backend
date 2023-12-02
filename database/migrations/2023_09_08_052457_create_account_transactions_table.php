@@ -25,6 +25,7 @@ return new class extends Migration
             $table->double('remaining_balance')->default(0);
             $table->enum('type', MemberAccountTransactionType::LIST)->nullable();
             $table->boolean('posted')->default(false);
+            $table->json('parameters')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

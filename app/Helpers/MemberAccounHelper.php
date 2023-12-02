@@ -26,7 +26,10 @@ class MemberAccounHelper {
             'particular' => "Credited Loan - $loan->loan_number",
             'transaction_date' => $loan->released_date,
             'amount' => $loan->principal_amount,
-            'type' => MemberAccountTransactionType::LOAN_CREDIT
+            'type' => MemberAccountTransactionType::LOAN_CREDIT,
+            'parameters' => [
+                "loan_id" => $loan->id
+            ]
            ]
         ]);
 
@@ -39,7 +42,10 @@ class MemberAccounHelper {
                         'particular' => "(Fees) " . ($fee->loan_fee_template->name),
                         'transaction_date' => $loan->released_date,
                         'amount' => (-$fee->amount),
-                        'type' => MemberAccountTransactionType::LOAN_FEES
+                        'type' => MemberAccountTransactionType::LOAN_FEES,
+                        'parameters' => [
+                            "loan_id" => $loan->id
+                        ]
                     ]
                 ]);
             }
@@ -54,7 +60,10 @@ class MemberAccounHelper {
                 'particular' => "Released Loan - $loan->loan_number",
                 'transaction_date' => $loan->released_date,
                 'amount' => (-$loan->released_amount),
-                'type' => MemberAccountTransactionType::LOAN_RELEASED
+                'type' => MemberAccountTransactionType::LOAN_RELEASED,
+                'parameters' => [
+                    "loan_id" => $loan->id
+                ]
             ]
         ]);
     }
@@ -151,7 +160,11 @@ class MemberAccounHelper {
                 'particular' => "Loan Payment - ($due_date) $loan->loan_number",
                 'transaction_date' => $payment_date,
                 'amount' => $paymentAmount,
-                'type' => MemberAccountTransactionType::LOAN_PAYMENT
+                'type' => MemberAccountTransactionType::LOAN_PAYMENT,
+                'parameters' => [
+                    "loan_id" => $loan->id,
+                    "loan_schedule_id" => $loanSchedule->id,
+                ]
             ]
         ]);
     }
@@ -185,7 +198,6 @@ class MemberAccounHelper {
 
         foreach ($accounts as $account) {
             $interest = AccountHelper::computeEarnInterest($account->balance, $account->earn_interest_per_anum);
-            Log::info("$account->balance : $interest");
             $account->transactions()->createMany([
                 [
                     'transaction_number' => AccountHelper::generateTransactionNumber(),
