@@ -162,7 +162,6 @@ class RepaymentController extends Controller
                 $request->payment_remarks,
                 $request->payment_reference,
                 $request->payment_channel
-
             );
     
             // Record transaction

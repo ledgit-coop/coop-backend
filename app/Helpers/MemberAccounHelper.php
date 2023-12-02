@@ -157,7 +157,7 @@ class MemberAccounHelper {
         $account->transactions()->createMany([
             [
                 'transaction_number' => AccountHelper::generateTransactionNumber(),
-                'particular' => "Loan Payment - ($due_date) $loan->loan_number",
+                'particular' => "Loan Payment - ($due_date) $loan->loan_number; Ref#: $loanSchedule->payment_reference",
                 'transaction_date' => $payment_date,
                 'amount' => $paymentAmount,
                 'type' => MemberAccountTransactionType::LOAN_PAYMENT,
