@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\MemberAccountTransactionType;
 use App\Constants\MemberLoanStatus;
 use App\Constants\Pagination;
 use App\Helpers\Exports\ExportFile;
@@ -10,6 +11,7 @@ use App\Helpers\LogHelper;
 use App\Helpers\MemberAccounHelper;
 use App\Helpers\TransactionHelper;
 use App\Http\Requests\LoanApplicationRequest;
+use App\Models\AccountTransaction;
 use App\Models\Loan;
 use App\Models\LoanProduct;
 use App\Models\LoanSchedule;
@@ -354,7 +356,6 @@ class LoanController extends Controller
         }
     }
 
-
     public function updateLoanSchedule(Request $request, LoanSchedule $schedule)
     {
         $this->validate($request, [
@@ -390,5 +391,15 @@ class LoanController extends Controller
             DB::rollBack();
             throw $th;
         }
+    }
+
+    public function repaymentAccountTransaction(Loan $loan) {
+ 
+        $transactions = AccountTransaction::where('type', MemberAccountTransactionType::LOAN_PAYMENT)
+            ->where('member_account_id', $loan->member_account_id);
+
+        $transactions->orderBy('transaction_date', 'asc');
+
+        return response()->json($transactions->get());
     }
 }

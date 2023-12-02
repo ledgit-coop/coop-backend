@@ -71,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/loans/schedule/{loan}', [LoanController::class, 'loanSchedule'])->name('loans.schedule');
     Route::get('/loans/download/{loan}', [LoanController::class, 'download'])->name('loans.download');
     Route::post('/loans/schedule/{schedule}', [LoanController::class, 'updateLoanSchedule'])->name('loans.schedule.update');
+    Route::post('/loans/repayments/{loan}', [LoanController::class, 'repaymentAccountTransaction'])->name('loans.repayments');
 
     Route::get('/loan-repayments', [RepaymentController::class, 'index'])->name('loan-repayments');
     Route::post('/loan-repayments/{loanRepayment}', [RepaymentController::class, 'store'])->name('loan-repayments.store');    
