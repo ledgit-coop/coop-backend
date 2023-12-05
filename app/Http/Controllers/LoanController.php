@@ -364,6 +364,9 @@ class LoanController extends Controller
             'interest_amount' => 'required|numeric|between:0.00,9999999.99',
             'penalty_amount' => 'required|numeric|between:0.00,9999999.99',
             'amount_paid' => 'required|numeric|between:0.00,9999999.99',
+            'payment_channel' => 'nullable|string',
+            'payment_reference' => 'nullable|string',
+            'payment_remarks' => 'nullable|string',
         ]);
 
         try {
@@ -377,6 +380,9 @@ class LoanController extends Controller
             $schedule->due_amount = (
                 $schedule->principal_amount + $schedule->interest_amount + $schedule->penalty_amount
             );
+            $schedule->payment_channel = $request->payment_channel;
+            $schedule->payment_reference = $request->payment_reference;
+            $schedule->payment_remarks = $request->payment_remarks;
 
             // @Note: this must be excuted first before saving
             LogHelper::logLoanScheduleUpdate($schedule);

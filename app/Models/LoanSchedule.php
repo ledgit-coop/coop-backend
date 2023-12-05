@@ -38,6 +38,7 @@ class LoanSchedule extends Model
         'principal_amount' => 'double',
         'interest_amount' => 'double',
         'principal_balance' => 'double',
+        'amount_paid' => 'double',
         'fee_amount' => 'double',
         'is_maturity' => 'boolean',
         'overdue' => 'boolean',
