@@ -83,8 +83,10 @@ Route::middleware('auth:sanctum')->group(function() {
     
     Route::post('/members/accounts/add/{id}/{account_id}', [MemberController::class, 'addAccount'])->name('members.account.add');
     Route::post('/members/update/orientation/{member}', [MemberController::class, 'attendedOrientation'])->name('members.update.orientation');
-    Route::get('/members/accounts/transaction/{member}', [MemberController::class, 'getAccountTransactions'])->name('members.accounts.transactions.list');
+    Route::get('/members/accounts/transaction/members/{member}', [MemberController::class, 'getAccountTransactions'])->name('members.accounts.transactions.list');
     Route::post('/members/accounts/transaction/{member}', [MemberController::class, 'addAccountTransaction'])->name('members.accounts.transactions.post');
+    Route::get('/members/accounts/transaction/{transaction}', [MemberController::class, 'getAccountTransaction'])->name('members.accounts.transactions.show');
+    Route::patch('/members/accounts/transaction/{transaction}', [MemberController::class, 'updateAccountTransaction'])->name('members.accounts.transactions.update');
     Route::delete('/members/accounts/transaction/{transaction}', [MemberController::class, 'deleteAccountTransaction'])->name('members.accounts.transactions.destroy');
     Route::delete('/members/accounts/{account}', [MemberController::class, 'deleteAccount'])->name('members.accounts.destroy');
     Route::get('/members/accounts/{member}', [MemberController::class, 'getMemberAccounts'])->name('members.accounts');

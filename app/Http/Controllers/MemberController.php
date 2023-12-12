@@ -695,6 +695,41 @@ class MemberController extends Controller
         return true;
     }
 
+
+    public function getAccountTransaction(AccountTransaction $transaction) {
+        try {
+            return response()->json($transaction);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+        
+        return true;
+    }
+
+    public function updateAccountTransaction(AccountTransaction $transaction, Request $request) {
+        try {
+            $request->validate([
+                'particular' => 'required',
+                'amount' => 'required',
+                'transaction_date' => 'required|date|date_format:Y-m-d',
+            ]);
+
+            $transaction->update($request->only('particular', 'amount', 'transaction_date'));
+
+            return response()->json($transaction);
+            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+        
+        return true;
+    }
+
+    
+    
+
     public function deleteAccount(MemberAccount $account) {
         if($account->has_balance) throw new Exception("Cannot delete the account that has already a balance.", 1);
 
