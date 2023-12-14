@@ -248,7 +248,7 @@ class LoanController extends Controller
 
             LoanHelper::updateLoanFees($loan);
 
-            if($loan->needsRecomputation())
+            if($loan->needsRecomputation() || $request->re_compute == true || $request->is_draft == true)
                 LoanHelper::reComputeSchedule($loan);
 
             $loan->save();

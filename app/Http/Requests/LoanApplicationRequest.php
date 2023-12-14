@@ -80,6 +80,8 @@ class LoanApplicationRequest extends FormRequest
             'pre_termination_panalty_method' => 'nullable|string',
 
             'is_draft' => 'nullable|boolean',
+
+            're_compute' => 'nullable|boolean',
         ];
     }
 }
