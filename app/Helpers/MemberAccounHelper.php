@@ -164,6 +164,7 @@ class MemberAccounHelper {
                 'parameters' => [
                     "loan_id" => $loan->id,
                     "loan_schedule_id" => $loanSchedule->id,
+                    "reference_number" => $loanSchedule->payment_reference,
                 ]
             ]
         ]);
