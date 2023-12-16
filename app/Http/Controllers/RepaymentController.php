@@ -168,7 +168,7 @@ class RepaymentController extends Controller
             MemberAccounHelper::recordPayment($loanRepayment, $request->amount_paid, $paymentDate);
 
             // Log Payment
-            LogHelper::logLoanPayment($loanRepayment);
+            LogHelper::logLoanPayment($loanRepayment, $request->amount_paid, $request->payment_reference);
     
             DB::commit();
 

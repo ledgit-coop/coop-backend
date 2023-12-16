@@ -92,11 +92,11 @@ class LogHelper {
         );
     }
 
-    public static function logLoanPayment(LoanSchedule $schedule) {
+    public static function logLoanPayment(LoanSchedule $schedule, float $amount_paid, string $payment_reference) {
         $loan = $schedule->loan;
         return self::create(
             LogTypes::SYSTEM,
-            "Loan ($loan->loan_number) payment recorded amounting " . number_format($schedule->amount_paid, 2) . "; Ref #: $schedule->payment_reference",
+            "Loan ($loan->loan_number) payment recorded amounting " . number_format($amount_paid, 2) . "; Ref #: $payment_reference",
             LoanSchedule::class,
             $schedule->id,
             Loan::class,
