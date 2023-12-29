@@ -75,6 +75,7 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::get('/loan-repayments', [RepaymentController::class, 'index'])->name('loan-repayments');
     Route::post('/loan-repayments/{loanRepayment}', [RepaymentController::class, 'store'])->name('loan-repayments.store');    
+    Route::get('/loan-repayments/export/collections', [RepaymentController::class, 'collections'])->name('loan-repayments.export.collections');
 
     Route::resource('logs', LogController::class)->except(['create', 'edit']);
 

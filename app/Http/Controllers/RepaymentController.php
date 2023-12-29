@@ -17,8 +17,12 @@ use Illuminate\Support\Facades\DB;
 class RepaymentController extends Controller
 {
     public function index(Request $request) {
-        
         $limit = $request->limit ?? Pagination::PER_PAGE;
+        $loans = $this->source($request);
+        return response()->json($loans->paginate($limit));
+    }
+
+    public function source(Request $request) {
         $filters = ($request->filters ? (object) $request->filters : null)  ?? [];
 
         $loans = LoanPayment::select('loans.*', DB::raw('IFNULL(MaxDueDate.due_date, "") AS due_date'))
@@ -135,7 +139,20 @@ class RepaymentController extends Controller
             $loans->orderBy('MaxDueDate.due_date', 'asc');
         }
         
-        return response()->json($loans->paginate($limit));
+        return $loans;
+    } 
+
+    public function collections(Request $request) {
+        
+        $loans = $this->source($request)->get();
+
+        $view = view('exports.loans.collections', [
+            'loans' => $loans
+        ])->render();
+
+        return response()->json([
+            'view' => $view
+        ]);
     }
 
     public function store(Request $request, LoanSchedule $loanRepayment) {
