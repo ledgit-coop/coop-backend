@@ -1,0 +1,65 @@
+services:
+    web:
+      container_name: ledget_backend_local
+      build:
+        context: ./docker
+      extra_hosts:
+        - 'host.docker.internal:host-gateway'
+      ports:
+        - '${APP_PORT:-8923}:8000'
+        - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+      volumes:
+        - './:/app'
+      environment:
+        DB_HOST: 'mysql'
+        DB_PORT: '3306'
+        DB_USERNAME: '${DB_USERNAME}'
+        DB_DATABASE: '${DB_DATABASE}'
+        DB_PASSWORD: '${DB_PASSWORD}'
+      networks:
+        - ledget_backend
+      depends_on:
+        - mysql
+
+    mysql:
+      container_name: ledget_backend_mysql
+      image: 'mysql:8.0.0'
+      ports:
+        - '3306:3306'
+      volumes:
+        - 'mysql-data:/var/lib/mysql'
+      environment:
+        MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+        MYSQL_ROOT_HOST: '%'
+        MYSQL_DATABASE: '${DB_DATABASE}'
+        MYSQL_USER: '${DB_USERNAME}'
+        MYSQL_PASSWORD: '${DB_PASSWORD}'
+      networks:
+        - ledget_backend
+      healthcheck:
+        test: ['CMD', '/opt/bitnami/scripts/mysql/healthcheck.sh']
+        interval: 15s
+        timeout: 5s
+        retries: 6
+
+    phpmyadmin:
+      container_name: ledget_backend_phpmyadmin
+      image: phpmyadmin
+      environment:
+        - PMA_ARBITRARY=1
+        - PMA_HOST=${DB_HOST}
+        - PMA_USER=${DB_USERNAME}
+        - PMA_PASSWORD=${DB_PASSWORD}
+        - PMA_PORT=${DB_PORT}
+      networks:
+        - ledget_backend
+      depends_on:
+        - mysql
+      ports:
+        - 8083:80
+
+networks:
+  ledget_backend:
+    driver: bridge
+volumes:
+  mysql-data:
