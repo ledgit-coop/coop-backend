@@ -1,4 +1,3 @@
-DELIMITER $$
 CREATE FUNCTION `share_capital_interest_allocation`(`fromDate` DATE, `toDate` DATE) RETURNS float
     DETERMINISTIC
 BEGIN
@@ -13,5 +12,4 @@ SELECT statutory_funds_total(fromDate, toDate), net_surplus_total(fromDate, toDa
 
 return ((netSurplus-staturyReserves) * (shareCapitalInt / 100));
 
-END$$
-DELIMITER ;
+END

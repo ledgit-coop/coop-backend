@@ -1,4 +1,3 @@
-DELIMITER $$
 CREATE FUNCTION `net_surplus_total`(`fromDate` DATE, `toDate` DATE) RETURNS float
     DETERMINISTIC
 BEGIN
@@ -12,5 +11,4 @@ SELECT sum(net_surplus_allocation_proc_temp.net_surplus) into netSurplus FROM `n
 
 return netSurplus;
 
-END$$
-DELIMITER ;
+END

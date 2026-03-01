@@ -1,4 +1,3 @@
-DELIMITER $$
 CREATE FUNCTION `share_capital_rate_interest`(`fromDate` DATE, `toDate` DATE) RETURNS float
     DETERMINISTIC
 BEGIN
@@ -13,5 +12,4 @@ SELECT sum(member_share_capital_shares_temp.total) into totalShareAvMonth FROM `
 select share_capital_interest_allocation(fromDate, toDate) / totalShareAvMonth into total;
 return total;
 
-END$$
-DELIMITER ;
+END

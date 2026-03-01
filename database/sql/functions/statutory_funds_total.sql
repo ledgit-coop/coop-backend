@@ -1,4 +1,3 @@
-DELIMITER $$
 CREATE FUNCTION `statutory_funds_total`(`fromDate` DATE, `toDate` DATE) RETURNS float
     DETERMINISTIC
 BEGIN
@@ -10,5 +9,4 @@ SELECT sum(`allocation_reserve_fund` + `educational_training_fund` + `optional_f
 
 return staturyReserves;
 
-END$$
-DELIMITER ;
+END

@@ -1,4 +1,3 @@
-DELIMITER $$
 CREATE PROCEDURE `member_share_capital_shares`(IN `fromDate` DATE, IN `toDate` DATE)
 BEGIN
 
@@ -47,5 +46,4 @@ FROM
 ORDER BY
     `account_transactions`.`member_account_id` ASC;
 
-END$$
-DELIMITER ;
+END

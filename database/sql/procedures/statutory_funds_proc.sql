@@ -1,4 +1,3 @@
-DELIMITER $$
 CREATE PROCEDURE `statutory_funds_proc`(IN `fromDate` DATE, IN `toDate` DATE)
 BEGIN
 
@@ -85,5 +84,4 @@ FROM
 
 
     
-END$$
-DELIMITER ;
+END

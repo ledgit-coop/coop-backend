@@ -1,4 +1,3 @@
-DELIMITER $$
 CREATE PROCEDURE `net_surplus_allocation_proc`(IN `fromDate` DATE, IN `toDate` DATE)
 BEGIN
 
@@ -90,5 +89,4 @@ FROM
         )
     ) where transactions.transaction_date BETWEEN fromDate and toDate;
     
-END$$
-DELIMITER ;
+END
