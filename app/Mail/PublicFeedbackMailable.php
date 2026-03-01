@@ -35,7 +35,7 @@ class PublicFeedbackMailable extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'DSPACC Feedback ' . $this->subject,
+            subject: 'Koop Ledget Feedback ' . $this->subject,
         );
     }
 

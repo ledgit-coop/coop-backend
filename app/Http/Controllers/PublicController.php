@@ -18,8 +18,8 @@ class PublicController extends Controller
             'message' => 'required',
         ]);
 
-        Mail::to(config('dspacc.public.receiver_email'))
-            ->cc(config('dspacc.public.carbon_copy'))
+        Mail::to(config('koop.public.receiver_email'))
+            ->cc(config('koop.public.carbon_copy'))
             ->send(new PublicFeedbackMailable(...[$request->name, $request->email, $request->subject, $request->message]));
 
         return response('OK');

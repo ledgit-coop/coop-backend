@@ -77,7 +77,7 @@
                     <td class="border-right-2" colspan="4">{{ $loan->member->full_name }}</td>
                 </tr>
                 <tr>
-                    <td class="border-left-2">DSPACC ID NUMBER</td>
+                    <td class="border-left-2">KOOP_LEDGET ID NUMBER</td>
                     <td class=" border-right-2" colspan="4">{{ $loan->member->member_number }}</td>
                 </tr>
                 <tr>

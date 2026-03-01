@@ -35,19 +35,19 @@
 				<strong><span >1.</span></strong><span > Eligibility Requirements</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
-				<span >A member who has no outstanding loan may qualify for a loan by submitting a properly accomplished application form at the appropriate (DSPACC)</span><span >&#xa0; </span><span >Dalan Sa Pag Asenso Credit Cooperative Office.</span>
+				<span >A member who has no outstanding loan may qualify for a loan by submitting a properly accomplished application form at the appropriate (KOOP Ledget)</span><span >&#xa0; </span><span >Dalan Sa Pag Asenso Credit Cooperative Office.</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
 				<strong><span >2.</span></strong><span > Amount of Loan</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
-				<span >The amount of loan shall be the sum total as approved by the (DSPACC) Dalan Sa Pag Asenso Credit Cooperative and as reflected in its disbursement voucher which is not necessarily the amount applied for.</span>
+				<span >The amount of loan shall be the sum total as approved by the (KOOP Ledget) Dalan Sa Pag Asenso Credit Cooperative and as reflected in its disbursement voucher which is not necessarily the amount applied for.</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
 				<span >For this purpose, the monthly take-home shall be considered in determining the amount of loan to be granted of the date of receipt of the loan application by the</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
-				<span >(DSPACC) Dalan Sa Pag Asenso Credit Cooperative.</span>
+				<span >(KOOP Ledget) Dalan Sa Pag Asenso Credit Cooperative.</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
 				<strong><span >3.</span></strong><span > Payment Terms</span>
@@ -56,7 +56,7 @@
 				<span >The loan principal, interest and service fee due shall be payable in daily/weekly/semi-monthly/monthly/quarterly/lumpsum amortization within the term selected by the Borrower.</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
-				<span style=" background-color:#ffffff">The monthly amortization (for Salary loan with Memorandum of Agreement between the company and the Coop) shall be deducted from the Borrower’s monthly pay . It is understood that the Borrower cannot authorize the stoppage of such deduction until full payment of the loan and other charges that may have accrued thereon. In the event that deduction as above authorized is not affected for whatever reason, the Borrower hereby undertakes to pay directly to the (DSPACC) Dalan Sa Pag Asenso Credit Cooperative all Amortization due.</span>
+				<span style=" background-color:#ffffff">The monthly amortization (for Salary loan with Memorandum of Agreement between the company and the Coop) shall be deducted from the Borrower’s monthly pay . It is understood that the Borrower cannot authorize the stoppage of such deduction until full payment of the loan and other charges that may have accrued thereon. In the event that deduction as above authorized is not affected for whatever reason, the Borrower hereby undertakes to pay directly to the (KOOP Ledget) Dalan Sa Pag Asenso Credit Cooperative all Amortization due.</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
 				<strong><span >4.</span></strong><span > Due Date</span>
@@ -107,7 +107,7 @@
 				<strong><span >11.</span></strong><span > </span><span style=" background-color:#ffffff">Authority to Apply Payment</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
-				<span style=" background-color:#ffffff">In case of maturity of this loan due to death of the Borrower and it remains outstanding either in whole or in part, both for principal and interest, the (DSPACC) Dalan Sa Pag Asenso Credit Cooperative is</span>
+				<span style=" background-color:#ffffff">In case of maturity of this loan due to death of the Borrower and it remains outstanding either in whole or in part, both for principal and interest, the (KOOP Ledget) Dalan Sa Pag Asenso Credit Cooperative is</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
 				<span style=" background-color:#ffffff">authorized to apply survivor’s benefit due to his/her beneficiaries, the amount equivalent to the outstanding balance of this loan, inclusive of interest, penalties and</span>
@@ -119,13 +119,13 @@
 				<span style=" background-color:#ffffff">residual of the benefit shall be paid to the qualified beneficiaries/claimants in accordance with the law.</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
-				<span style=" background-color:#ffffff">Further, in the event that the survivor’s benefit is insufficient to fully settle the outstanding obligation, (DSPACC) Dalan Sa Pag Asenso Credit Cooperative is authorized to apply the monthly survivorship pension(basic survivorship pension and dependent’ pension) due to the qualified survivorship/s to the remaining outstanding obligations until the loan is fully paid. Such authorization shall remain effective until full payment of the loan or any other outstanding obligations of the Borrower to the (DSPACC) Dalan Sa Pag Asenso Credit Cooperative, by virtue of this loan and/or other obligation shall constitute a lien over any benefits/claims that may be due the Borrower. Should such benefits/claims from the (DSPACC) Dalan Sa Pag Asenso Credit Cooperative be sufficient to cover the remaining balance, (DSPACC) Dalan Sa Pag Asenso Credit Cooperative shall not be prevented from filing the necessary civil administrative action(s) for recovery either against the borrower or his estate.</span>
+				<span style=" background-color:#ffffff">Further, in the event that the survivor’s benefit is insufficient to fully settle the outstanding obligation, (KOOP Ledget) Dalan Sa Pag Asenso Credit Cooperative is authorized to apply the monthly survivorship pension(basic survivorship pension and dependent’ pension) due to the qualified survivorship/s to the remaining outstanding obligations until the loan is fully paid. Such authorization shall remain effective until full payment of the loan or any other outstanding obligations of the Borrower to the (KOOP Ledget) Dalan Sa Pag Asenso Credit Cooperative, by virtue of this loan and/or other obligation shall constitute a lien over any benefits/claims that may be due the Borrower. Should such benefits/claims from the (KOOP Ledget) Dalan Sa Pag Asenso Credit Cooperative be sufficient to cover the remaining balance, (KOOP Ledget) Dalan Sa Pag Asenso Credit Cooperative shall not be prevented from filing the necessary civil administrative action(s) for recovery either against the borrower or his estate.</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
 				<strong><span >12.</span></strong><span > Attorneys Fees</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
-				<span >Should the (DSPACC) Dalan Sa Pag Asenso Credit Cooperative be compelled to refer the loan or any position thereof to an Attorney-at-Law for collection or to enforce any right hereunder against the Borrower or avail of any remedy under law of this Agreement, the Borrower shall pay an amount equivalent to twenty-five (25%) percent of all amounts outstanding and unpaid as</span>
+				<span >Should the (KOOP Ledget) Dalan Sa Pag Asenso Credit Cooperative be compelled to refer the loan or any position thereof to an Attorney-at-Law for collection or to enforce any right hereunder against the Borrower or avail of any remedy under law of this Agreement, the Borrower shall pay an amount equivalent to twenty-five (25%) percent of all amounts outstanding and unpaid as</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
 				<span >and for attorney’s fees and litigation expenses.</span>
@@ -137,13 +137,13 @@
 				<span >Any legal action, suit, or proceeding arising out or relating to this Agreement, shall be brought or instituted in the appropriate courts in Lapu-Lapu City or such other venue at</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
-				<span >the exclusive option of (DSPACC) Dalan Sa Pag Asenso Credit Cooperative. In the event the Borrower initiates any legal action arising from or under the agreement, for whatever causes, the borrower agrees to initiate such action only in the City where the principal office of (DSPACC) Dalan Sa Pag Asenso Credit Cooperative is located.</span>
+				<span >the exclusive option of (KOOP Ledget) Dalan Sa Pag Asenso Credit Cooperative. In the event the Borrower initiates any legal action arising from or under the agreement, for whatever causes, the borrower agrees to initiate such action only in the City where the principal office of (KOOP Ledget) Dalan Sa Pag Asenso Credit Cooperative is located.</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
 				<strong><span >14.</span></strong><span > Notices</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
-				<span >All notices required under this Agreement or for its enforcement shall be sent to the office Address or at Mailing/Residential Address indicated in the loan application or as such other address as may be indicated hereafter by the Borrower to the (DSPACC) Dalan Sa Pag Asenso Credit Cooperative. The notices sent to any such addresses shall be valid and sufficient notice to the Borrower for all legal intents and purposes.</span>
+				<span >All notices required under this Agreement or for its enforcement shall be sent to the office Address or at Mailing/Residential Address indicated in the loan application or as such other address as may be indicated hereafter by the Borrower to the (KOOP Ledget) Dalan Sa Pag Asenso Credit Cooperative. The notices sent to any such addresses shall be valid and sufficient notice to the Borrower for all legal intents and purposes.</span>
 			</p>
 			<p style="text-align:justify; line-height:normal">
 				<span >&#xa0;</span>

@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'System',
-            'email' => 'scheduler@dspacc.com',
+            'email' => 'scheduler@koop.com',
             'password' => '',
             'type' => UserType::SYSTEM,
         ]);

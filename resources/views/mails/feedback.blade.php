@@ -1,4 +1,4 @@
-<p>A message received from the dspacc.com website</p>
+<p>A message received from the ledgetcoop website</p>
 <br>
 <br>
 <br>
