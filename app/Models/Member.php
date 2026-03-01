@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Constants\AccountType;
 use App\Constants\AddressResidencyStatus;
 use App\Constants\MemberLoanStatus;
+use App\Helpers\Uploading;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -53,25 +54,25 @@ class Member extends Model
         'paid_membership' => 'boolean',
         'oriented' => 'boolean',
     ];
-    
+
     protected function age(): Attribute
     {
         return Attribute::make(
-            get: fn () => (new Carbon($this->date_of_birth))->age,
+            get: fn() => (new Carbon($this->date_of_birth))->age,
         );
     }
 
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn () => ucwords("$this->first_name $this->middle_name $this->surname"),
+            get: fn() => ucwords("$this->first_name $this->middle_name $this->surname"),
         );
     }
 
     protected function fullPresentAddress(): Attribute
     {
         return Attribute::make(
-            get: function() {
+            get: function () {
                 $address = $this->member_addresses()->where('type', AddressResidencyStatus::PRESENT)->first();
                 return $address ? $address->full_address : '';
             }
@@ -81,11 +82,11 @@ class Member extends Model
     protected function guarantoredTwice(): Attribute
     {
         return Attribute::make(
-            get: function() {
+            get: function () {
                 $id = $this->id;
-                return Loan::where('status', '<>', MemberLoanStatus::CLOSED)->where(function($guarantor) use($id) {
+                return Loan::where('status', '<>', MemberLoanStatus::CLOSED)->where(function ($guarantor) use ($id) {
                     $guarantor->orWhere('guarantor_first_id', $id)
-                    ->orWhere('guarantor_second_id', $id);
+                        ->orWhere('guarantor_second_id', $id);
                 })->count() >= 2;
             }
         );
@@ -94,12 +95,21 @@ class Member extends Model
     protected function guarantoredCount(): Attribute
     {
         return Attribute::make(
-            get: function() {
+            get: function () {
                 $id = $this->id;
-                return Loan::where('status', '<>', MemberLoanStatus::CLOSED)->where(function($guarantor) use($id) {
+                return Loan::where('status', '<>', MemberLoanStatus::CLOSED)->where(function ($guarantor) use ($id) {
                     $guarantor->orWhere('guarantor_first_id', $id)
-                    ->orWhere('guarantor_second_id', $id);
+                        ->orWhere('guarantor_second_id', $id);
                 })->count();
+            }
+        );
+    }
+
+    protected function profilePictureUrl(): Attribute
+    {
+        return Attribute::make(
+            get: function ($profile_picture_url) {
+                return Uploading::getMemberImageUrl($profile_picture_url);
             }
         );
     }
@@ -117,7 +127,7 @@ class Member extends Model
     protected function fullPermanentAddress(): Attribute
     {
         return Attribute::make(
-            get: function() {
+            get: function () {
                 $address = $this->member_addresses()->where('type', AddressResidencyStatus::PERMANENT)->first();
                 return $address ? $address->full_address : '';
             }
@@ -127,7 +137,7 @@ class Member extends Model
     protected function residencyStatus(): Attribute
     {
         return Attribute::make(
-            get: function() {
+            get: function () {
                 $address = $this->member_addresses()->where('type', AddressResidencyStatus::PRESENT)->first();
                 return $address ? $address->residency_status : '';
             }
@@ -144,52 +154,63 @@ class Member extends Model
         return $this->hasOne(MemberAddress::class)->where('type', AddressResidencyStatus::PERMANENT);
     }
 
-    public function beneficiaries() {
+    public function beneficiaries()
+    {
         return $this->hasMany(MemberBeneficiary::class);
     }
 
-    public function member_addresses() {
+    public function member_addresses()
+    {
         return $this->hasMany(MemberAddress::class);
     }
 
-    public function member_related_people() {
+    public function member_related_people()
+    {
         return $this->hasMany(MemberRelatedPeople::class);
     }
 
-    public function mother() {
+    public function mother()
+    {
         return $this->hasOne(MemberRelatedPeople::class)->where('type', 'mother');
     }
 
-    public function spouse() {
+    public function spouse()
+    {
         return $this->hasOne(MemberRelatedPeople::class)->where('type', 'spouse');
     }
 
-    public function father() {
+    public function father()
+    {
         return $this->hasOne(MemberRelatedPeople::class)->where('type', 'father');
     }
 
-    public function member_accounts() {
+    public function member_accounts()
+    {
         return $this->hasMany(MemberAccount::class);
     }
 
-    public function share_capital_account() {
-        return $this->hasOne(MemberAccount::class)->whereHas('account', function($account) {
+    public function share_capital_account()
+    {
+        return $this->hasOne(MemberAccount::class)->whereHas('account', function ($account) {
             $account->where('type', AccountType::SHARE_CAPITAL);
         });
     }
 
-    public function mortuary_account() {
-        return $this->hasOne(MemberAccount::class)->whereHas('account', function($account) {
+    public function mortuary_account()
+    {
+        return $this->hasOne(MemberAccount::class)->whereHas('account', function ($account) {
             $account->where('type', AccountType::MORTUARY);
         });
     }
 
-    public function loans() {
+    public function loans()
+    {
         return $this->hasMany(Loan::class, 'member_id');
     }
 
-    public function savings_accounts() {
-        return $this->hasMany(MemberAccount::class)->whereHas('account', function($account) {
+    public function savings_accounts()
+    {
+        return $this->hasMany(MemberAccount::class)->whereHas('account', function ($account) {
             $account->where('type', AccountType::SAVINGS);
         });
     }
