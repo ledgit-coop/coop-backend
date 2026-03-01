@@ -6,7 +6,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
-      - "${APP_PORT:-8923}:80001"
+      - "${APP_PORT:-8923}:8001"
       - "${VITE_PORT:-5173}:${VITE_PORT:-5172}"
     volumes:
       - "./:/app"
