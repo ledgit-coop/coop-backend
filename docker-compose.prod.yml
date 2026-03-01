@@ -1,0 +1,18 @@
+services:
+  web:
+    container_name: koop_ledget_production
+    build:
+      context: ./docker
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${APP_PORT:-8923}:80001"
+      - "${VITE_PORT:-5173}:${VITE_PORT:-5172}"
+    volumes:
+      - "./:/app"
+    networks:
+      - koop_ledget
+
+networks:
+  koop_ledget:
+    driver: bridge
